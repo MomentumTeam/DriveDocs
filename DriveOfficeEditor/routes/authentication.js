@@ -1,0 +1,14 @@
+const passport = require('../authentication/passport');
+const cookieParser = require('cookie-parser')
+module.exports = (app) => {
+  app.use(passport.initialize());
+  app.use(passport.session());
+  app.get('/login', passport.authenticate('shraga'), function (req, res, next) {
+    return res.status(200).json(req.user);
+  });
+
+  app.post('/success', passport.authenticate('shraga'), function (req, res, next) {
+    console.log(req.user);
+    return res.redirect(req.user.relayState);
+  });
+};
