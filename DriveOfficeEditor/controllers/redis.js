@@ -18,6 +18,7 @@ exports.removeUserFromSession = async (id, userToRemove) => {
       return;
     }
     session.Users = session.Users.filter((u) => u.Id !== userToRemove.id);
+    session.UserForUpload = userToRemove.id;
     session = JSON.stringify(JSON.stringify(session));
     await setAsync(id, session);
   } catch (err) {

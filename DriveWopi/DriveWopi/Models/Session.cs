@@ -19,6 +19,8 @@ namespace DriveWopi.Models
 
         protected string _LockString;
 
+        protected string _UserForUpload = null;
+
         protected FileInfo _FileInfo;
         protected IRedisClient Client;
 
@@ -39,6 +41,12 @@ namespace DriveWopi.Models
         {
             get { return _SessionId; }
             set { _SessionId = value; }
+        }
+
+        public string UserForUpload
+        {
+            get { return _UserForUpload; }
+            set { _UserForUpload = value; }
         }
         public DateTime LastUpdated
         {
@@ -167,6 +175,7 @@ namespace DriveWopi.Models
                     sessionObj.LastUpdated = (DateTime)deserializedSessionDict["LastUpdated"];
                     string lockStatusAsString = ((long)deserializedSessionDict["LockStatus"]).ToString();
                     string lockStringAsString = (string)deserializedSessionDict["LockString"];
+                    sessionObj.UserForUpload = (string)deserializedSessionDict["UserForUpload"];
                     sessionObj.LockStatus = lockStatusAsString.Equals("1") ? LockStatus.LOCK : LockStatus.UNLOCK;
                     sessionObj.LockString = lockStringAsString;
                     foreach (Dictionary<string, object> userDict in UsersListDict)
