@@ -50,7 +50,8 @@ namespace DriveWopi.Controllers
                 }
                 var sessionContext = Request.Headers["X-WOPI-SessionContext"];
                 string idToDownload = token.ContainsKey("template") ? token["template"].ToString() : id;
-                string fileName = Config.Folder + "/" + id + "." + metadata["type"];
+                Console.WriteLine(metadata["name"]);
+                string fileName = Config.Folder + "/" + metadata["name"];
                 Session editSession = Session.GetSessionFromRedis(id, client);
                 if (editSession == null)
                 {

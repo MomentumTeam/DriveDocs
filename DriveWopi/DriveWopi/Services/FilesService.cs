@@ -26,7 +26,7 @@ namespace DriveWopi.Services
         
         }
 
-        public async static Task<string> getUploadId(FileInfo fileInfo, string authorization)
+        public async static Task<string> getUploadId(FileInfo fileInfo, string authorization, string fileId)
         {
             try
             {
@@ -35,12 +35,13 @@ namespace DriveWopi.Services
                     string uploadId = "";
                     httpClient.DefaultRequestHeaders.Add("X-Content-Length", fileInfo.Length.ToString());
                     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    var fileId = fileInfo.Name.ToString();
-                    int index = fileId.IndexOf(".");
-                    if (index > 0)
-                    {
-                        fileId = fileId.Substring(0, index);
-                    }
+                    // var fileId = fileInfo.Name.ToString();
+                    Console.WriteLine("fileid"+fileId);
+                    // int index = fileId.IndexOf(".");
+                    // if (index > 0)
+                    // {
+                    //     fileId = fileId.Substring(0, index);
+                    // }
                     if (!Config.Mimetypes.ContainsKey(fileInfo.Extension.ToString().ToLower()))
                     {
                         throw new Exception();
@@ -65,23 +66,25 @@ namespace DriveWopi.Services
                     {
                         throw new Exception();
                     }
+                    Console.WriteLine(uploadId);
                     return uploadId;
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                throw ex;
             }
         }
-        public async static void UpdateFileInDrive(FileInfo fileInfo, string authorization)
+        public async static void UpdateFileInDrive(FileInfo fileInfo, string authorization, string fileId)
         {
             try
             {
-                string uploadId = await getUploadId(fileInfo, authorization);
+                string uploadId = await getUploadId(fileInfo, authorization, fileId);
+                Console.WriteLine("ok");
                 using (var client = new WebClient())
                 {
+                    Console.WriteLine(fileId);
                     client.Headers.Set("Authorization", authorization);
-
                     client.Headers.Set("Content-Range", "bytes 0-" + (fileInfo.Length - 1) + "/" + fileInfo.Length);
                     Console.WriteLine(uploadId + "");
                     byte[] responseArray = client.UploadFile(Config.DriveUrl + "/api/upload?uploadType=resumable&uploadId=" + uploadId, fileInfo.FullName);
@@ -90,10 +93,9 @@ namespace DriveWopi.Services
                     // return true;
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-
-                throw e;
+                
             }
         }
         public static void DownloadFileFromDrive(string idToDownload, string localPath, string authorization)
@@ -116,9 +118,9 @@ namespace DriveWopi.Services
                     Console.WriteLine("");
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                throw ex;
             }
 
         }
@@ -145,9 +147,9 @@ namespace DriveWopi.Services
                     Console.WriteLine("hello");
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                throw ex;
             }
         }
 
@@ -159,9 +161,9 @@ namespace DriveWopi.Services
                 string dest = Config.Folder + "/" + id;
                 File.Copy(source, dest, true);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                throw ex;
             }
         }
         public static void CreateBlankFile(string path)
@@ -185,9 +187,9 @@ namespace DriveWopi.Services
                 }
                 File.Copy(source, dest, true);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                throw ex;
             }
         }
 
@@ -202,9 +204,9 @@ namespace DriveWopi.Services
                     fileStream.Write(newContent, 0, newContent.Length);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                throw ex;
             }
 
         }
@@ -224,9 +226,9 @@ namespace DriveWopi.Services
                     return ms.ToArray();
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                throw ex;
             }
         }
 
@@ -251,9 +253,9 @@ namespace DriveWopi.Services
                 ms.Position = 0;
                 return ms.ToArray();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                throw ex;
             }
 
         }
@@ -265,9 +267,9 @@ namespace DriveWopi.Services
                 //string filePath = GeneratePath(id);
                 return File.Exists(filePath);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                throw ex;
             }
 
         }

@@ -251,7 +251,8 @@ namespace DriveWopi.Models
         {
             ///TODO upload the file to drive
             try{
-                Services.FilesService.UpdateFileInDrive(this._FileInfo,FilesService.GenerateAuthorizationToken(userForUpload.Id));
+                Console.WriteLine("fileinfo:"+this._FileInfo);
+                Services.FilesService.UpdateFileInDrive(this._FileInfo,FilesService.GenerateAuthorizationToken(userForUpload.Id),this._SessionId);
             }
             catch(Exception ex){
                 throw ex;

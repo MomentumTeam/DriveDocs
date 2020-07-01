@@ -55,17 +55,12 @@ namespace DriveWopi.Models
                     allSessions = allSessions.Where(x => x != null).ToList();
                     lock (allSessions)
                     {
-                        Console.WriteLine(allSessions);
                         for (int i = 0; i < allSessions.Count; i++)
                         {
                             Session session = allSessions[i];
-                            Console.WriteLine(session);
                             usersCountBefore = session.Users==null?0:session.Users.Count;
-                            Console.WriteLine(usersCountBefore);
                             if (usersCountBefore == 0)
                             {
-                                Console.WriteLine("X PRESS");
-                                Console.WriteLine("USER FOR UPLOAD:"+session.UserForUpload);
                                 if(session.UserForUpload != null){
                                     session.SaveToDrive(new User(session.UserForUpload));
                                 }
