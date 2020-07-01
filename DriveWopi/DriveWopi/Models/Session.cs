@@ -73,13 +73,14 @@ namespace DriveWopi.Models
             get { return _LockString; }
             set { _LockString = value; }
         }
-        public CheckFileInfo GetCheckFileInfo(string userId, string userName)
+        public CheckFileInfo GetCheckFileInfo(string userId, string userName, string name)
         {
             try
             {
+                Console.WriteLine("name:"+_FileInfo.Name);
                 CheckFileInfo cfi = new CheckFileInfo();
                 cfi.SupportsCoauth = true;
-                cfi.BaseFileName = _FileInfo.Name;
+                cfi.BaseFileName = name;
                 //cfi.OwnerId = m_login;
                 cfi.UserFriendlyName = userName;
                 cfi.UserId = userId;
@@ -253,6 +254,8 @@ namespace DriveWopi.Models
             try{
                 Console.WriteLine("fileinfo:"+this._FileInfo);
                 Services.FilesService.UpdateFileInDrive(this._FileInfo,FilesService.GenerateAuthorizationToken(userForUpload.Id),this._SessionId);
+                Services.FilesService.RemoveFile(this._LocalFilePath);
+
             }
             catch(Exception ex){
                 throw ex;

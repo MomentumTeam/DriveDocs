@@ -284,5 +284,17 @@ namespace DriveWopi.Services
         {
             return Config.Folder + "/" + id;
         }
+
+        public static void RemoveFile(string path)
+        {
+            Console.WriteLine(path);
+            try {
+                File.Delete(path);
+            } 
+            catch (Exception ex) {
+                throw ex;
+            }
+            
+        }
     }
 }

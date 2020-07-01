@@ -51,7 +51,7 @@ namespace DriveWopi.Controllers
                 var sessionContext = Request.Headers["X-WOPI-SessionContext"];
                 string idToDownload = token.ContainsKey("template") ? token["template"].ToString() : id;
                 Console.WriteLine(metadata["name"]);
-                string fileName = Config.Folder + "/" + metadata["name"];
+                string fileName = Config.Folder + "/" + metadata["id"] + "." +metadata["type"];
                 Session editSession = Session.GetSessionFromRedis(id, client);
                 if (editSession == null)
                 {
@@ -65,7 +65,7 @@ namespace DriveWopi.Controllers
                     editSession.AddUser(user["id"]);
                     editSession.SaveToRedis();
                 }
-                CheckFileInfo checkFileInfo = editSession.GetCheckFileInfo(user["id"], user["name"]);
+                CheckFileInfo checkFileInfo = editSession.GetCheckFileInfo(user["id"], user["name"], metadata["name"]);
                 return Ok(checkFileInfo);
             }
             catch (Exception e)

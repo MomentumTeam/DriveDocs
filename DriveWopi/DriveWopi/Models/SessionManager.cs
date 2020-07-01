@@ -120,7 +120,6 @@ namespace DriveWopi.Models
                 }
             }
             catch(Exception ex){
-                // Console.WriteLine("Exception in CleanUp");
                 throw ex;
             }
 
