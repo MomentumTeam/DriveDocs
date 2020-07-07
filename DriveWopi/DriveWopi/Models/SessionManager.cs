@@ -41,36 +41,48 @@ namespace DriveWopi.Models
             _Timer.Enabled = true;
         }
 
-        private void CleanUp(object sender, ElapsedEventArgs e)
+        private async void CleanUp(object sender, ElapsedEventArgs e)
         {
             try{
                 IRedisClient client = RedisService.GenerateRedisClient();
                 User userForUpload = null;
                 Console.WriteLine("CleanUp");
-                bool needToCloseSomeSessions = false;
-                lock (SessionManager._SyncObj)
-                {
+                bool needToCloseSomeSessions = false , updateSuccess = true;
                     int usersCountBefore, usersCountAfter;
                     List<Session> allSessions = Session.GetAllSessions(client);
                     allSessions = allSessions.Where(x => x != null).ToList();
-                    lock (allSessions)
-                    {
                         for (int i = 0; i < allSessions.Count; i++)
                         {
                             Session session = allSessions[i];
-                            usersCountBefore = session.Users==null?0:session.Users.Count;
-                            if (usersCountBefore == 0)
+
+                            if (session.LastUpdated.AddSeconds(Config.MaxRedisSessionTime) < DateTime.Now)
                             {
-                                if(session.UserForUpload != null){
-                                    session.SaveToDrive(new User(session.UserForUpload));
-                                }
+                                needToCloseSomeSessions = true;
                                 session.DeleteSessionFromRedis();
                                 allSessions[i] = null;
-                                needToCloseSomeSessions = true;
+                                session.RemoveLocalFile();
                                 continue;
                             }
+
+                            usersCountBefore = session.Users==null?0:session.Users.Count;
+                            // Zero users in the sessions
+                            if (usersCountBefore == 0)
+                            {
+                                updateSuccess = true;
+                                if(session.UserForUpload != null){
+                                    updateSuccess = await session.SaveToDrive(new User(session.UserForUpload));
+                                }
+                                // UserForUpload is null or upload was successful
+                                if(updateSuccess){
+                                    session.DeleteSessionFromRedis();
+                                    session.RemoveLocalFile();
+                                    allSessions[i] = null;
+                                    needToCloseSomeSessions = true;
+                                }
+                                continue;
+                            }
+
                             userForUpload = session.Users[0];
-                            //Update the file instead
                             session.Users.RemoveAll((User user) =>
                             {
                                 if (user.LastUpdated.AddSeconds(Config.Removewaituser) < DateTime.Now)
@@ -88,36 +100,41 @@ namespace DriveWopi.Models
                             {
                                 if (usersCountAfter == 0)
                                 {
-                                    session.SaveToDrive(userForUpload);
-                                    session.DeleteSessionFromRedis();
-                                    allSessions[i] = null;
-                                    needToCloseSomeSessions = true;
+                                    updateSuccess = await session.SaveToDrive(userForUpload);
+                                    if(updateSuccess){
+                                        session.DeleteSessionFromRedis();
+                                        session.RemoveLocalFile();
+                                        allSessions[i] = null;
+                                        needToCloseSomeSessions = true;
+                                    }
+                                    else{
+                                        session.SaveToRedis();
+                                    }
                                     continue;
                                 }
                                 else
                                 {
-                                    // string convertedSession = JsonConvert.SerializeObject(session);
                                     session.SaveToRedis();
                                 }
                             }
-                            if (session.LastUpdated.AddSeconds(Config.Closewait) < DateTime.Now || session.Users.Count == 0)
-                            {
-                                needToCloseSomeSessions = true;
-                                // save the changes to the file
-                                session.SaveToDrive(userForUpload);
 
-                                session.DeleteSessionFromRedis();
-                                allSessions[i] = null;
-                                // clean up
+                            if (session.LastUpdated.AddSeconds(Config.Closewait) < DateTime.Now)
+                            {
+                                // save the changes to the file
+                                updateSuccess = await session.SaveToDrive(userForUpload);
+                                if(updateSuccess){
+                                    needToCloseSomeSessions = true;
+                                    session.RemoveLocalFile();
+                                    session.DeleteSessionFromRedis();
+                                    allSessions[i] = null;
+                                }
                             }
                         }
-                    }
                     allSessions = allSessions.Where(x => x != null).ToList();
                     if (needToCloseSomeSessions)
                     {
                         Session.UpdateSessionsListInRedis(allSessions, client);
                     }
-                }
             }
             catch(Exception ex){
                 throw ex;

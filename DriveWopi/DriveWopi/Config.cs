@@ -25,6 +25,8 @@ namespace DriveWopi
         public static int Timeout; //Time period to perform cleanUp
         public static int Closewait; // Time before the session is deleted after not being updated
         public static int Removewaituser; // Time before the user is deleted from the session after begin inactive
+        
+        public static int MaxRedisSessionTime;
         static Config(){
             Folder = Environment.GetEnvironmentVariable("FOLDER");
             TemplatesFolder = Environment.GetEnvironmentVariable("TEMPLATE_FOLDER");
@@ -37,6 +39,7 @@ namespace DriveWopi
             Closewait =  int.Parse(Environment.GetEnvironmentVariable("CLOSE_WAIT"));       
             Removewaituser =  int.Parse(Environment.GetEnvironmentVariable("REMOVE_WAIT_USER")); // Time before the user is deleted from the session after begin inactive
             AuthorizationToken=Environment.GetEnvironmentVariable("AUTHORIZATION_TOKEN");
+            MaxRedisSessionTime = int.Parse(Environment.GetEnvironmentVariable("MAX_REDIS_SESSION_TIME")); // Time after which the session is surely deleted from redis
 
         }
     }

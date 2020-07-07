@@ -19,11 +19,7 @@ namespace DriveWopi.Services
         public static string GenerateAuthorizationToken(string userId)
         {
             //TODO
-
-           // return "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsImFkZnNJZCI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJnZW5lc2lzSWQiOiI1ZTU2ODgzMjQyMDNmYzQwMDQzNTkxYWEiLCJuYW1lIjp7ImZpcnN0TmFtZSI6Iteg15nXmden15kiLCJsYXN0TmFtZSI6IteQ15PXmdeT16EifSwiZGlzcGxheU5hbWUiOiJ0MjM0NTg3ODlAamVsbG8uY29tIiwicHJvdmlkZXIiOiJHZW5lc2lzIiwiZW50aXR5VHlwZSI6ImRpZ2ltb24iLCJjdXJyZW50VW5pdCI6Im5pdHJvIHVuaXQiLCJkaXNjaGFyZ2VEYXkiOiIyMDIyLTExLTMwVDIyOjAwOjAwLjAwMFoiLCJyYW5rIjoibWVnYSIsImpvYiI6Iteo15XXpteXIiwicGhvbmVOdW1iZXJzIjpbIjA1Mi0xMjM0NTY3Il0sImFkZHJlc3MiOiLXqNeX15XXkSDXlNee157Xqten15nXnSAzNCIsInBob3RvIjpudWxsLCJqdGkiOiJmZjQ2ODJjMy1lZDI3LTRkODItYmFjNi1iZWFhYTgzNDVmNzAiLCJpYXQiOjE1OTIyMzAxOTUsImV4cCI6MTU5NDgyMjE5NSwiZmlyc3ROYW1lIjoi16DXmdeZ16fXmSIsImxhc3ROYW1lIjoi15DXk9eZ15PXoSJ9.4caytinSKCQMDGSHq0p0Fl--NypOOiKC8Df5W7RCPkY";
             return Config.AuthorizationToken;
-        
-        
         }
 
         public async static Task<string> getUploadId(FileInfo fileInfo, string authorization, string fileId)
@@ -35,13 +31,6 @@ namespace DriveWopi.Services
                     string uploadId = "";
                     httpClient.DefaultRequestHeaders.Add("X-Content-Length", fileInfo.Length.ToString());
                     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    // var fileId = fileInfo.Name.ToString();
-                    Console.WriteLine("fileid"+fileId);
-                    // int index = fileId.IndexOf(".");
-                    // if (index > 0)
-                    // {
-                    //     fileId = fileId.Substring(0, index);
-                    // }
                     if (!Config.Mimetypes.ContainsKey(fileInfo.Extension.ToString().ToLower()))
                     {
                         throw new Exception();
@@ -58,15 +47,18 @@ namespace DriveWopi.Services
                     var response = await httpClient.SendAsync(request);
                     HttpHeaders headers = response.Headers;
                     IEnumerable<string> values;
+                    Console.WriteLine("Reponse Status = "+ response.StatusCode);
+
                     if (headers.TryGetValues("X-Uploadid", out values))
                     {
                         uploadId = values.First();
+                        Console.WriteLine("uploadId = "+ uploadId);
                     }
                     else
                     {
                         throw new Exception();
+                        
                     }
-                    Console.WriteLine(uploadId);
                     return uploadId;
                 }
             }
@@ -75,27 +67,22 @@ namespace DriveWopi.Services
                 throw ex;
             }
         }
-        public async static void UpdateFileInDrive(FileInfo fileInfo, string authorization, string fileId)
+        public async static Task<bool> UpdateFileInDrive(FileInfo fileInfo, string authorization, string fileId)
         {
             try
             {
                 string uploadId = await getUploadId(fileInfo, authorization, fileId);
-                Console.WriteLine("ok");
                 using (var client = new WebClient())
                 {
-                    Console.WriteLine(fileId);
-                    client.Headers.Set("Authorization", authorization);
                     client.Headers.Set("Content-Range", "bytes 0-" + (fileInfo.Length - 1) + "/" + fileInfo.Length);
-                    Console.WriteLine(uploadId + "");
                     byte[] responseArray = client.UploadFile(Config.DriveUrl + "/api/upload?uploadType=resumable&uploadId=" + uploadId, fileInfo.FullName);
                     Console.WriteLine("\nResponse Received. The contents of the file uploaded are:\n{0}", System.Text.Encoding.ASCII.GetString(responseArray));
-                    Console.WriteLine("UpdateFileInDrive");
-                    // return true;
+                    return true;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                
+                return false;
             }
         }
         public static void DownloadFileFromDrive(string idToDownload, string localPath, string authorization)
@@ -105,16 +92,7 @@ namespace DriveWopi.Services
                 using (var client = new WebClient())
                 {
                     client.Headers.Set("Authorization", authorization);
-                    //client.Encoding = Encoding.UTF8;
-                    //string fileName = Config.Folder+"\\"+localPath;
-                    //TODO download from Drive Service
-                    //byte[] data = client.DownloadData(Config.DriveServiceUrl+"/files/download/" + idToDownload);//, Config.Folder+"/"+name);
                     client.DownloadFile(Config.DriveUrl + "/api/files/" + idToDownload + "?alt=media", localPath);
-                    // BinaryWriter writer = new BinaryWriter(File.OpenWrite(fileName));     
-                    //  writer.Write(data);
-                    //  writer.Flush();
-                    //  writer.Close();
-                    //File.WriteAllBytes(Config.Folder+"/"+name,data);
                     Console.WriteLine("");
                 }
             }
@@ -123,34 +101,6 @@ namespace DriveWopi.Services
                 throw ex;
             }
 
-        }
-
-
-        public static void UpdateFileInDrive(string idToUpdate, string localPath, string authorization)
-        {
-            try
-            {
-                using (var client = new WebClient())
-                {
-                    client.Headers.Set("Authorization", authorization);
-
-                    //client.Encoding = Encoding.UTF8;
-                    // string fileName = Config.Folder+"\\"+localPath;
-                    //TODO download from Drive Service
-                    //byte[] data = client.DownloadData(Config.DriveServiceUrl+"/files/download/" + idToDownload);//, Config.Folder+"/"+name);
-                    //client.DownloadFile("http://atan-drv.northeurope.cloudapp.azure.com/api/files/"+idToDownload+"?alt=media", fileName);
-                    // BinaryWriter writer = new BinaryWriter(File.OpenWrite(fileName));     
-                    //  writer.Write(data);
-                    //  writer.Flush();
-                    //  writer.Close();
-                    //File.WriteAllBytes(Config.Folder+"/"+name,data);
-                    Console.WriteLine("hello");
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
         }
 
         public static void CopyTemplate(string template, string id)

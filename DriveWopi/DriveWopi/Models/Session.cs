@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using DriveWopi.Services;
 using ServiceStack.Redis;
+using System.Threading.Tasks;
 
 namespace DriveWopi.Models
 {
@@ -58,6 +59,7 @@ namespace DriveWopi.Models
             get { return _LocalFilePath; }
             set { _LocalFilePath = value; }
         }
+        
         public List<User> Users
         {
             get { return _Users; }
@@ -72,6 +74,10 @@ namespace DriveWopi.Models
         {
             get { return _LockString; }
             set { _LockString = value; }
+        }
+
+        public bool LocalFileExists(){
+            return  _FileInfo.Exists;      
         }
         public CheckFileInfo GetCheckFileInfo(string userId, string userName, string name)
         {
@@ -248,19 +254,30 @@ namespace DriveWopi.Models
             }
         }
 
-        public void SaveToDrive(User userForUpload)
+        public async Task<bool> SaveToDrive(User userForUpload)
         {
-            ///TODO upload the file to drive
             try{
-                Console.WriteLine("fileinfo:"+this._FileInfo);
-                Services.FilesService.UpdateFileInDrive(this._FileInfo,FilesService.GenerateAuthorizationToken(userForUpload.Id),this._SessionId);
-                Services.FilesService.RemoveFile(this._LocalFilePath);
+                bool ret = await Services.FilesService.UpdateFileInDrive(this._FileInfo,FilesService.GenerateAuthorizationToken(userForUpload.Id),this._SessionId);
+                return ret;
+            }
+            catch(Exception ex){
+                return false;
+                //throw ex;
+            }
+            
+        }
 
+        public void RemoveLocalFile()
+        {
+            try{
+                if(LocalFileExists()){
+                    Services.FilesService.RemoveFile(this._LocalFilePath);
+                }
             }
             catch(Exception ex){
                 throw ex;
             }
-            
+
         }
 
         public void DeleteSessionFromRedis()
