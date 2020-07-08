@@ -10,7 +10,7 @@ services:
             restart_policy:
               condition: on-failure
     wopi:
-        build: ./DriveWopi/DriveWopi
+        image: drivedocs/drivewopi
         depends_on:
             - redis-server
         environment:
@@ -39,7 +39,7 @@ services:
             restart_policy:
               condition: on-failure
     node-app:
-        build: ./DriveOfficeEditor
+        image: drivedocs/driveofficeeditor
         environment:
             -  WOPI_URL=${WOPI_URL}
             -  REDIS_HOST=${REDIS_HOST}
