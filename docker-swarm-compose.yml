@@ -14,20 +14,20 @@ services:
         depends_on:
             - redis-server
         environment:
-            -  REDIS_HOST=${REDIS_HOST}
-            -  REDIS_PORT=${REDIS_PORT}
-            -  DRIVE_URL=${DRIVE_URL}
-            -  PORT=${PORT_WOPI}
-            -  JWT_SECRET=${JWT_SECRET}
-            -  FOLDER=${FOLDER}
-            -  TEMPLATE_FOLDER=${TEMPLATE_FOLDER}
-            -  AUTHORIZATION_TOKEN=${AUTHORIZATION_TOKEN}
-            -  DRIVE_SECRET=${DRIVE_SECRET}
-            -  TOKEN_EXPIRE=${TOKEN_EXPIRE}
-            -  TIME_OUT=${TIME_OUT} #Time period to perform cleanUp in milliseconds
-            -  CLOSE_WAIT=${CLOSE_WAIT} #Time before the session is deleted after not being updated in seconds
-            -  REMOVE_WAIT_USER=${REMOVE_WAIT_USER} #Time before the user is deleted from the session after begin inactive in seconds
-            -  MAX_REDIS_SESSION_TIME=${MAX_REDIS_SESSION_TIME} #maximum time for session on redis
+            -  REDIS_HOST=13.74.150.126
+            -  REDIS_PORT=6379
+            -  DRIVE_URL=http://yosef.northeurope.cloudapp.azure.com
+            -  PORT=8080
+            -  JWT_SECRET=niceSecret
+            -  FOLDER=/sample_files
+            -  TEMPLATE_FOLDER=/templates
+            -  AUTHORIZATION_TOKEN=Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsImFkZnNJZCI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJnZW5lc2lzSWQiOiI1ZTU2ODgzMjQyMDNmYzQwMDQzNTkxYWEiLCJuYW1lIjp7ImZpcnN0TmFtZSI6Iteg15nXmden15kiLCJsYXN0TmFtZSI6IteQ15PXmdeT16EifSwiZGlzcGxheU5hbWUiOiJ0MjM0NTg3ODlAamVsbG8uY29tIiwicHJvdmlkZXIiOiJHZW5lc2lzIiwiZW50aXR5VHlwZSI6ImRpZ2ltb24iLCJjdXJyZW50VW5pdCI6Im5pdHJvIHVuaXQiLCJkaXNjaGFyZ2VEYXkiOiIyMDIyLTExLTMwVDIyOjAwOjAwLjAwMFoiLCJyYW5rIjoibWVnYSIsImpvYiI6Iteo15XXpteXIiwicGhvbmVOdW1iZXJzIjpbIjA1Mi0xMjM0NTY3Il0sImFkZHJlc3MiOiLXqNeX15XXkSDXlNee157Xqten15nXnSAzNCIsInBob3RvIjpudWxsLCJqdGkiOiI0YzRmMzYwMS00OTQ0LTQ3M2MtOTEyMi1hNjVjMGU5YmI0YWUiLCJpYXQiOjE1OTQxMDE0NjksImV4cCI6MTU5NjY5MzQ2OSwiZmlyc3ROYW1lIjoi16DXmdeZ16fXmSIsImxhc3ROYW1lIjoi15DXk9eZ15PXoSJ9.QlEuP5nO8S7uZ7P66RtMOTWABRRFAA11dER03SI2KQk
+            -  DRIVE_SECRET=driveSecret
+            -  TOKEN_EXPIRE=86400000
+            -  TIME_OUT=30000 #Time period to perform cleanUp in milliseconds
+            -  CLOSE_WAIT=30 #Time before the session is deleted after not being updated in seconds
+            -  REMOVE_WAIT_USER=1800 #Time before the user is deleted from the session after begin inactive in seconds
+            -  MAX_REDIS_SESSION_TIME=86400000 #maximum time for session on redis
 
         ports: 
             - "8082:8080"
@@ -41,17 +41,17 @@ services:
     node-app:
         image: drivedocs/driveofficeeditor
         environment:
-            -  WOPI_URL=${WOPI_URL}
-            -  REDIS_HOST=${REDIS_HOST}
-            -  REDIS_PORT=${REDIS_PORT}
-            -  OFFICE_ONLINE_URL=${OFFICE_ONLINE_URL}
-            -  PORT=${PORT_NODE}
-            -  JWT_SECRET=${JWT_SECRET}
-            -  SHRAGA_URL=${SHRAGA_URL}
-            -  AUTHORIZATION_TOKEN=${AUTHORIZATION_TOKEN}
-            -  DRIVE_URL=${DRIVE_URL}
+            -  WOPI_URL=http://13.74.150.126:8082
+            -  REDIS_HOST=13.74.150.126
+            -  REDIS_PORT=6379
+            -  OFFICE_ONLINE_URL=http://52.178.147.179
+            -  PORT=3000
+            -  JWT_SECRET=niceSecret
+            -  SHRAGA_URL=http://13.79.7.3
+            -  AUTHORIZATION_TOKEN=Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsImFkZnNJZCI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJnZW5lc2lzSWQiOiI1ZTU2ODgzMjQyMDNmYzQwMDQzNTkxYWEiLCJuYW1lIjp7ImZpcnN0TmFtZSI6Iteg15nXmden15kiLCJsYXN0TmFtZSI6IteQ15PXmdeT16EifSwiZGlzcGxheU5hbWUiOiJ0MjM0NTg3ODlAamVsbG8uY29tIiwicHJvdmlkZXIiOiJHZW5lc2lzIiwiZW50aXR5VHlwZSI6ImRpZ2ltb24iLCJjdXJyZW50VW5pdCI6Im5pdHJvIHVuaXQiLCJkaXNjaGFyZ2VEYXkiOiIyMDIyLTExLTMwVDIyOjAwOjAwLjAwMFoiLCJyYW5rIjoibWVnYSIsImpvYiI6Iteo15XXpteXIiwicGhvbmVOdW1iZXJzIjpbIjA1Mi0xMjM0NTY3Il0sImFkZHJlc3MiOiLXqNeX15XXkSDXlNee157Xqten15nXnSAzNCIsInBob3RvIjpudWxsLCJqdGkiOiI0YzRmMzYwMS00OTQ0LTQ3M2MtOTEyMi1hNjVjMGU5YmI0YWUiLCJpYXQiOjE1OTQxMDE0NjksImV4cCI6MTU5NjY5MzQ2OSwiZmlyc3ROYW1lIjoi16DXmdeZ16fXmSIsImxhc3ROYW1lIjoi15DXk9eZ15PXoSJ9.QlEuP5nO8S7uZ7P66RtMOTWABRRFAA11dER03SI2KQk
+            -  DRIVE_URL=http://yosef.northeurope.cloudapp.azure.com
             # - 'SECRET=thisIsASecret'
-            -  DRIVE_SECRET=${DRIVE_SECRET}
+            -  DRIVE_SECRET=driveSecret
 
         depends_on:
             - redis-server
