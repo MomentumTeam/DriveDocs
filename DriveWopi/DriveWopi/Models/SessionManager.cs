@@ -41,7 +41,7 @@ namespace DriveWopi.Models
             _Timer.Enabled = true;
         }
 
-        private async void CleanUp(object sender, ElapsedEventArgs e)
+        private void CleanUp(object sender, ElapsedEventArgs e)
         {
             try{
                 IRedisClient client = RedisService.GenerateRedisClient();
@@ -70,7 +70,7 @@ namespace DriveWopi.Models
                             {
                                 updateSuccess = true;
                                 if(session.UserForUpload != null){
-                                    updateSuccess = await session.SaveToDrive(new User(session.UserForUpload));
+                                    updateSuccess = session.SaveToDrive(new User(session.UserForUpload));
                                 }
                                 // UserForUpload is null or upload was successful
                                 if(updateSuccess){
@@ -100,7 +100,7 @@ namespace DriveWopi.Models
                             {
                                 if (usersCountAfter == 0)
                                 {
-                                    updateSuccess = await session.SaveToDrive(userForUpload);
+                                    updateSuccess = session.SaveToDrive(userForUpload);
                                     if(updateSuccess){
                                         session.DeleteSessionFromRedis();
                                         session.RemoveLocalFile();
@@ -121,7 +121,9 @@ namespace DriveWopi.Models
                             if (session.LastUpdated.AddSeconds(Config.Closewait) < DateTime.Now)
                             {
                                 // save the changes to the file
-                                updateSuccess = await session.SaveToDrive(userForUpload);
+                                Console.WriteLine("SaveToDrive! updateSuccess=");
+                                updateSuccess = session.SaveToDrive(userForUpload);
+                                Console.WriteLine(updateSuccess);
                                 if(updateSuccess){
                                     needToCloseSomeSessions = true;
                                     session.RemoveLocalFile();

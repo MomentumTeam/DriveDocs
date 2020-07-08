@@ -64,24 +64,46 @@ namespace DriveWopi.Services
             }
             catch (Exception ex)
             {
-                throw ex;
+                Console.WriteLine("Got an exception in GetUploadId:" + ex.Message.ToString());
+                return null;
+                //throw ex;
             }
         }
-        public async static Task<bool> UpdateFileInDrive(FileInfo fileInfo, string authorization, string fileId)
+        public static bool UpdateFileInDrive(FileInfo fileInfo, string authorization, string fileId)
         {
             try
             {
-                string uploadId = await getUploadId(fileInfo, authorization, fileId);
+            
+                //string uploadId = await getUploadId(fileInfo, authorization, fileId);
+                Task<string> t = Task<string>.Run(async () => {
+                    try{
+                        string uploadId = await getUploadId(fileInfo, authorization, fileId);
+                        return uploadId;
+                    }
+                    catch(Exception e){
+                        return null;
+                    }
+                });
+                t.Wait();
+                string uploadId = t.Result;
+                if(uploadId == null){
+                    return false;
+                }
                 using (var client = new WebClient())
                 {
+                    Console.WriteLine("Going to update with uploadId="+uploadId);
                     client.Headers.Set("Content-Range", "bytes 0-" + (fileInfo.Length - 1) + "/" + fileInfo.Length);
-                    byte[] responseArray = client.UploadFile(Config.DriveUrl + "/api/upload?uploadType=resumable&uploadId=" + uploadId, fileInfo.FullName);
+                    string url = Config.DriveUrl + "/api/upload?uploadType=resumable&uploadId=" + uploadId;
+                    Console.WriteLine("URL = "+url);
+                    byte[] responseArray = client.UploadFile(url, fileInfo.FullName);
                     Console.WriteLine("\nResponse Received. The contents of the file uploaded are:\n{0}", System.Text.Encoding.ASCII.GetString(responseArray));
                     return true;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine("Got an exception in UploadFileInDrive:" + ex.Message.ToString());
+
                 return false;
             }
         }

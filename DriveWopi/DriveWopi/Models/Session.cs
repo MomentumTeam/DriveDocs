@@ -254,10 +254,10 @@ namespace DriveWopi.Models
             }
         }
 
-        public async Task<bool> SaveToDrive(User userForUpload)
+        public bool SaveToDrive(User userForUpload)
         {
             try{
-                bool ret = await Services.FilesService.UpdateFileInDrive(this._FileInfo,FilesService.GenerateAuthorizationToken(userForUpload.Id),this._SessionId);
+                bool ret =  Services.FilesService.UpdateFileInDrive(this._FileInfo,FilesService.GenerateAuthorizationToken(userForUpload.Id),this._SessionId);
                 return ret;
             }
             catch(Exception ex){

@@ -6,6 +6,7 @@ services:
         command: redis-server
         ports: 
             - "6379:6379"
+        restart: on-failure
     wopi:
         build: ./DriveWopi/DriveWopi
         depends_on:
@@ -31,6 +32,7 @@ services:
         volumes:
             - ./sample_files:/sample_files
             - ./templates:/templates
+        restart: on-failure
     node-app:
         build: ./DriveOfficeEditor
         environment:
@@ -51,3 +53,4 @@ services:
             - wopi
         ports: 
             - "3000:3000"
+        restart: on-failure

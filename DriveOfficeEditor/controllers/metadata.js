@@ -21,12 +21,11 @@ exports.loadMetadata = async (req, res, next) => {
         res.locals.metadata = metadata;
         next();
       } catch (error) {
-        console.log(error);
-        return res.status(500).send(error);
+        return res.status(500).send("File does not exist");
       }
     }
   } catch (e) {
-    throw e;
+    return res.status(500).send("File does not exist");
   }
 };
 
@@ -44,6 +43,6 @@ exports.checkPermissionsOnFile = (req, res, next) => {
       }
     }
   } catch (e) {
-    throw e;
+    return res.status(404).send("You do not have the right permission!");
   }
 };
