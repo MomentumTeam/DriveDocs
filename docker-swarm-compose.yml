@@ -1,0 +1,65 @@
+version: '3'
+services: 
+    redis-server:
+        image: 'redis:alpine'
+        container_name: redis-server
+        command: redis-server
+        ports: 
+            - "6379:6379"
+        deploy:
+            replicas: 1
+            restart_policy:
+              condition: on-failure
+    wopi:
+        build: ./DriveWopi/DriveWopi
+        depends_on:
+            - redis-server
+        environment:
+            -  REDIS_HOST=${REDIS_HOST}
+            -  REDIS_PORT=${REDIS_PORT}
+            -  DRIVE_URL=${DRIVE_URL}
+            -  PORT=${PORT_WOPI}
+            -  JWT_SECRET=${JWT_SECRET}
+            -  FOLDER=${FOLDER}
+            -  TEMPLATE_FOLDER=${TEMPLATE_FOLDER}
+            -  AUTHORIZATION_TOKEN=${AUTHORIZATION_TOKEN}
+            -  DRIVE_SECRET=${DRIVE_SECRET}
+            -  TOKEN_EXPIRE=${TOKEN_EXPIRE}
+            -  TIME_OUT=${TIME_OUT} #Time period to perform cleanUp in milliseconds
+            -  CLOSE_WAIT=${CLOSE_WAIT} #Time before the session is deleted after not being updated in seconds
+            -  REMOVE_WAIT_USER=${REMOVE_WAIT_USER} #Time before the user is deleted from the session after begin inactive in seconds
+            -  MAX_REDIS_SESSION_TIME=${MAX_REDIS_SESSION_TIME} #maximum time for session on redis
+
+        ports: 
+            - "8082:8080"
+        volumes:
+            - ./sample_files:/sample_files
+            - ./templates:/templates
+        deploy:
+            replicas: 1
+            restart_policy:
+              condition: on-failure
+    node-app:
+        build: ./DriveOfficeEditor
+        environment:
+            -  WOPI_URL=${WOPI_URL}
+            -  REDIS_HOST=${REDIS_HOST}
+            -  REDIS_PORT=${REDIS_PORT}
+            -  OFFICE_ONLINE_URL=${OFFICE_ONLINE_URL}
+            -  PORT=${PORT_NODE}
+            -  JWT_SECRET=${JWT_SECRET}
+            -  SHRAGA_URL=${SHRAGA_URL}
+            -  AUTHORIZATION_TOKEN=${AUTHORIZATION_TOKEN}
+            -  DRIVE_URL=${DRIVE_URL}
+            # - 'SECRET=thisIsASecret'
+            -  DRIVE_SECRET=${DRIVE_SECRET}
+
+        depends_on:
+            - redis-server
+            - wopi
+        ports: 
+            - "3000:3000"
+        deploy:
+            replicas: 1
+            restart_policy:
+              condition: on-failure
