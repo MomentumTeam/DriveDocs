@@ -57,7 +57,7 @@ services:
             - redis-server
             - wopi
         ports: 
-            - "3000:3000"
+            - "80:3000"
         deploy:
             replicas: 1
             restart_policy:
