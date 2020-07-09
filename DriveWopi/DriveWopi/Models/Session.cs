@@ -20,6 +20,8 @@ namespace DriveWopi.Models
 
         protected string _LockString;
 
+        protected bool _ChangesMade;
+
         protected string _UserForUpload = null;
 
         protected FileInfo _FileInfo;
@@ -35,6 +37,7 @@ namespace DriveWopi.Models
             _LockStatus = LockStatus.UNLOCK;
             _LockString = "";
             Client = RedisService.GenerateRedisClient();
+            _ChangesMade = false;
         }
 
 
@@ -42,6 +45,12 @@ namespace DriveWopi.Models
         {
             get { return _SessionId; }
             set { _SessionId = value; }
+        }
+
+         public bool ChangesMade
+        {
+            get { return _ChangesMade; }
+            set { _ChangesMade = value; }
         }
 
         public string UserForUpload
@@ -183,6 +192,7 @@ namespace DriveWopi.Models
                     string lockStatusAsString = ((long)deserializedSessionDict["LockStatus"]).ToString();
                     string lockStringAsString = (string)deserializedSessionDict["LockString"];
                     sessionObj.UserForUpload = (string)deserializedSessionDict["UserForUpload"];
+                    sessionObj.ChangesMade = (bool)deserializedSessionDict["ChangesMade"];
                     sessionObj.LockStatus = lockStatusAsString.Equals("1") ? LockStatus.LOCK : LockStatus.UNLOCK;
                     sessionObj.LockString = lockStringAsString;
                     foreach (Dictionary<string, object> userDict in UsersListDict)

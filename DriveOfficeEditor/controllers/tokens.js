@@ -3,17 +3,17 @@ const { v4 } = require("uuid");
 const redis = require("redis");
 const client = redis.createClient({
   host: process.env.REDIS_HOST,
-  port: process.env.REDIS_PORT
+  port: process.env.REDIS_PORT,
 });
 const { promisify } = require("util");
 const getAsync = promisify(client.get).bind(client);
 const setAsync = promisify(client.set).bind(client);
 
-client.on("error", function(error) {
+client.on("error", function (error) {
   console.error(error);
 });
 
-const getUid = userId => {
+const getUid = (userId) => {
   return jwt.sign({ token: userId }, process.env.JWT_SECRET, { expiresIn: "1h" });
 };
 
@@ -55,7 +55,7 @@ exports.generateAccessToken = async (req, res, next) => {
       user: req.user,
       uid: uid,
       created: Date.now(),
-      operation: req.query.operation ? req.query.operation : "edit"
+      operation: req.query.operation ? req.query.operation : "edit",
     };
     if (res.locals.metadata) {
       dataToSign.metadata = res.locals.metadata;
@@ -65,7 +65,7 @@ exports.generateAccessToken = async (req, res, next) => {
     }
     const jwtToken = jwt.sign(
       {
-        data: dataToSign
+        data: dataToSign,
       },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }

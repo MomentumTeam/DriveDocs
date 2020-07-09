@@ -192,6 +192,7 @@ namespace DriveWopi.Controllers
                         {
                             if (editSession.Save(content, user["id"]))
                             {
+                                editSession.ChangesMade = true;
                                 editSession.SaveToRedis();
                                 return StatusCode(200);
                             }

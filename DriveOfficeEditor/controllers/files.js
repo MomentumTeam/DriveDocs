@@ -2,13 +2,13 @@ const fileTypes = {
   DOCX: "docx",
   XLSX: "xlsx",
   PPTX: "pptx",
-  PDF: "pdf"
+  PDF: "pdf",
 };
 
 const operations = {
   VIEW: "view",
   EDIT: "edit",
-  EDIT_NEW: "editNew"
+  EDIT_NEW: "editNew",
 };
 
 exports.setEditNewLocals = (req, res, next) => {
@@ -90,23 +90,24 @@ exports.generateUrl = (req, res, next) => {
       //EDIT_NEW
       switch (fileType) {
         case fileTypes.DOCX:
-          url = `${process.env.OFFICE_ONLINE_URL}/we/wordeditorframe.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
-          proxyUrl = `${process.env.OFFICE_ONLINE_URL}/we/wordeditorframe.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&new=1&access_token=${res.locals.accessToken}`;
+          url = `${process.env.OFFICE_ONLINE_URL}/wv/wordviewerframe.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
+          proxyUrl = `${process.env.OFFICE_ONLINE_URL}/wv/wordviewerframe.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
           faviconUrl = `${process.env.OFFICE_ONLINE_URL}/wv/resources/1037/FavIcon_Word.ico`;
           break;
         case fileTypes.PPTX:
-          url = `${process.env.OFFICE_ONLINE_URL}/p/PowerPointFrame.aspx?PowerPointView=EditView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
-          proxyUrl = `${process.env.OFFICE_ONLINE_URL}/p/PowerPointFrame.aspx?PowerPointView=EditView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&PowerPointView=EditView&new=1&access_token=${res.locals.accessToken}`;
+          url = `${process.env.OFFICE_ONLINE_URL}/p/PowerPointFrame.aspx?PowerPointView=ReadingView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
+          proxyUrl = `${process.env.OFFICE_ONLINE_URL}/p/PowerPointFrame.aspx?PowerPointView=ReadingView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
           faviconUrl = `${process.env.OFFICE_ONLINE_URL}/p/resources/1037/FavIcon_Ppt.ico`;
           break;
         case fileTypes.XLSX:
           url = `${process.env.OFFICE_ONLINE_URL}/x/_layouts/xlviewerinternal.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
-          proxyUrl = `${process.env.OFFICE_ONLINE_URL}/x/_layouts/xlviewerinternal.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&edit=1&new=1&access_token=${res.locals.accessToken}`;
+          proxyUrl = `${process.env.OFFICE_ONLINE_URL}/x/_layouts/xlviewerinternal.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
           faviconUrl = `${process.env.OFFICE_ONLINE_URL}/x/_layouts/resources/FavIcon_Excel.ico`;
           break;
         default:
-          url = `${process.env.OFFICE_ONLINE_URL}/we/wordeditorframe.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
-          proxyUrl = `${process.env.OFFICE_ONLINE_URL}/we/wordeditorframe.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&new=1&access_token=${res.locals.accessToken}`;
+          //PDF
+          url = `${process.env.OFFICE_ONLINE_URL}/wv/wordviewerframe.aspx?PdfMode=1&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
+          proxyUrl = `${process.env.OFFICE_ONLINE_URL}/wv/wordviewerframe.aspx?PdfMode=1&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
           faviconUrl = `${process.env.OFFICE_ONLINE_URL}/wv/resources/1037/FavIcon_Word.ico`;
           break;
       }

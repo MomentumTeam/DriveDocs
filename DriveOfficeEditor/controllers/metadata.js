@@ -19,6 +19,10 @@ exports.loadMetadata = async (req, res, next) => {
         let metadata = await metadataService.getMetadata(fileId, req.user.id);
         metadata.type = metadata.name.substring(metadata.name.indexOf(".") + 1, metadata.name.length);
         res.locals.metadata = metadata;
+        if (res.locals.metadata.hasOwnProperty("permission")) {
+          delete res.locals.metadata["permission"];
+        }
+
         next();
       } catch (error) {
         return res.status(500).send("File does not exist");
@@ -36,7 +40,9 @@ exports.checkPermissionsOnFile = (req, res, next) => {
       next();
     } else {
       const metadata = res.locals.metadata;
-      if (metadata.role != "OWNER" && metadata.role != "WRITE") {
+      if (req.query.operation == operations.EDIT && metadata.role != "OWNER" && metadata.role != "WRITE") {
+        return res.status(404).send("You do not have the right permission!");
+      } else if (req.query.operation == operations.VIEW && metadata.role != "OWNER" && metadata.role != "WRITE" && metadata.role != "READ") {
         return res.status(404).send("You do not have the right permission!");
       } else {
         next();

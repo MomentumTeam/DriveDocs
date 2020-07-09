@@ -93,8 +93,8 @@ namespace DriveWopi.Services
                 {
                     Console.WriteLine("Going to update with uploadId="+uploadId);
                     client.Headers.Set("Content-Range", "bytes 0-" + (fileInfo.Length - 1) + "/" + fileInfo.Length);
+                    client.Headers.Set("Authorization", authorization);
                     string url = Config.DriveUrl + "/api/upload?uploadType=resumable&uploadId=" + uploadId;
-                    Console.WriteLine("URL = "+url);
                     byte[] responseArray = client.UploadFile(url, fileInfo.FullName);
                     Console.WriteLine("\nResponse Received. The contents of the file uploaded are:\n{0}", System.Text.Encoding.ASCII.GetString(responseArray));
                     return true;

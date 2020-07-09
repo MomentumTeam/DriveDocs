@@ -15,6 +15,8 @@ namespace DriveWopi
         public static string RedisHost;
         public static string DriveUrl;
         public static int AccessTokenExpiringTime;
+
+        public static int DriveUpdateTime;
         public static string  AllSessionsRedisKey = "AllSessions";
         public static string AuthorizationToken;
         public static Dictionary<string, string> Mimetypes = new Dictionary<string, string>(){
@@ -35,11 +37,22 @@ namespace DriveWopi
             RedisHost = Environment.GetEnvironmentVariable("REDIS_HOST")+":"+Environment.GetEnvironmentVariable("REDIS_PORT");
             DriveUrl =  Environment.GetEnvironmentVariable("DRIVE_URL");
             AccessTokenExpiringTime =  int.Parse(Environment.GetEnvironmentVariable("TOKEN_EXPIRE"));
-            Timeout =  int.Parse(Environment.GetEnvironmentVariable("TIME_OUT")); //Time period to perform cleanUp
-            Closewait =  int.Parse(Environment.GetEnvironmentVariable("CLOSE_WAIT"));       
-            Removewaituser =  int.Parse(Environment.GetEnvironmentVariable("REMOVE_WAIT_USER")); // Time before the user is deleted from the session after begin inactive
             AuthorizationToken=Environment.GetEnvironmentVariable("AUTHORIZATION_TOKEN");
-            MaxRedisSessionTime = int.Parse(Environment.GetEnvironmentVariable("MAX_REDIS_SESSION_TIME")); // Time after which the session is surely deleted from redis
+
+            //Time period to perform cleanUp
+            Closewait =  int.Parse(Environment.GetEnvironmentVariable("CLOSE_WAIT"));       
+
+            //Time period to perform cleanUp
+            Timeout =  int.Parse(Environment.GetEnvironmentVariable("TIME_OUT")); 
+
+            // Time before the user is deleted from the session after begin inactive
+            Removewaituser =  int.Parse(Environment.GetEnvironmentVariable("REMOVE_WAIT_USER"));
+            
+            // Time after which the session is surely deleted from redis in mil
+            MaxRedisSessionTime = int.Parse(Environment.GetEnvironmentVariable("MAX_REDIS_SESSION_TIME"));
+
+            // Time after which the file is updated in drive still without closing the sesson in mill
+            DriveUpdateTime = int.Parse(Environment.GetEnvironmentVariable("DRIVE_UPDATE_TIME"));
 
         }
     }

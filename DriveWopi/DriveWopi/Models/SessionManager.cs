@@ -69,7 +69,7 @@ namespace DriveWopi.Models
                             if (usersCountBefore == 0)
                             {
                                 updateSuccess = true;
-                                if(session.UserForUpload != null){
+                                if(session.ChangesMade && session.UserForUpload != null){
                                     updateSuccess = session.SaveToDrive(new User(session.UserForUpload));
                                 }
                                 // UserForUpload is null or upload was successful
@@ -100,7 +100,7 @@ namespace DriveWopi.Models
                             {
                                 if (usersCountAfter == 0)
                                 {
-                                    updateSuccess = session.SaveToDrive(userForUpload);
+                                    updateSuccess = session.ChangesMade?session.SaveToDrive(userForUpload):true;
                                     if(updateSuccess){
                                         session.DeleteSessionFromRedis();
                                         session.RemoveLocalFile();
@@ -120,16 +120,26 @@ namespace DriveWopi.Models
 
                             if (session.LastUpdated.AddSeconds(Config.Closewait) < DateTime.Now)
                             {
-                                // save the changes to the file
-                                Console.WriteLine("SaveToDrive! updateSuccess=");
-                                updateSuccess = session.SaveToDrive(userForUpload);
-                                Console.WriteLine(updateSuccess);
+                                // save the changes to the file and close session
+                                updateSuccess = session.ChangesMade?session.SaveToDrive(userForUpload):true;
                                 if(updateSuccess){
                                     needToCloseSomeSessions = true;
                                     session.RemoveLocalFile();
                                     session.DeleteSessionFromRedis();
                                     allSessions[i] = null;
                                 }
+                                continue;
+                            }
+
+                            if (session.ChangesMade && session.LastUpdated.AddSeconds(Config.DriveUpdateTime) < DateTime.Now)
+                            {
+                                // save the changes to the file
+                                updateSuccess = session.SaveToDrive(userForUpload);
+                                if(updateSuccess){
+                                    session.ChangesMade = false;
+                                    session.SaveToRedis();
+                                }
+
                             }
                         }
                     allSessions = allSessions.Where(x => x != null).ToList();
