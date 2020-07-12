@@ -34,7 +34,7 @@ namespace DriveWopi
             TemplatesFolder = Environment.GetEnvironmentVariable("TEMPLATE_FOLDER");
             Port =  int.Parse(Environment.GetEnvironmentVariable("PORT"));
             JwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET");
-            RedisHost = Environment.GetEnvironmentVariable("REDIS_HOST")+":"+Environment.GetEnvironmentVariable("REDIS_PORT");
+            RedisHost = Environment.GetEnvironmentVariable("REDIS_PASSWORD")+ "@" + Environment.GetEnvironmentVariable("REDIS_HOST")+":"+Environment.GetEnvironmentVariable("REDIS_PORT");
             DriveUrl =  Environment.GetEnvironmentVariable("DRIVE_URL");
             AccessTokenExpiringTime =  int.Parse(Environment.GetEnvironmentVariable("TOKEN_EXPIRE"));
             AuthorizationToken=Environment.GetEnvironmentVariable("AUTHORIZATION_TOKEN");

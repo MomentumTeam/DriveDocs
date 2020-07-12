@@ -3,6 +3,14 @@ const redis = require("redis");
 const client = redis.createClient({
   host: process.env.REDIS_HOST,
   port: process.env.REDIS_PORT,
+  socket_keepalive:true,
+  socket_initial_delay: 2*1000,
+  password:process.env.REDIS_PASSWORD
+
+});
+
+client.on("error", function (error) {
+  console.error(error);
 });
 const getAsync = promisify(client.get).bind(client);
 const setAsync = promisify(client.set).bind(client);

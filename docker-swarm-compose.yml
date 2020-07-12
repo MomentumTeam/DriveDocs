@@ -2,7 +2,7 @@ version: '3'
 services: 
     redis-server:
         image: 'redis:alpine'
-        command: redis-server
+        command: redis-server --requirepass mozart
         ports: 
             - "6379:6379"
         deploy:
@@ -29,6 +29,7 @@ services:
             -  REMOVE_WAIT_USER=1200 #Time before the user is deleted from the session after begin inactive in seconds
             -  MAX_REDIS_SESSION_TIME=86400 #maximum time for session on redis
             -  DRIVE_UPDATE_TIME=30
+            -  REDIS_PASSWORD=mozart
 
         ports: 
             - "8082:8080"
@@ -53,6 +54,7 @@ services:
             -  DRIVE_URL=http://yosef.northeurope.cloudapp.azure.com
             # - 'SECRET=thisIsASecret'
             -  DRIVE_SECRET=driveSecret
+            -  REDIS_PASSWORD=mozart
 
         depends_on:
             - redis-server
