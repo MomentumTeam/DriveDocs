@@ -10,7 +10,7 @@ passport.deserializeUser((user, done) => {
 
 const config = {
   //callbackURL: `http://localhost:${process.env.PORT}/success`,
-   callbackURL: `http://13.79.160.153:3000/success`,
+   callbackURL: `${process.env.OFFICE_EDITOR_URL}/success`,
   shragaURL: process.env.SHRAGA_URL,
   useADFS: true
 };
