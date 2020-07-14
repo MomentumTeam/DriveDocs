@@ -42,6 +42,7 @@ services:
             -  WOPI_URL=${WOPI_URL}
             -  REDIS_HOST=${REDIS_HOST}
             -  REDIS_PORT=${REDIS_PORT}
+            -  OFFICE_EDITOR_URL=${OFFICE_EDITOR_URL}
             -  OFFICE_ONLINE_URL=${OFFICE_ONLINE_URL}
             -  PORT=${PORT_NODE}
             -  JWT_SECRET=${JWT_SECRET}

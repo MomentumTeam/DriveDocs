@@ -24,11 +24,12 @@ namespace DriveWopi.Controllers
     public class FilesController : ControllerBase
     {
         //public static Session editSession;
-        [HttpGet("hello/world", Name = "helloWorld")]
+        [HttpGet("hello/world", Name = "HelloWorld")]
         public string HelloWorld()
         {
             return "Hello World!";
         }
+        
 
         // CheckFileInfo
         // GET: wopi/Files/5

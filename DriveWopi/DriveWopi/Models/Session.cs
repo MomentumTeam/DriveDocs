@@ -270,7 +270,7 @@ namespace DriveWopi.Models
                 bool ret =  Services.FilesService.UpdateFileInDrive(this._FileInfo,FilesService.GenerateAuthorizationToken(userForUpload.Id),this._SessionId);
                 return ret;
             }
-            catch(Exception ex){
+            catch(Exception){
                 return false;
                 //throw ex;
             }

@@ -20,8 +20,9 @@
     "jsonwebtoken": "^8.5.1",
     "passport": "^0.4.1",
     "passport-shraga": "^1.4.0",
-    "redis": "^3.0.2",
+    "axios":"^0.19.2",
     "uuid": "^7.0.3",
-    "nodemon": "2.0.4"
+    "nodemon": "2.0.4",
+    "redis":"^3.0.2"
   }
 }
