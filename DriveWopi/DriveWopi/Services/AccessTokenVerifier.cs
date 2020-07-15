@@ -50,6 +50,8 @@ namespace DriveWopi.Services
             }
         }
 
+
+
         public static string GetUidFromRedis(string userId, IRedisClient client)
         {
             try

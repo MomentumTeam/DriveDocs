@@ -70,7 +70,7 @@ namespace DriveWopi.Models
                             {
                                 updateSuccess = true;
                                 if(session.ChangesMade && session.UserForUpload != null){
-                                    updateSuccess = session.SaveToDrive(new User(session.UserForUpload));
+                                    updateSuccess = session.SaveToDrive(session.UserForUpload);
                                 }
                                 // UserForUpload is null or upload was successful
                                 if(updateSuccess){

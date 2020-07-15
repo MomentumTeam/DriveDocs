@@ -16,13 +16,12 @@ exports.loadMetadata = async (req, res, next) => {
     } else {
       try {
         const fileId = req.query.template ? req.query.template : req.params.id;
-        let metadata = await metadataService.getMetadata(fileId, req.user.id);
+        let metadata = await metadataService.getMetadata(fileId, req.user);
         metadata.type = metadata.name.substring(metadata.name.indexOf(".") + 1, metadata.name.length);
         res.locals.metadata = metadata;
         if (res.locals.metadata.hasOwnProperty("permission")) {
           delete res.locals.metadata["permission"];
         }
-
         next();
       } catch (error) {
         return res.status(500).send("File does not exist");

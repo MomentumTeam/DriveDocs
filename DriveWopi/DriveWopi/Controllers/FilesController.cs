@@ -56,14 +56,15 @@ namespace DriveWopi.Controllers
                 Session editSession = Session.GetSessionFromRedis(id, client);
                 if (editSession == null)
                 {
-                    FilesService.DownloadFileFromDrive(idToDownload, fileName, Services.FilesService.GenerateAuthorizationToken(user["id"]));
+                    Console.WriteLine("I am downloading the file with authorization =" + user["authorization"]);
+                    FilesService.DownloadFileFromDrive(idToDownload, fileName, user["authorization"]);
                     editSession = new Session(id, fileName);
                     editSession.SaveToRedis();
                     editSession.AddSessionToListInRedis();
                 }
                 if (!editSession.UserIsInSession(user["id"]))
                 {
-                    editSession.AddUser(user["id"]);
+                    editSession.AddUser(user["id"],user["authorization"]);
                     editSession.SaveToRedis();
                 }
                 CheckFileInfo checkFileInfo = editSession.GetCheckFileInfo(user["id"], user["name"], metadata["name"]);

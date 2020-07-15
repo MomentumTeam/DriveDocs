@@ -1,6 +1,7 @@
 const { promisify } = require("util");
 const redis = require("redis");
-const axios = require("axios");
+const jwt = require("jsonwebtoken");
+
 console.log(process.env.REDIS_PASSWORD);
 const client = redis.createClient({
   url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
@@ -31,8 +32,15 @@ exports.removeUserFromSession = async (id, userToRemove) => {
     if (!session || session == null || !session.Users || session.Users == null) {
       return;
     }
+    const userToRemoveAsInSession = session.Users.find((user) => user.Id == userToRemove.id);
+    if (!userToRemoveAsInSession) {
+      return;
+    }
     session.Users = session.Users.filter((u) => u.Id !== userToRemove.id);
-    session.UserForUpload = userToRemove.id;
+
+    console.log("User deleted and updated in redis:");
+    console.log(userToRemoveAsInSession);
+    session.UserForUpload = userToRemoveAsInSession;
     session = JSON.stringify(JSON.stringify(session));
     await setAsync(id, session);
   } catch (err) {

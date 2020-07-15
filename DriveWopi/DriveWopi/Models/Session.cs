@@ -22,7 +22,7 @@ namespace DriveWopi.Models
 
         protected bool _ChangesMade;
 
-        protected string _UserForUpload = null;
+        protected User _UserForUpload = null;
 
         protected FileInfo _FileInfo;
         protected IRedisClient Client;
@@ -53,7 +53,7 @@ namespace DriveWopi.Models
             set { _ChangesMade = value; }
         }
 
-        public string UserForUpload
+        public User UserForUpload
         {
             get { return _UserForUpload; }
             set { _UserForUpload = value; }
@@ -143,6 +143,11 @@ namespace DriveWopi.Models
             _Users.Add(new User(id));
         }
 
+        public void AddUser(string id,string authorization)
+        {
+            _Users.Add(new User(id,authorization));
+        }
+
         public void AddUser(User user)
         {
             _Users.Add(user);
@@ -186,18 +191,20 @@ namespace DriveWopi.Models
                     Dictionary<string, object> deserializedSessionDict = JsonConvert.DeserializeObject<Dictionary<string, Object>>(session.ToString(), new JsonSerializerSettings()
                     { ContractResolver = new IgnorePropertiesResolver(new[] { "Client" }) });
                     List<Dictionary<string, object>> UsersListDict = JsonConvert.DeserializeObject<List<Dictionary<string, Object>>>(deserializedSessionDict["Users"].ToString());
-
+                    
+                    Dictionary<string,object> userForUploadDict = deserializedSessionDict["UserForUpload"]==null? null : JsonConvert.DeserializeObject<Dictionary<string,object>>(deserializedSessionDict["UserForUpload"].ToString());
+                    User userForUpload = userForUploadDict==null?null:new User((string)userForUploadDict["Id"], (DateTime)userForUploadDict["LastUpdated"],(string)userForUploadDict["Authorization"]);
                     Session sessionObj = new Session((string)deserializedSessionDict["SessionId"], (string)deserializedSessionDict["LocalFilePath"]);
                     sessionObj.LastUpdated = (DateTime)deserializedSessionDict["LastUpdated"];
                     string lockStatusAsString = ((long)deserializedSessionDict["LockStatus"]).ToString();
                     string lockStringAsString = (string)deserializedSessionDict["LockString"];
-                    sessionObj.UserForUpload = (string)deserializedSessionDict["UserForUpload"];
+                    sessionObj.UserForUpload = userForUpload;
                     sessionObj.ChangesMade = (bool)deserializedSessionDict["ChangesMade"];
                     sessionObj.LockStatus = lockStatusAsString.Equals("1") ? LockStatus.LOCK : LockStatus.UNLOCK;
                     sessionObj.LockString = lockStringAsString;
                     foreach (Dictionary<string, object> userDict in UsersListDict)
                     {
-                        User user = new User((string)userDict["Id"], (DateTime)userDict["LastUpdated"]);
+                        User user = new User((string)userDict["Id"], (DateTime)userDict["LastUpdated"],(string)userDict["Authorization"]);
                         sessionObj.AddUser(user);
                     }
                     return sessionObj;
@@ -267,7 +274,7 @@ namespace DriveWopi.Models
         public bool SaveToDrive(User userForUpload)
         {
             try{
-                bool ret =  Services.FilesService.UpdateFileInDrive(this._FileInfo,FilesService.GenerateAuthorizationToken(userForUpload.Id),this._SessionId);
+                bool ret =  Services.FilesService.UpdateFileInDrive(this._FileInfo,FilesService.GenerateAuthorizationToken(userForUpload),this._SessionId);
                 return ret;
             }
             catch(Exception){

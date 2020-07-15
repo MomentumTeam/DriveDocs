@@ -10,9 +10,10 @@ passport.deserializeUser((user, done) => {
 
 const config = {
   //callbackURL: `http://localhost:${process.env.PORT}/success`,
-   callbackURL: `${process.env.OFFICE_EDITOR_URL}/success`,
+  callbackURL: `${process.env.OFFICE_EDITOR_URL}/success`,
   shragaURL: process.env.SHRAGA_URL,
-  useADFS: true
+  useADFS: true,
+  useEnrichId: true,
 };
 passport.use(
   new shraga.Strategy(config, (profile, done) => {
@@ -25,7 +26,7 @@ passport.use(
       displayName: profile.displayName,
       job: profile.job,
       relayState: profile.RelayState,
-      fileId: fileId
+      fileId: fileId,
     };
     return done(null, user);
   })

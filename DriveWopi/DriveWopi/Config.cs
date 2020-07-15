@@ -12,6 +12,8 @@ namespace DriveWopi
         public static int Port;
         public static string JwtSecret;
 
+        public static string DriveSecret;
+
         public static string RedisHost;
         public static string DriveUrl;
         public static int AccessTokenExpiringTime;
@@ -53,7 +55,7 @@ namespace DriveWopi
 
             // Time after which the file is updated in drive still without closing the sesson in mill
             DriveUpdateTime = int.Parse(Environment.GetEnvironmentVariable("DRIVE_UPDATE_TIME"));
-
+            DriveSecret = Environment.GetEnvironmentVariable("DRIVE_SECRET");
         }
     }
 }

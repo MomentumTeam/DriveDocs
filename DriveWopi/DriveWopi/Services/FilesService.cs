@@ -16,10 +16,9 @@ namespace DriveWopi.Services
     public class FilesService
     {
 
-        public static string GenerateAuthorizationToken(string userId)
+        public static string GenerateAuthorizationToken(User user)
         {
-            //TODO
-            return Config.AuthorizationToken;
+            return user.Authorization;
         }
 
         public async static Task<string> getUploadId(FileInfo fileInfo, string authorization, string fileId)

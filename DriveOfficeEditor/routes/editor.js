@@ -4,7 +4,7 @@ const files = require("../controllers/files");
 const tokens = require("../controllers/tokens");
 const redis = require("../controllers/redis");
 
-module.exports = app => {
+module.exports = (app) => {
   app.get(
     "/api/files/:id",
     authenitcation.isAuthenticated,
@@ -89,7 +89,7 @@ module.exports = app => {
           url: url,
           accessToken: accessToken,
           faviconUrl: faviconUrl,
-          fileName: res.locals.metadata.name
+          fileName: res.locals.metadata.name,
         });
       } catch (e) {
         res.status(500).send(e);

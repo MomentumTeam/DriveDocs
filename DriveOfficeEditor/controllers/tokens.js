@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { v4 } = require("uuid");
 const { promisify } = require("util");
+const metadataService = require("../services/metadataService");
 const getUid = (userId) => {
   return jwt.sign({ token: userId }, process.env.JWT_SECRET, { expiresIn: "1h" });
 };
@@ -40,7 +41,7 @@ exports.generateAccessToken = async (req, res, next) => {
   try {
     const uid = getUid(req.user.id);
     const dataToSign = {
-      user: req.user,
+      user: { ...req.user, authorization: metadataService.getAuthorizationHeader(req.user) },
       uid: uid,
       created: Date.now(),
       operation: req.query.operation ? req.query.operation : "edit",
@@ -56,7 +57,7 @@ exports.generateAccessToken = async (req, res, next) => {
         data: dataToSign,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "24h" }
     );
     res.locals.accessToken = jwtToken;
     next();
