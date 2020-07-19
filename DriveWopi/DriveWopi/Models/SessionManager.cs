@@ -38,7 +38,7 @@ namespace DriveWopi.Models
             _Timer = new Timer(Config.Timeout);
             _Timer.AutoReset = true;
             _Timer.Elapsed += CleanUp;
-            _Timer.Enabled = true;
+            _Timer.Enabled = Config.CleanUpEnabled;
         }
 
         private void CleanUp(object sender, ElapsedEventArgs e)

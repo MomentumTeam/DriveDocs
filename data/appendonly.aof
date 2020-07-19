@@ -2585,3 +2585,123 @@ $3
 DEL
 $11
 AllSessions
+*2
+$6
+SELECT
+$1
+0
+*3
+$3
+SET
+$24
+5f0ff65377fd8300117ac87e
+$261
+"{\"SessionId\":\"5f0ff65377fd8300117ac87e\",\"ChangesMade\":false,\"UserForUpload\":null,\"LastUpdated\":\"2020-07-19T08:07:26.2734728+00:00\",\"LocalFilePath\":\"/sample_files/5f0ff65377fd8300117ac87e.docx\",\"Users\":[],\"LockStatus\":0,\"LockString\":\"\"}"
+*3
+$5
+RPUSH
+$11
+AllSessions
+$24
+5f0ff65377fd8300117ac87e
+*3
+$3
+SET
+$24
+5f0ff65377fd8300117ac87e
+$830
+"{\"SessionId\":\"5f0ff65377fd8300117ac87e\",\"ChangesMade\":false,\"UserForUpload\":null,\"LastUpdated\":\"2020-07-19T08:07:26.2734728+00:00\",\"LocalFilePath\":\"/sample_files/5f0ff65377fd8300117ac87e.docx\",\"Users\":[{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-19T08:07:26.3288715+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImZpbGVJZCI6IjVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImlhdCI6MTU5NTE0NjA0NCwiZXhwIjoxNTk1MjMyNDQ0LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.m07dpqy1vhyrBCqFsVvPSG42ABokAz2rtFRKEjowNiE\"}],\"LockStatus\":0,\"LockString\":\"\"}"
+*3
+$3
+SET
+$24
+5f0ff65377fd8300117ac87e
+$898
+"{\"SessionId\":\"5f0ff65377fd8300117ac87e\",\"ChangesMade\":false,\"UserForUpload\":null,\"LastUpdated\":\"2020-07-19T08:07:26.2734728+00:00\",\"LocalFilePath\":\"/sample_files/5f0ff65377fd8300117ac87e.docx\",\"Users\":[{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-19T08:07:26.3288715+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImZpbGVJZCI6IjVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImlhdCI6MTU5NTE0NjA0NCwiZXhwIjoxNTk1MjMyNDQ0LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.m07dpqy1vhyrBCqFsVvPSG42ABokAz2rtFRKEjowNiE\"}],\"LockStatus\":1,\"LockString\":\"{\\\"S\\\":\\\"fe7073a1-8846-4941-9c18-53952649e687\\\",\\\"F\\\":4}\"}"
+*3
+$3
+SET
+$24
+5f0ff65377fd8300117ac87e
+$1016
+"{\"SessionId\":\"5f0ff65377fd8300117ac87e\",\"ChangesMade\":false,\"UserForUpload\":null,\"LastUpdated\":\"2020-07-19T08:07:26.2734728+00:00\",\"LocalFilePath\":\"/sample_files/5f0ff65377fd8300117ac87e.docx\",\"Users\":[{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-19T08:07:26.3288715+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImZpbGVJZCI6IjVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImlhdCI6MTU5NTE0NjA0NCwiZXhwIjoxNTk1MjMyNDQ0LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.m07dpqy1vhyrBCqFsVvPSG42ABokAz2rtFRKEjowNiE\"}],\"LockStatus\":1,\"LockString\":\"{\\\"S\\\":\\\"fe7073a1-8846-4941-9c18-53952649e687\\\",\\\"F\\\":4,\\\"E\\\":2,\\\"M\\\":\\\"5029b68067874048adc5cad09e982c83\\\",\\\"P\\\":\\\"A09B40F1-D8B5-456F-90BC-20294DDBF9E9\\\"}\"}"
+*3
+$3
+set
+$24
+5f0ff65377fd8300117ac87e
+$1012
+"{\"SessionId\":\"5f0ff65377fd8300117ac87e\",\"ChangesMade\":false,\"UserForUpload\":{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-19T08:07:26.3288715+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImZpbGVJZCI6IjVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImlhdCI6MTU5NTE0NjA0NCwiZXhwIjoxNTk1MjMyNDQ0LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.m07dpqy1vhyrBCqFsVvPSG42ABokAz2rtFRKEjowNiE\"},\"LastUpdated\":\"2020-07-19T08:07:26.2734728+00:00\",\"LocalFilePath\":\"/sample_files/5f0ff65377fd8300117ac87e.docx\",\"Users\":[],\"LockStatus\":1,\"LockString\":\"{\\\"S\\\":\\\"fe7073a1-8846-4941-9c18-53952649e687\\\",\\\"F\\\":4,\\\"E\\\":2,\\\"M\\\":\\\"5029b68067874048adc5cad09e982c83\\\",\\\"P\\\":\\\"A09B40F1-D8B5-456F-90BC-20294DDBF9E9\\\"}\"}"
+*3
+$3
+SET
+$24
+5f0ff65377fd8300117ac87e
+$1581
+"{\"SessionId\":\"5f0ff65377fd8300117ac87e\",\"ChangesMade\":false,\"UserForUpload\":{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-19T08:07:26.3288715+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImZpbGVJZCI6IjVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImlhdCI6MTU5NTE0NjA0NCwiZXhwIjoxNTk1MjMyNDQ0LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.m07dpqy1vhyrBCqFsVvPSG42ABokAz2rtFRKEjowNiE\"},\"LastUpdated\":\"2020-07-19T08:07:26.2734728+00:00\",\"LocalFilePath\":\"/sample_files/5f0ff65377fd8300117ac87e.docx\",\"Users\":[{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-19T08:09:24.2614349+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImZpbGVJZCI6IjVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImlhdCI6MTU5NTE0NjA0NCwiZXhwIjoxNTk1MjMyNDQ0LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.m07dpqy1vhyrBCqFsVvPSG42ABokAz2rtFRKEjowNiE\"}],\"LockStatus\":1,\"LockString\":\"{\\\"S\\\":\\\"fe7073a1-8846-4941-9c18-53952649e687\\\",\\\"F\\\":4,\\\"E\\\":2,\\\"M\\\":\\\"5029b68067874048adc5cad09e982c83\\\",\\\"P\\\":\\\"A09B40F1-D8B5-456F-90BC-20294DDBF9E9\\\"}\"}"
+*2
+$6
+SELECT
+$1
+0
+*3
+$3
+set
+$24
+5f0ff65377fd8300117ac87e
+$1012
+"{\"SessionId\":\"5f0ff65377fd8300117ac87e\",\"ChangesMade\":false,\"UserForUpload\":{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-19T08:09:24.2614349+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImZpbGVJZCI6IjVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImlhdCI6MTU5NTE0NjA0NCwiZXhwIjoxNTk1MjMyNDQ0LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.m07dpqy1vhyrBCqFsVvPSG42ABokAz2rtFRKEjowNiE\"},\"LastUpdated\":\"2020-07-19T08:07:26.2734728+00:00\",\"LocalFilePath\":\"/sample_files/5f0ff65377fd8300117ac87e.docx\",\"Users\":[],\"LockStatus\":1,\"LockString\":\"{\\\"S\\\":\\\"fe7073a1-8846-4941-9c18-53952649e687\\\",\\\"F\\\":4,\\\"E\\\":2,\\\"M\\\":\\\"5029b68067874048adc5cad09e982c83\\\",\\\"P\\\":\\\"A09B40F1-D8B5-456F-90BC-20294DDBF9E9\\\"}\"}"
+*3
+$3
+SET
+$24
+5f0ff65377fd8300117ac87e
+$1581
+"{\"SessionId\":\"5f0ff65377fd8300117ac87e\",\"ChangesMade\":false,\"UserForUpload\":{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-19T08:09:24.2614349+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImZpbGVJZCI6IjVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImlhdCI6MTU5NTE0NjA0NCwiZXhwIjoxNTk1MjMyNDQ0LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.m07dpqy1vhyrBCqFsVvPSG42ABokAz2rtFRKEjowNiE\"},\"LastUpdated\":\"2020-07-19T08:07:26.2734728+00:00\",\"LocalFilePath\":\"/sample_files/5f0ff65377fd8300117ac87e.docx\",\"Users\":[{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-19T08:11:59.6088301+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImZpbGVJZCI6IjVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImlhdCI6MTU5NTE0NjA0NCwiZXhwIjoxNTk1MjMyNDQ0LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.m07dpqy1vhyrBCqFsVvPSG42ABokAz2rtFRKEjowNiE\"}],\"LockStatus\":1,\"LockString\":\"{\\\"S\\\":\\\"fe7073a1-8846-4941-9c18-53952649e687\\\",\\\"F\\\":4,\\\"E\\\":2,\\\"M\\\":\\\"5029b68067874048adc5cad09e982c83\\\",\\\"P\\\":\\\"A09B40F1-D8B5-456F-90BC-20294DDBF9E9\\\"}\"}"
+*2
+$6
+SELECT
+$1
+0
+*3
+$3
+SET
+$24
+5f0ff65377fd8300117ac87e
+$1581
+"{\"SessionId\":\"5f0ff65377fd8300117ac87e\",\"ChangesMade\":false,\"UserForUpload\":{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-19T08:09:24.2614349+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImZpbGVJZCI6IjVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImlhdCI6MTU5NTE0NjA0NCwiZXhwIjoxNTk1MjMyNDQ0LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.m07dpqy1vhyrBCqFsVvPSG42ABokAz2rtFRKEjowNiE\"},\"LastUpdated\":\"2020-07-19T08:07:26.2734728+00:00\",\"LocalFilePath\":\"/sample_files/5f0ff65377fd8300117ac87e.docx\",\"Users\":[{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-19T08:11:59.6088301+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImZpbGVJZCI6IjVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImlhdCI6MTU5NTE0NjA0NCwiZXhwIjoxNTk1MjMyNDQ0LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.m07dpqy1vhyrBCqFsVvPSG42ABokAz2rtFRKEjowNiE\"}],\"LockStatus\":1,\"LockString\":\"{\\\"S\\\":\\\"bafaefa1-47ff-4471-bd33-442331c30a8b\\\",\\\"F\\\":4,\\\"E\\\":2,\\\"M\\\":\\\"5029b68067874048adc5cad09e982c83\\\",\\\"P\\\":\\\"BC3B04CA-2FAC-40E3-85C7-F6B1B0CD3254\\\"}\"}"
+*3
+$3
+set
+$24
+5f0ff65377fd8300117ac87e
+$1012
+"{\"SessionId\":\"5f0ff65377fd8300117ac87e\",\"ChangesMade\":false,\"UserForUpload\":{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-19T08:11:59.6088301+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImZpbGVJZCI6IjVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImlhdCI6MTU5NTE0NjA0NCwiZXhwIjoxNTk1MjMyNDQ0LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.m07dpqy1vhyrBCqFsVvPSG42ABokAz2rtFRKEjowNiE\"},\"LastUpdated\":\"2020-07-19T08:07:26.2734728+00:00\",\"LocalFilePath\":\"/sample_files/5f0ff65377fd8300117ac87e.docx\",\"Users\":[],\"LockStatus\":1,\"LockString\":\"{\\\"S\\\":\\\"bafaefa1-47ff-4471-bd33-442331c30a8b\\\",\\\"F\\\":4,\\\"E\\\":2,\\\"M\\\":\\\"5029b68067874048adc5cad09e982c83\\\",\\\"P\\\":\\\"BC3B04CA-2FAC-40E3-85C7-F6B1B0CD3254\\\"}\"}"
+*3
+$3
+SET
+$24
+5f0ff65377fd8300117ac87e
+$1581
+"{\"SessionId\":\"5f0ff65377fd8300117ac87e\",\"ChangesMade\":false,\"UserForUpload\":{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-19T08:11:59.6088301+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImZpbGVJZCI6IjVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImlhdCI6MTU5NTE0NjA0NCwiZXhwIjoxNTk1MjMyNDQ0LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.m07dpqy1vhyrBCqFsVvPSG42ABokAz2rtFRKEjowNiE\"},\"LastUpdated\":\"2020-07-19T08:07:26.2734728+00:00\",\"LocalFilePath\":\"/sample_files/5f0ff65377fd8300117ac87e.docx\",\"Users\":[{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-19T09:54:02.7739444+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImZpbGVJZCI6IjVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImlhdCI6MTU5NTE1MjQyOSwiZXhwIjoxNTk1MjM4ODI5LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.oOsJrmd8oyQAk70nz0Z8TuhlXDZZ7ws8GQDMaJ7ny0E\"}],\"LockStatus\":1,\"LockString\":\"{\\\"S\\\":\\\"bafaefa1-47ff-4471-bd33-442331c30a8b\\\",\\\"F\\\":4,\\\"E\\\":2,\\\"M\\\":\\\"5029b68067874048adc5cad09e982c83\\\",\\\"P\\\":\\\"BC3B04CA-2FAC-40E3-85C7-F6B1B0CD3254\\\"}\"}"
+*3
+$3
+SET
+$24
+5f0ff65377fd8300117ac87e
+$1012
+"{\"SessionId\":\"5f0ff65377fd8300117ac87e\",\"ChangesMade\":false,\"UserForUpload\":{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-19T08:11:59.6088301+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImZpbGVJZCI6IjVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImlhdCI6MTU5NTE0NjA0NCwiZXhwIjoxNTk1MjMyNDQ0LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.m07dpqy1vhyrBCqFsVvPSG42ABokAz2rtFRKEjowNiE\"},\"LastUpdated\":\"2020-07-19T08:07:26.2734728+00:00\",\"LocalFilePath\":\"/sample_files/5f0ff65377fd8300117ac87e.docx\",\"Users\":[],\"LockStatus\":0,\"LockString\":\"{\\\"S\\\":\\\"bafaefa1-47ff-4471-bd33-442331c30a8b\\\",\\\"F\\\":4,\\\"E\\\":2,\\\"M\\\":\\\"5029b68067874048adc5cad09e982c83\\\",\\\"P\\\":\\\"BC3B04CA-2FAC-40E3-85C7-F6B1B0CD3254\\\"}\"}"
+*3
+$3
+SET
+$24
+5f0ff65377fd8300117ac87e
+$1581
+"{\"SessionId\":\"5f0ff65377fd8300117ac87e\",\"ChangesMade\":false,\"UserForUpload\":{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-19T08:11:59.6088301+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImZpbGVJZCI6IjVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImlhdCI6MTU5NTE0NjA0NCwiZXhwIjoxNTk1MjMyNDQ0LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.m07dpqy1vhyrBCqFsVvPSG42ABokAz2rtFRKEjowNiE\"},\"LastUpdated\":\"2020-07-19T08:07:26.2734728+00:00\",\"LocalFilePath\":\"/sample_files/5f0ff65377fd8300117ac87e.docx\",\"Users\":[{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-19T09:54:09.1217107+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImZpbGVJZCI6IjVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImlhdCI6MTU5NTE1MjQyOSwiZXhwIjoxNTk1MjM4ODI5LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.oOsJrmd8oyQAk70nz0Z8TuhlXDZZ7ws8GQDMaJ7ny0E\"}],\"LockStatus\":0,\"LockString\":\"{\\\"S\\\":\\\"bafaefa1-47ff-4471-bd33-442331c30a8b\\\",\\\"F\\\":4,\\\"E\\\":2,\\\"M\\\":\\\"5029b68067874048adc5cad09e982c83\\\",\\\"P\\\":\\\"BC3B04CA-2FAC-40E3-85C7-F6B1B0CD3254\\\"}\"}"
+*3
+$3
+SET
+$24
+5f0ff65377fd8300117ac87e
+$1581
+"{\"SessionId\":\"5f0ff65377fd8300117ac87e\",\"ChangesMade\":false,\"UserForUpload\":{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-19T08:11:59.6088301+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImZpbGVJZCI6IjVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImlhdCI6MTU5NTE0NjA0NCwiZXhwIjoxNTk1MjMyNDQ0LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.m07dpqy1vhyrBCqFsVvPSG42ABokAz2rtFRKEjowNiE\"},\"LastUpdated\":\"2020-07-19T08:07:26.2734728+00:00\",\"LocalFilePath\":\"/sample_files/5f0ff65377fd8300117ac87e.docx\",\"Users\":[{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-19T09:54:09.1268176+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImZpbGVJZCI6IjVmMGZmNjUzNzdmZDgzMDAxMTdhYzg3ZSIsImlhdCI6MTU5NTE1MjQyOSwiZXhwIjoxNTk1MjM4ODI5LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.oOsJrmd8oyQAk70nz0Z8TuhlXDZZ7ws8GQDMaJ7ny0E\"}],\"LockStatus\":0,\"LockString\":\"{\\\"S\\\":\\\"bafaefa1-47ff-4471-bd33-442331c30a8b\\\",\\\"F\\\":4,\\\"E\\\":2,\\\"M\\\":\\\"5029b68067874048adc5cad09e982c83\\\",\\\"P\\\":\\\"BC3B04CA-2FAC-40E3-85C7-F6B1B0CD3254\\\"}\"}"
