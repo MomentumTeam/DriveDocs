@@ -2585,3 +2585,50 @@ $3
 DEL
 $11
 AllSessions
+*2
+$6
+SELECT
+$1
+0
+*3
+$3
+SET
+$24
+5f15606cd379ea00116c9511
+$261
+"{\"SessionId\":\"5f15606cd379ea00116c9511\",\"ChangesMade\":false,\"UserForUpload\":null,\"LastUpdated\":\"2020-07-20T10:55:46.8283356+00:00\",\"LocalFilePath\":\"/sample_files/5f15606cd379ea00116c9511.docx\",\"Users\":[],\"LockStatus\":0,\"LockString\":\"\"}"
+*3
+$5
+RPUSH
+$11
+AllSessions
+$24
+5f15606cd379ea00116c9511
+*3
+$3
+SET
+$24
+5f15606cd379ea00116c9511
+$830
+"{\"SessionId\":\"5f15606cd379ea00116c9511\",\"ChangesMade\":false,\"UserForUpload\":null,\"LastUpdated\":\"2020-07-20T10:55:46.8283356+00:00\",\"LocalFilePath\":\"/sample_files/5f15606cd379ea00116c9511.docx\",\"Users\":[{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-20T10:55:46.8773204+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMTU2MDZjZDM3OWVhMDAxMTZjOTUxMSIsImZpbGVJZCI6IjVmMTU2MDZjZDM3OWVhMDAxMTZjOTUxMSIsImlhdCI6MTU5NTI0MjU0NiwiZXhwIjoxNTk1MzI4OTQ2LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.cvYZRyD9Oay5I_nzNmbL0eh35aTTbFAZTWBbJ2QG6Y8\"}],\"LockStatus\":0,\"LockString\":\"\"}"
+*3
+$3
+SET
+$24
+5f15606cd379ea00116c9511
+$898
+"{\"SessionId\":\"5f15606cd379ea00116c9511\",\"ChangesMade\":false,\"UserForUpload\":null,\"LastUpdated\":\"2020-07-20T10:55:46.8283356+00:00\",\"LocalFilePath\":\"/sample_files/5f15606cd379ea00116c9511.docx\",\"Users\":[{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-20T10:55:46.8773204+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMTU2MDZjZDM3OWVhMDAxMTZjOTUxMSIsImZpbGVJZCI6IjVmMTU2MDZjZDM3OWVhMDAxMTZjOTUxMSIsImlhdCI6MTU5NTI0MjU0NiwiZXhwIjoxNTk1MzI4OTQ2LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.cvYZRyD9Oay5I_nzNmbL0eh35aTTbFAZTWBbJ2QG6Y8\"}],\"LockStatus\":1,\"LockString\":\"{\\\"S\\\":\\\"58dbd0e2-1893-40dc-b2ad-4d5fa3c21fc8\\\",\\\"F\\\":4}\"}"
+*3
+$3
+SET
+$24
+5f15606cd379ea00116c9511
+$1016
+"{\"SessionId\":\"5f15606cd379ea00116c9511\",\"ChangesMade\":false,\"UserForUpload\":null,\"LastUpdated\":\"2020-07-20T10:55:46.8283356+00:00\",\"LocalFilePath\":\"/sample_files/5f15606cd379ea00116c9511.docx\",\"Users\":[{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-20T10:55:46.8773204+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMTU2MDZjZDM3OWVhMDAxMTZjOTUxMSIsImZpbGVJZCI6IjVmMTU2MDZjZDM3OWVhMDAxMTZjOTUxMSIsImlhdCI6MTU5NTI0MjU0NiwiZXhwIjoxNTk1MzI4OTQ2LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.cvYZRyD9Oay5I_nzNmbL0eh35aTTbFAZTWBbJ2QG6Y8\"}],\"LockStatus\":1,\"LockString\":\"{\\\"S\\\":\\\"58dbd0e2-1893-40dc-b2ad-4d5fa3c21fc8\\\",\\\"F\\\":4,\\\"E\\\":2,\\\"M\\\":\\\"5029b68067874048adc5cad09e982c83\\\",\\\"P\\\":\\\"3BF7E86E-3ED7-4184-957F-02EDFA2E3F20\\\"}\"}"
+*3
+$3
+SET
+$24
+5f15606cd379ea00116c9511
+$1016
+"{\"SessionId\":\"5f15606cd379ea00116c9511\",\"ChangesMade\":false,\"UserForUpload\":null,\"LastUpdated\":\"2020-07-20T10:55:46.8283356+00:00\",\"LocalFilePath\":\"/sample_files/5f15606cd379ea00116c9511.docx\",\"Users\":[{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-20T10:55:46.8773204+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMTU2MDZjZDM3OWVhMDAxMTZjOTUxMSIsImZpbGVJZCI6IjVmMTU2MDZjZDM3OWVhMDAxMTZjOTUxMSIsImlhdCI6MTU5NTI0MjU0NiwiZXhwIjoxNTk1MzI4OTQ2LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.cvYZRyD9Oay5I_nzNmbL0eh35aTTbFAZTWBbJ2QG6Y8\"}],\"LockStatus\":1,\"LockString\":\"{\\\"S\\\":\\\"58dbd0e2-1893-40dc-b2ad-4d5fa3c21fc8\\\",\\\"F\\\":4,\\\"E\\\":2,\\\"M\\\":\\\"5029b68067874048adc5cad09e982c83\\\",\\\"P\\\":\\\"3BF7E86E-3ED7-4184-957F-02EDFA2E3F20\\\"}\"}"

@@ -2,6 +2,8 @@ const jwt = require("jsonwebtoken");
 const { v4 } = require("uuid");
 const { promisify } = require("util");
 const metadataService = require("../services/metadataService");
+const logger = require("../services/logger.js");
+
 const getUid = (userId) => {
   return jwt.sign({ token: userId }, process.env.JWT_SECRET, { expiresIn: "1h" });
 };
@@ -60,8 +62,17 @@ exports.generateAccessToken = async (req, res, next) => {
       { expiresIn: "24h" }
     );
     res.locals.accessToken = jwtToken;
+    logger.log({
+      level: "info",
+      message: "accessToken successfully created",
+      label: `user: ${req.user.id}`
+    });
     next();
   } catch (e) {
+    logger.log({
+      level: "error",
+      message: `status 500: ${e}`,
+    });
     return res.status(500).send(e);
   }
 };

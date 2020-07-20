@@ -5,6 +5,7 @@ const session = require("express-session");
 const editor = require("./routes/editor");
 const auth = require("./routes/authentication");
 const app = express();
+require("dotenv").config();
 //process.env.WOPI_URL = process.env.WOPI_URL_LIHI;
 //process.env.DRIVE_SERVICE_URL = process.env.DRIVE_SERVICE_URL_LIHI;
 //process.env.REDIS_HOST = process.env.WOPI_URL_LIHI;

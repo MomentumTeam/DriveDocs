@@ -1,5 +1,6 @@
 const passport = require('../authentication/passport');
 const cookieParser = require('cookie-parser')
+
 module.exports = (app) => {
   app.use(passport.initialize());
   app.use(passport.session());
