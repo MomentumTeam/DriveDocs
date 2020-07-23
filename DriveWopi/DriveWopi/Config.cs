@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace DriveWopi
 {
@@ -29,6 +30,8 @@ namespace DriveWopi
         public static int Timeout; //Time period to perform cleanUp
         public static int Closewait; // Time before the session is deleted after not being updated
         public static int Removewaituser; // Time before the user is deleted from the session after begin inactive
+
+        public static ILogger logger;
         
         public static int MaxRedisSessionTime;
         static Config(){
@@ -56,6 +59,8 @@ namespace DriveWopi
             // Time after which the file is updated in drive still without closing the sesson in mill
             DriveUpdateTime = int.Parse(Environment.GetEnvironmentVariable("DRIVE_UPDATE_TIME"));
             DriveSecret = Environment.GetEnvironmentVariable("DRIVE_SECRET");
+
+            
         }
     }
 }

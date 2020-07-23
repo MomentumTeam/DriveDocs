@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using System.Text;
 using DriveWopi.Services;
 using ServiceStack.Redis;
+using Microsoft.Extensions.Logging;
 
 namespace DriveWopi.Services
 {
@@ -42,10 +43,12 @@ namespace DriveWopi.Services
                 {
                     dict["template"] = template;
                 }
+                Config.logger.LogDebug("DecodeJwt success");
                 return dict;
             }
             catch (Exception e)
             {
+                Config.logger.LogError("DecodeJwt fail, error:" + e.Message);
                 throw e;
             }
         }
@@ -61,6 +64,7 @@ namespace DriveWopi.Services
             }
             catch (Exception ex)
             {
+                Config.logger.LogError("GetUidFromRedis fail error:" + ex.Message);
                 throw ex;
             }
 
@@ -70,14 +74,6 @@ namespace DriveWopi.Services
             RedisService.Remove(userId, client);
         }
 
-
-        public static double Time1970()
-        {
-            DateTime dt1970 = new DateTime(1970, 1, 1);
-            DateTime current = DateTime.Now;//DateTime.UtcNow for unix timestamp
-            TimeSpan span = current - dt1970;
-            return span.TotalMilliseconds;
-        }
         public static bool VerifyAccessToken(string fileId, string uidFromToken, string created)
         {
             //TODO check expiring time

@@ -10,6 +10,11 @@ const operations = {
   EDIT: "edit",
   EDIT_NEW: "editNew",
 };
+const roles = {
+  OWNER: "OWNER",
+  READ: "READ",
+  WRITE: "WRITE",
+};
 
 exports.loadMetadata = async (req, res, next) => {
   try {
@@ -49,41 +54,29 @@ exports.loadMetadata = async (req, res, next) => {
   }
 };
 
+
 exports.checkPermissionsOnFile = (req, res, next) => {
   try {
-    if (req.query.operation == operations.EDIT_NEW) {
-      req.user.permission = permissions.WRITE;
-      next();
+    const metadata = res.locals.metadata;
+    if (metadata.role == roles.OWNER || metadata.role == roles.WRITE) {
+      req.query.operation = req.query.operation ? req.query.operation : operations.EDIT;
+    } else if (metadata.role == roles.READ) {
+      req.query.operation = operations.VIEW;
     } else {
-      const metadata = res.locals.metadata;
-      if (req.query.operation == operations.EDIT && metadata.role != "OWNER" && metadata.role != "WRITE") {
-        logger.log({
-          level: "error",
-          message: "status 403: Permissoin denied",
-          label: `user: ${req.user.id}`
-        });
-        return res.status(403).send("You do not have the right permission!");
-      } else if (req.query.operation == operations.VIEW && metadata.role != "OWNER" && metadata.role != "WRITE" && metadata.role != "READ") {
-        logger.log({
-          level: "error",
-          message: "status 403: Permissoin denied",
-          label: `user: ${req.user.id}`
-        });
-        return res.status(403).send("You do not have the right permission!");
-      } else {
-        logger.log({
-          level: "info",
-          message: "Permissoin granted",
-          label: `user: ${req.user.id}`
-        });
-        next();
-      }
+      logger.log({
+        level: "error",
+        message: "status 403: Permissoin denied",
+        label: `user: ${req.user.id}`
+      });
+      return res.status(403).send("You do not have the right permission!");
     }
-  } catch (e) {
     logger.log({
-      level: "error",
-      message: "status 403: Permissoin denied",
+      level: "info",
+      message: "Permissoin granted",
+      label: `user: ${req.user.id}`
     });
+    next();
+  } catch (e) {
     return res.status(403).send("You do not have the right permission!");
   }
 };

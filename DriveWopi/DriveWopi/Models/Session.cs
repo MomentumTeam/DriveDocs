@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using DriveWopi.Services;
 using ServiceStack.Redis;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace DriveWopi.Models
 {
@@ -92,7 +93,6 @@ namespace DriveWopi.Models
         {
             try
             {
-                Console.WriteLine("name:"+_FileInfo.Name);
                 CheckFileInfo cfi = new CheckFileInfo();
                 cfi.SupportsCoauth = true;
                 cfi.BaseFileName = name;
@@ -128,11 +128,12 @@ namespace DriveWopi.Models
                 cfi.UserCanWrite = true;
                 cfi.LicenseCheckForEditIsEnabled = true;
                 cfi.SupportsGetLock = true;
-
+                Config.logger.LogDebug("GetCheckFileInfo Success");
                 return cfi;
             }
             catch (Exception e)
             {
+                Config.logger.LogError("GetCheckFileInfo fail error:" + e.Message);
                 throw e;
             }
         }
@@ -171,6 +172,7 @@ namespace DriveWopi.Models
             }
             catch (Exception e)
             {
+                Config.logger.LogError("CopyUsers fail error:" + e.Message);
                 throw e;
             }
         }
@@ -207,11 +209,13 @@ namespace DriveWopi.Models
                         User user = new User((string)userDict["Id"], (DateTime)userDict["LastUpdated"],(string)userDict["Authorization"]);
                         sessionObj.AddUser(user);
                     }
+                    Config.logger.LogDebug("GetSession Success");
                     return sessionObj;
                 }
             }
             catch (Exception e)
             {
+                Config.logger.LogError("GetSession fail error:" + e.Message);
                 throw e;
             }
         }
@@ -231,13 +235,21 @@ namespace DriveWopi.Models
             }
             catch (Exception e)
             {
+                Config.logger.LogError("GetAllSessions fail error:" + e.Message);
                 throw e;
             }
         }
 
         public void AddSessionToListInRedis()
-        {
-            RedisService.AddItemToList(Config.AllSessionsRedisKey, _SessionId, this.Client);
+        {   
+            try{
+                RedisService.AddItemToList(Config.AllSessionsRedisKey, _SessionId, this.Client);
+                Config.logger.LogDebug("AddSessionToListInRedis Success");
+            }catch (Exception e)
+            {
+                Config.logger.LogError("AddSessionToListInRedis fail error:" + e.Message);
+                throw e;
+            }
         }
 
         public static void UpdateSessionsListInRedis(List<Session> sessions, IRedisClient client)
@@ -254,6 +266,7 @@ namespace DriveWopi.Models
             }
             catch (Exception e)
             {
+                Config.logger.LogError("UpdateSessionsListInRedis fail error:" + e.Message);
                 throw e;
             }
         }
@@ -264,9 +277,11 @@ namespace DriveWopi.Models
                 string convertedSession = JsonConvert.SerializeObject(this, new JsonSerializerSettings()
                 { ContractResolver = new IgnorePropertiesResolver(new[] { "Client" }) });
                 RedisService.Set($"{this._SessionId}", convertedSession, this.Client);
+                Config.logger.LogDebug("SaveToRedis success");
             }
             catch (Exception ex)
             {
+                Config.logger.LogError("SaveToRedis fail error:" + ex.Message);
                 throw ex;
             }
         }
@@ -277,7 +292,8 @@ namespace DriveWopi.Models
                 bool ret =  Services.FilesService.UpdateFileInDrive(this._FileInfo,FilesService.GenerateAuthorizationToken(userForUpload),this._SessionId);
                 return ret;
             }
-            catch(Exception){
+            catch(Exception ex){
+                Config.logger.LogError("SaveToDrive fail error:" + ex.Message);
                 return false;
                 //throw ex;
             }
@@ -292,6 +308,7 @@ namespace DriveWopi.Models
                 }
             }
             catch(Exception ex){
+                Config.logger.LogError("RemoveLocalFile fail error:" + ex.Message);
                 throw ex;
             }
 
@@ -303,6 +320,7 @@ namespace DriveWopi.Models
                 RedisService.Remove(this._SessionId, this.Client);
             }
             catch(Exception ex){
+                Config.logger.LogError("DeleteSessionFromRedis fail error:" + ex.Message);
                 throw ex;
             }
 
@@ -317,6 +335,7 @@ namespace DriveWopi.Models
             }
             catch (Exception e)
             {
+                Config.logger.LogError("GetFileContent fail error:" + e.Message);
                 throw e;
             }
         }
@@ -348,9 +367,11 @@ namespace DriveWopi.Models
             try
             {
                 return Users.Find((User u) => u.Id.Equals(userId)) != null;
+                
             }
             catch (Exception e)
             {
+                Config.logger.LogError("UserIsInSession fail error:" + e.Message);
                 throw e;
             }
         }
@@ -376,6 +397,7 @@ namespace DriveWopi.Models
             }
             catch (Exception e)
             {
+                Config.logger.LogDebug("status:500, Save fail, error: "+e.Message);
                 throw e;
             }
         }
