@@ -113,7 +113,9 @@ namespace DriveWopi.Models
                     }
                 }
 
-                cfi.Version = DateTime.Now.ToString("s");
+                //cfi.Version = DateTime.Now.ToString("s");
+               cfi.Version = DateTime.Now.ToString("s");
+               
                // cfi.HostEmbeddedEditUrl = Config.HostUrl + "/files/" + this._SessionId + "operation=edit";
                // cfi.HostEmbeddedViewUrl = Config.HostUrl + "/files/" + this._SessionId + "operation=view";
                 //cfi.HostEditUrl = Config.HostUrl + "/files/" + this._SessionId + "operation=edit";

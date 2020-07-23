@@ -25,7 +25,9 @@ namespace DriveWopi.Services
         {
             try
             {
-                using (var httpClient = new HttpClient())
+                HttpClientHandler clientHandler = new HttpClientHandler();
+                clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+                using (var httpClient = new HttpClient(clientHandler))
                 {
                     string uploadId = "";
                     httpClient.DefaultRequestHeaders.Add("X-Content-Length", fileInfo.Length.ToString());
