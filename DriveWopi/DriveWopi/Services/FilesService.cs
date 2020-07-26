@@ -30,6 +30,7 @@ namespace DriveWopi.Services
                 using (var httpClient = new HttpClient(clientHandler))
                 {
                     string uploadId = "";
+                    httpClient.DefaultRequestHeaders.Add("Auth-Type", "Docs");
                     httpClient.DefaultRequestHeaders.Add("X-Content-Length", fileInfo.Length.ToString());
                     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     if (!Config.Mimetypes.ContainsKey(fileInfo.Extension.ToString().ToLower()))
@@ -42,6 +43,7 @@ namespace DriveWopi.Services
                     HttpContent content = new StringContent(convertedBody, System.Text.Encoding.UTF8, "application/json");
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, Config.DriveUrl + "/api/upload/" + fileId);
                     request.Headers.Add("X-Content-Length", fileInfo.Length.ToString());
+                    request.Headers.Add("Auth-Type", "Docs");
                     request.Headers.Add("Authorization", authorization);
                     request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     request.Content = content;
@@ -94,6 +96,7 @@ namespace DriveWopi.Services
                 {
                     client.Headers.Set("Content-Range", "bytes 0-" + (fileInfo.Length - 1) + "/" + fileInfo.Length);
                     client.Headers.Set("Authorization", authorization);
+                    client.Headers.Set("Auth-Type", "Docs");
                     string url = Config.DriveUrl + "/api/upload?uploadType=resumable&uploadId=" + uploadId;
                     byte[] responseArray = client.UploadFile(url, fileInfo.FullName);
                     Config.logger.LogDebug("UpdateFileInDrive success");
@@ -112,6 +115,7 @@ namespace DriveWopi.Services
             {
                 using (var client = new WebClient())
                 {
+                    client.Headers.Set("Auth-Type", "Docs");
                     client.Headers.Set("Authorization", authorization);
                     client.DownloadFile(Config.DriveUrl + "/api/files/" + idToDownload + "?alt=media", localPath);
                 }

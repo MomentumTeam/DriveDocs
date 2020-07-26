@@ -59,7 +59,7 @@ exports.getMetadata = async (fileId, user) => {
     const url = `${process.env.DRIVE_URL}/api/files/${fileId}`;
     const authorization = generateAuthorizationHeader(user);
     const metadata = await axios.get(url, {
-      headers: { Authorization: authorization },
+      headers: { Authorization: authorization, "Auth-Type": "Docs" },
     });
     return metadata.data;
   } catch (error) {
