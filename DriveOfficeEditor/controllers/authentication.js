@@ -10,8 +10,9 @@ exports.isAuthenticated = (req, res, next) => {
       return next();
     } else {
       logger.log({
-        level: "error",
+        level: "info",
         message: "status:401 is not Authenticated",
+        label: "user is not Authenticated"
       });
       return res.redirect("/login?RelayState=" + req.originalUrl);
     }
@@ -19,6 +20,7 @@ exports.isAuthenticated = (req, res, next) => {
     logger.log({
       level: "error",
       message: `status 500: ${e}`,
+      label: "user is not Authenticated"
     });
     return res.status(500).send(e);
   }

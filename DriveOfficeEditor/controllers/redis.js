@@ -17,6 +17,7 @@ client.on("connect", () => {
   logger.log({
     level: "info",
     message: "redis is connect",
+    label: "redis up"
   });
 });
 client.on("error", function (error) {

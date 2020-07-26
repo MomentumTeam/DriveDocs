@@ -32,6 +32,7 @@ namespace DriveWopi
         public static int Removewaituser; // Time before the user is deleted from the session after begin inactive
 
         public static ILogger logger;
+
         
         public static int MaxRedisSessionTime;
         static Config(){

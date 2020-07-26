@@ -15,12 +15,11 @@ namespace DriveWopi.Services
             {
                 RedisManagerPool manager = new RedisManagerPool(Config.RedisHost);
                 IRedisClient client = client = manager.GetClient();
-                Config.logger.LogDebug("Redisclient created successfully");
                 return client;
             }
             catch (Exception e)
             {
-                Config.logger.LogDebug("problem with Redisclient creation");
+                Config.logger.LogDebug("problem with Redisclient creation, error:"+e.Message);
                 throw e;
             }
 

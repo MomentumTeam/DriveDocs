@@ -14,7 +14,7 @@ namespace DriveWopi.Models
 
         // public SessionManager(ILogger<SessionManager> logger)
         // {
-            
+
         // }
         private static volatile SessionManager _Instance;
 
@@ -39,19 +39,20 @@ namespace DriveWopi.Models
 
         public SessionManager()
         {
-
+            var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
             _Timer = new Timer(Config.Timeout);
             _Timer.AutoReset = true;
             _Timer.Elapsed += CleanUp;
             _Timer.Enabled = true;
-            // Config.logger.Debug("SessionManager created");
+            logger.Debug("SessionManager created");
         }
 
         private void CleanUp(object sender, ElapsedEventArgs e)
         {
             try
             {
-                // Config.logger.Debug("enter CleanUp");
+                var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+                logger.Debug("enter CleanUp");
                 IRedisClient client = RedisService.GenerateRedisClient();
                 User userForUpload = null;
                 bool needToCloseSomeSessions = false, updateSuccess = true;
@@ -67,7 +68,7 @@ namespace DriveWopi.Models
                         session.DeleteSessionFromRedis();
                         allSessions[i] = null;
                         session.RemoveLocalFile();
-                        // Config.logger.Debug("session LastUpdated time pased");
+                        logger.Debug("session {0} RedisSessionTime time pased, the session delete", session.SessionId);
                         continue;
                     }
 
@@ -75,7 +76,7 @@ namespace DriveWopi.Models
                     // Zero users in the sessions
                     if (usersCountBefore == 0)
                     {
-                        // Config.logger.Debug("Zero users in the sessions before");
+                        logger.Debug("Zero users in the session {0} before", session.SessionId);
                         updateSuccess = true;
                         if (session.ChangesMade && session.UserForUpload != null)
                         {
@@ -88,6 +89,7 @@ namespace DriveWopi.Models
                             session.RemoveLocalFile();
                             allSessions[i] = null;
                             needToCloseSomeSessions = true;
+                            logger.Debug("the file {0} saved in Drive successfully", session.SessionId);
                         }
                         continue;
                     }
@@ -97,7 +99,7 @@ namespace DriveWopi.Models
                     {
                         if (user.LastUpdated.AddSeconds(Config.Removewaituser) < DateTime.Now)
                         {
-                            // Config.logger.Debug("user LastUpdated time pased");
+                            logger.Debug("user {0} LastUpdated time pased", user.Id);
                             return true;
                         }
                         else
@@ -109,9 +111,10 @@ namespace DriveWopi.Models
                     usersCountAfter = session.Users.Count;
                     if (usersCountAfter != usersCountBefore)
                     {
+                        logger.Debug("the number of users on the session {0} has changed", session.SessionId);
                         if (usersCountAfter == 0)
                         {
-                            // Config.logger.Debug("Zero users in the sessions after");
+                            logger.Debug("Zero users in the session {0} after", session.SessionId);
                             updateSuccess = session.ChangesMade ? session.SaveToDrive(userForUpload) : true;
                             if (updateSuccess)
                             {
@@ -119,10 +122,12 @@ namespace DriveWopi.Models
                                 session.RemoveLocalFile();
                                 allSessions[i] = null;
                                 needToCloseSomeSessions = true;
+                                logger.Debug("the file {0} saved in Drive successfully", session.SessionId);
                             }
                             else
                             {
                                 session.SaveToRedis();
+                                logger.Debug("the session {0} saved in Redis successfully, But update fail", session.SessionId);
                             }
                             continue;
                         }
@@ -154,6 +159,7 @@ namespace DriveWopi.Models
                         {
                             session.ChangesMade = false;
                             session.SaveToRedis();
+                            logger.Debug("session {0} DriveUpdateTime time pased, the session update in Drive", session.SessionId);
                         }
 
                     }
@@ -161,13 +167,14 @@ namespace DriveWopi.Models
                 allSessions = allSessions.Where(x => x != null).ToList();
                 if (needToCloseSomeSessions)
                 {
-                    // Config.logger.Debug("needToCloseSomeSessions");
+                    logger.Debug("needToCloseSomeSessions");
                     Session.UpdateSessionsListInRedis(allSessions, client);
                 }
             }
             catch (Exception ex)
             {
-                // Config.logger.LogError("status:500, cleanUp fail, error: " + ex.Message);
+                var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+                logger.Error("status:500, cleanUp fail, error: " + ex.Message);
                 throw ex;
             }
 

@@ -48,7 +48,7 @@ namespace DriveWopi.Models
             set { _SessionId = value; }
         }
 
-         public bool ChangesMade
+        public bool ChangesMade
         {
             get { return _ChangesMade; }
             set { _ChangesMade = value; }
@@ -69,7 +69,7 @@ namespace DriveWopi.Models
             get { return _LocalFilePath; }
             set { _LocalFilePath = value; }
         }
-        
+
         public List<User> Users
         {
             get { return _Users; }
@@ -86,8 +86,9 @@ namespace DriveWopi.Models
             set { _LockString = value; }
         }
 
-        public bool LocalFileExists(){
-            return  _FileInfo.Exists;      
+        public bool LocalFileExists()
+        {
+            return _FileInfo.Exists;
         }
         public CheckFileInfo GetCheckFileInfo(string userId, string userName, string name)
         {
@@ -114,10 +115,10 @@ namespace DriveWopi.Models
                 }
 
                 cfi.Version = DateTime.Now.ToString("s");
-               // cfi.HostEmbeddedEditUrl = Config.HostUrl + "/files/" + this._SessionId + "operation=edit";
-               // cfi.HostEmbeddedViewUrl = Config.HostUrl + "/files/" + this._SessionId + "operation=view";
+                // cfi.HostEmbeddedEditUrl = Config.HostUrl + "/files/" + this._SessionId + "operation=edit";
+                // cfi.HostEmbeddedViewUrl = Config.HostUrl + "/files/" + this._SessionId + "operation=view";
                 //cfi.HostEditUrl = Config.HostUrl + "/files/" + this._SessionId + "operation=edit";
-               // cfi.HostViewUrl = Config.HostUrl + "/files/" + this._SessionId + "operation=view";
+                // cfi.HostViewUrl = Config.HostUrl + "/files/" + this._SessionId + "operation=view";
                 cfi.SupportsCoauth = true;
                 cfi.SupportsCobalt = false;
                 cfi.SupportsFolders = true;
@@ -128,12 +129,12 @@ namespace DriveWopi.Models
                 cfi.UserCanWrite = true;
                 cfi.LicenseCheckForEditIsEnabled = true;
                 cfi.SupportsGetLock = true;
-                Config.logger.LogDebug("GetCheckFileInfo Success");
+                Config.logger.LogDebug("GetCheckFileInfo of file {0} Success", name);
                 return cfi;
             }
             catch (Exception e)
             {
-                Config.logger.LogError("GetCheckFileInfo fail error:" + e.Message);
+                Config.logger.LogError("GetCheckFileInfo of file {0} fail, error: {1}", name, e.Message);
                 throw e;
             }
         }
@@ -144,9 +145,9 @@ namespace DriveWopi.Models
             _Users.Add(new User(id));
         }
 
-        public void AddUser(string id,string authorization)
+        public void AddUser(string id, string authorization)
         {
-            _Users.Add(new User(id,authorization));
+            _Users.Add(new User(id, authorization));
         }
 
         public void AddUser(User user)
@@ -156,7 +157,6 @@ namespace DriveWopi.Models
 
         public void RemoveUser(string id)
         {
-            
             Users.RemoveAll((User user) => { return user == null || user.Id.Equals(id); });
         }
 
@@ -193,9 +193,9 @@ namespace DriveWopi.Models
                     Dictionary<string, object> deserializedSessionDict = JsonConvert.DeserializeObject<Dictionary<string, Object>>(session.ToString(), new JsonSerializerSettings()
                     { ContractResolver = new IgnorePropertiesResolver(new[] { "Client" }) });
                     List<Dictionary<string, object>> UsersListDict = JsonConvert.DeserializeObject<List<Dictionary<string, Object>>>(deserializedSessionDict["Users"].ToString());
-                    
-                    Dictionary<string,object> userForUploadDict = deserializedSessionDict["UserForUpload"]==null? null : JsonConvert.DeserializeObject<Dictionary<string,object>>(deserializedSessionDict["UserForUpload"].ToString());
-                    User userForUpload = userForUploadDict==null?null:new User((string)userForUploadDict["Id"], (DateTime)userForUploadDict["LastUpdated"],(string)userForUploadDict["Authorization"]);
+
+                    Dictionary<string, object> userForUploadDict = deserializedSessionDict["UserForUpload"] == null ? null : JsonConvert.DeserializeObject<Dictionary<string, object>>(deserializedSessionDict["UserForUpload"].ToString());
+                    User userForUpload = userForUploadDict == null ? null : new User((string)userForUploadDict["Id"], (DateTime)userForUploadDict["LastUpdated"], (string)userForUploadDict["Authorization"]);
                     Session sessionObj = new Session((string)deserializedSessionDict["SessionId"], (string)deserializedSessionDict["LocalFilePath"]);
                     sessionObj.LastUpdated = (DateTime)deserializedSessionDict["LastUpdated"];
                     string lockStatusAsString = ((long)deserializedSessionDict["LockStatus"]).ToString();
@@ -206,16 +206,16 @@ namespace DriveWopi.Models
                     sessionObj.LockString = lockStringAsString;
                     foreach (Dictionary<string, object> userDict in UsersListDict)
                     {
-                        User user = new User((string)userDict["Id"], (DateTime)userDict["LastUpdated"],(string)userDict["Authorization"]);
+                        User user = new User((string)userDict["Id"], (DateTime)userDict["LastUpdated"], (string)userDict["Authorization"]);
                         sessionObj.AddUser(user);
                     }
-                    Config.logger.LogDebug("GetSession Success");
+                    Config.logger.LogDebug("GetSession of {0} Success", sessionId);
                     return sessionObj;
                 }
             }
             catch (Exception e)
             {
-                Config.logger.LogError("GetSession fail error:" + e.Message);
+                Config.logger.LogError("GetSession  of {0} fail error: {1}", sessionId, e.Message);
                 throw e;
             }
         }
@@ -241,11 +241,12 @@ namespace DriveWopi.Models
         }
 
         public void AddSessionToListInRedis()
-        {   
-            try{
+        {
+            try
+            {
                 RedisService.AddItemToList(Config.AllSessionsRedisKey, _SessionId, this.Client);
-                Config.logger.LogDebug("AddSessionToListInRedis Success");
-            }catch (Exception e)
+            }
+            catch (Exception e)
             {
                 Config.logger.LogError("AddSessionToListInRedis fail error:" + e.Message);
                 throw e;
@@ -254,8 +255,6 @@ namespace DriveWopi.Models
 
         public static void UpdateSessionsListInRedis(List<Session> sessions, IRedisClient client)
         {
-            //lihi
-            //TODO save the list with the ids of sessions in redis
             try
             {
                 RedisService.Remove(Config.AllSessionsRedisKey, client);
@@ -277,38 +276,41 @@ namespace DriveWopi.Models
                 string convertedSession = JsonConvert.SerializeObject(this, new JsonSerializerSettings()
                 { ContractResolver = new IgnorePropertiesResolver(new[] { "Client" }) });
                 RedisService.Set($"{this._SessionId}", convertedSession, this.Client);
-                Config.logger.LogDebug("SaveToRedis success");
             }
             catch (Exception ex)
             {
-                Config.logger.LogError("SaveToRedis fail error:" + ex.Message);
+                Config.logger.LogError("SaveToRedis of {0} fail error: {1}", this._SessionId, ex.Message);
                 throw ex;
             }
         }
 
         public bool SaveToDrive(User userForUpload)
         {
-            try{
-                bool ret =  Services.FilesService.UpdateFileInDrive(this._FileInfo,FilesService.GenerateAuthorizationToken(userForUpload),this._SessionId);
+            try
+            {
+                bool ret = Services.FilesService.UpdateFileInDrive(this._FileInfo, FilesService.GenerateAuthorizationToken(userForUpload), this._SessionId);
                 return ret;
             }
-            catch(Exception ex){
-                Config.logger.LogError("SaveToDrive fail error:" + ex.Message);
+            catch (Exception ex)
+            {
+                Config.logger.LogError("SaveToDrive of {0} fail error: {1}", this._SessionId, ex.Message);
                 return false;
-                //throw ex;
             }
-            
+
         }
 
         public void RemoveLocalFile()
         {
-            try{
-                if(LocalFileExists()){
+            try
+            {
+                if (LocalFileExists())
+                {
                     Services.FilesService.RemoveFile(this._LocalFilePath);
                 }
             }
-            catch(Exception ex){
-                Config.logger.LogError("RemoveLocalFile fail error:" + ex.Message);
+            catch (Exception ex)
+            {
+                Config.logger.LogError("RemoveLocalFile of {0} fail error: {1}", this._LocalFilePath, ex.Message);
                 throw ex;
             }
 
@@ -316,11 +318,13 @@ namespace DriveWopi.Models
 
         public void DeleteSessionFromRedis()
         {
-            try{
+            try
+            {
                 RedisService.Remove(this._SessionId, this.Client);
             }
-            catch(Exception ex){
-                Config.logger.LogError("DeleteSessionFromRedis fail error:" + ex.Message);
+            catch (Exception ex)
+            {
+                Config.logger.LogError("DeleteSessionFromRedis of {0} fail error: {1}", this._SessionId, ex.Message);
                 throw ex;
             }
 
@@ -335,7 +339,7 @@ namespace DriveWopi.Models
             }
             catch (Exception e)
             {
-                Config.logger.LogError("GetFileContent fail error:" + e.Message);
+                Config.logger.LogError("GetFileContent of {0} fail error: {1}", _FileInfo.FullName ,e.Message);
                 throw e;
             }
         }
@@ -367,11 +371,11 @@ namespace DriveWopi.Models
             try
             {
                 return Users.Find((User u) => u.Id.Equals(userId)) != null;
-                
+
             }
             catch (Exception e)
             {
-                Config.logger.LogError("UserIsInSession fail error:" + e.Message);
+                Config.logger.LogError("UserIsInSession of {0} fail error: {1}",userId, e.Message);
                 throw e;
             }
         }
@@ -397,7 +401,7 @@ namespace DriveWopi.Models
             }
             catch (Exception e)
             {
-                Config.logger.LogDebug("status:500, Save fail, error: "+e.Message);
+                Config.logger.LogDebug("status:500, Save of {0} fail, error: {1} ",  e.Message);
                 throw e;
             }
         }

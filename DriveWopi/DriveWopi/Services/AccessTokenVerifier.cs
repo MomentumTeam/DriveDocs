@@ -43,12 +43,11 @@ namespace DriveWopi.Services
                 {
                     dict["template"] = template;
                 }
-                Config.logger.LogDebug("DecodeJwt success");
                 return dict;
             }
             catch (Exception e)
             {
-                Config.logger.LogError("DecodeJwt fail, error:" + e.Message);
+                Config.logger.LogError("DecodeJwt of {0} fail, error: {1}", jwt, e.Message);
                 throw e;
             }
         }
@@ -64,7 +63,7 @@ namespace DriveWopi.Services
             }
             catch (Exception ex)
             {
-                Config.logger.LogError("GetUidFromRedis fail error:" + ex.Message);
+                Config.logger.LogError("GetUidFromRedis of {0} fail error:", userId, ex.Message);
                 throw ex;
             }
 

@@ -62,17 +62,18 @@ namespace DriveWopi.Controllers
                 Session editSession = Session.GetSessionFromRedis(id, client);
                 if (editSession == null)
                 {
-                    Config.logger.LogDebug("create new session");
                     FilesService.DownloadFileFromDrive(idToDownload, fileName, user["authorization"]);
                     editSession = new Session(id, fileName);
                     editSession.SaveToRedis();
                     editSession.AddSessionToListInRedis();
+                    Config.logger.LogDebug("create new session" + id);
                 }
                 if (!editSession.UserIsInSession(user["id"]))
                 {
                     Config.logger.LogDebug("add new user to session");
                     editSession.AddUser(user["id"], user["authorization"]);
                     editSession.SaveToRedis();
+                    Config.logger.LogDebug("add new user {0} to session {1}", user["id"], id);
                 }
                 CheckFileInfo checkFileInfo = editSession.GetCheckFileInfo(user["id"], user["name"], metadata["name"]);
                 return Ok(checkFileInfo);
@@ -81,12 +82,12 @@ namespace DriveWopi.Controllers
             {
                 if (e is DriveFileNotFoundException)
                 {
-                    Config.logger.LogError("status:404 CheckFileInfo Drive LogError" + e.Message);
+                    Config.logger.LogError("status:404 CheckFileInfo Drive Error" + e.Message);
                     return StatusCode(404);
                 }
                 else
                 {
-                    Config.logger.LogError("status:500, CheckFileInfo LogError:" + e.Message);
+                    Config.logger.LogError("status:500, CheckFileInfo Error:" + e.Message);
                     return StatusCode(500);
                 }
             }
@@ -118,21 +119,23 @@ namespace DriveWopi.Controllers
                 Session editSession = Session.GetSessionFromRedis(id, client);
                 if (editSession == null)
                 {
+                    Config.logger.LogError("status:500 the session is null");
                     return StatusCode(500);
                 }
                 byte[] content = editSession.GetFileContent();
+                Config.logger.LogDebug("the file {0} opens successfully", id);
                 return File(content, "application/octet-stream", id);
             }
             catch (Exception e)
             {
                 if (e is DriveFileNotFoundException)
                 {
-                    Config.logger.LogError("status:404 GetFileContents Drive LogError" + e.Message);
+                    Config.logger.LogError("status:404 GetFileContents Drive Error" + e.Message);
                     return StatusCode(404);
                 }
                 else
                 {
-                    Config.logger.LogError("status:500, GetFileContents LogError:" + e.Message);
+                    Config.logger.LogError("status:500, GetFileContents Error:" + e.Message);
                     return StatusCode(500);
                 }
             }
@@ -159,7 +162,7 @@ namespace DriveWopi.Controllers
                 if (!AccessTokenVerifier.VerifyAccessToken(id, (string)metadata["id"], (string)token["created"]))
                 {
                     Config.logger.LogError("status:500 accessToken is illegal");
-                    return StatusCode(500); //access token is illegal
+                    return StatusCode(500); 
                 }
 
                 Session editSession = Session.GetSessionFromRedis(id, client);
@@ -191,7 +194,7 @@ namespace DriveWopi.Controllers
                 Request.Headers.TryGetValue("X-WOPI-Override", out var xWopiOverrideHeader);
                 if (xWopiOverrideHeader.Count != 1 || string.IsNullOrWhiteSpace(xWopiOverrideHeader.FirstOrDefault()))
                 {
-                    //explain
+                    Config.logger.LogError("status:400, X-WOPI-Override header not found");
                     return StatusCode(400);
                 }
                 else
@@ -220,36 +223,40 @@ namespace DriveWopi.Controllers
                             {
                                 editSession.ChangesMade = true;
                                 editSession.SaveToRedis();
-                                Config.logger.LogDebug("status 200, the file saved");
+                                Config.logger.LogDebug("status 200, the session {0} saved in redis", editSession.SessionId);
                                 return StatusCode(200);
                             }
                             else
                             {
                                 //User unauthorized
-                                Config.logger.LogError("status 404, save file is fail");
+                                Config.logger.LogError("status 404, save session {0} is fail", editSession.SessionId);
                                 return StatusCode(404);
                             }
                         }
                         else
                         {
                             Response.Headers.Add("X-WOPI-Lock", lockValue);
+                            Config.logger.LogError("status:409, lock value isnt the same");
                             return StatusCode(409);
                         }
                     //TODO case "RELATIVE_PUT"
-                    default:
+                    default:{
+                        Config.logger.LogError("status 500, Put fail");
                         return StatusCode(500);
+                    }
+                        
                 }
             }
             catch (Exception e)
             {
                 if (e is DriveFileNotFoundException)
                 {
-                    Config.logger.LogError("status:404 PutFile Drive LogError" + e.Message);
+                    Config.logger.LogError("status:404 PutFile Drive Error" + e.Message);
                     return StatusCode(404);
                 }
                 else
                 {
-                    Config.logger.LogError("status:500, PutFile LogError:" + e.Message);
+                    Config.logger.LogError("status:500, PutFile Error:" + e.Message);
                     return StatusCode(500);
                 }
             }
@@ -281,7 +288,7 @@ namespace DriveWopi.Controllers
                 string fileName = editSession.LocalFilePath;
                 if (!FilesService.FileExists(fileName))
                 {
-                    Config.logger.LogError("status:404 the file is not exsist");
+                    Config.logger.LogError("status:404 the file {0} is not exsist",fileName);
                     return StatusCode(404);
                 }
                 string lockValue, operation, xWopiLock, xWopiOldLock = "";
@@ -294,6 +301,7 @@ namespace DriveWopi.Controllers
                 Request.Headers.TryGetValue("X-WOPI-Override", out var xWopiOverrideHeader);
                 if (xWopiOverrideHeader.Count != 1 || string.IsNullOrWhiteSpace(xWopiOverrideHeader.FirstOrDefault()))
                 {
+                    Config.logger.LogError("status:400, X-WOPI-Override header not found");
                     return StatusCode(400);
                 }
                 else
@@ -303,6 +311,7 @@ namespace DriveWopi.Controllers
                 Request.Headers.TryGetValue("X-WOPI-Lock", out var xWopiLockHeader);
                 if ((xWopiLockHeader.Count != 1 || string.IsNullOrWhiteSpace(xWopiLockHeader.FirstOrDefault())) && operation != "GET_LOCK")
                 {
+                    Config.logger.LogError("status:400, X-WOPI-Lock header not found");
                     return StatusCode(400);
                 }
                 else
@@ -326,13 +335,13 @@ namespace DriveWopi.Controllers
                         {
                             editSession.LockSession(xWopiLock);
                             editSession.SaveToRedis();
-                            Config.logger.LogDebug("status:200, the session locked");
+                            Config.logger.LogDebug("status:200, the session {0} locked", editSession.SessionId);
                             return StatusCode(200);
                         }
                         else if (!lockValue.Equals(xWopiLock))
                         {
                             Response.Headers.Add("X-WOPI-Lock", lockValue);
-                            //explain
+                            Config.logger.LogError("status:409, lock value isnt the same");
                             return StatusCode(409);
                         }
                         else
@@ -345,20 +354,21 @@ namespace DriveWopi.Controllers
                     case "GET_LOCK":
                         lockValue = editSession.LockString;
                         Response.Headers.Add("X-WOPI-Lock", lockValue);
-                        Config.logger.LogDebug("statusL200, GET_LOCK sucess");
+                        Config.logger.LogDebug("status200, GET_LOCKsession {0} success ", editSession.SessionId);
                         return StatusCode(200);
                     case "REFRESH_LOCK":
                         lockValue = editSession.LockString;
                         if (!xWopiLock.Equals(lockValue))
                         {
                             Response.Headers.Add("X-WOPI-Lock", lockValue);
+                            Config.logger.LogError("status:409, lock value isnt the same");
                             return StatusCode(409);
                         }
                         else
                         {
                             editSession.RefreshLock(xWopiLock);
                             editSession.SaveToRedis();
-                            Config.logger.LogDebug("status:200, RefreshLock success");
+                            Config.logger.LogDebug("status:200, RefreshLockSession {0} success ", editSession.SessionId);
                             return StatusCode(200);
                         }
                     case "UNLOCK":
@@ -366,6 +376,7 @@ namespace DriveWopi.Controllers
                         if (!xWopiLock.Equals(lockValue))
                         {
                             Response.Headers.Add("X-WOPI-Lock", lockValue);
+                            Config.logger.LogError("status:409, lock value isnt the same");
                             return StatusCode(409);
                         }
                         else
@@ -376,7 +387,7 @@ namespace DriveWopi.Controllers
                                 return sessionUser.Id.Equals(user["id"]);
                             });
                             editSession.SaveToRedis();
-                            Config.logger.LogDebug("status:200, UnlockSession success");
+                            Config.logger.LogDebug("status:200, UnlockSession {0} success ", editSession.SessionId);
                             return StatusCode(200);
                         }
                     case "UNLOCK_RELOCK":
@@ -384,19 +395,21 @@ namespace DriveWopi.Controllers
                         if (!xWopiOldLock.Equals(lockValue))
                         {
                             Response.Headers.Add("X-WOPI-Lock", lockValue);
+                            Config.logger.LogError("status:409, lock value isnt the same");
                             return StatusCode(409);
                         }
                         else
                         {
                             editSession.UnlockAndRelock(xWopiLock);
                             editSession.SaveToRedis();
-                            Config.logger.LogDebug("status:200, UnlUnlockAndRelock success");
+                            Config.logger.LogDebug("status:200, UnlUnlockAndRelockSession {0} success ", editSession.SessionId);
                             return StatusCode(200);
                         }
-                    default:{
-                        Config.logger.LogError("status:500, Lock method fail");
-                        return StatusCode(500);
-                    }   
+                    default:
+                        {
+                            Config.logger.LogError("status:500, Lock method fail");
+                            return StatusCode(500);
+                        }
                 }
             }
             catch (Exception e)
