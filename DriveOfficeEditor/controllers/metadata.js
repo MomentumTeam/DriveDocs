@@ -16,12 +16,6 @@ const roles = {
   WRITE: "WRITE",
 };
 
-const roles = {
-  OWNER: "OWNER",
-  READ: "READ",
-  WRITE: "WRITE",
-};
-
 exports.loadMetadata = async (req, res, next) => {
   try {
     if (req.query.operation == operations.EDIT_NEW) {
@@ -77,7 +71,7 @@ exports.checkPermissionsOnFile = (req, res, next) => {
     }
     logger.log({
       level: "info",
-      message: "Permissoin granted",
+      message: "Permission granted",
       label: `user: ${req.user.id}`,
     });
     next();
