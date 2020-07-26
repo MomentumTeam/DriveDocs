@@ -36,6 +36,7 @@ services:
         volumes:
             - ./sample_files:/sample_files
             - ./templates:/templates
+            - ./logs:/logs
         restart: on-failure
     node-app:
         build: ./DriveOfficeEditor
@@ -61,3 +62,5 @@ services:
         ports: 
             - "3000:3000"
         restart: on-failure
+        volumes: 
+            - ./logs:/logs

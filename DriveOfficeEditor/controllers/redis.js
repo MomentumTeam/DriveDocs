@@ -1,6 +1,7 @@
 const { promisify } = require("util");
 const redis = require("redis");
 const jwt = require("jsonwebtoken");
+const logger = require("../services/logger.js");
 
 console.log(process.env.REDIS_PASSWORD);
 const client = redis.createClient({
@@ -13,9 +14,18 @@ const client = redis.createClient({
 
 client.on("connect", () => {
   global.console.log("connected");
+  logger.log({
+    level: "info",
+    message: "redis is connect",
+    label: "redis up"
+  });
 });
 client.on("error", function (error) {
   console.error(error);
+  logger.log({
+    level: "error",
+    message: `status 500, failed to connect to redis, error: ${error}`,
+  });
 });
 
 const getAsync = promisify(client.get).bind(client);
@@ -43,8 +53,18 @@ exports.removeUserFromSession = async (id, userToRemove) => {
     session.UserForUpload = userToRemoveAsInSession;
     session = JSON.stringify(JSON.stringify(session));
     await setAsync(id, session);
+    logger.log({
+      level: "info",
+      message: "user is successfully remove",
+      label: `session: ${id} user: ${userToRemove}`
+    });
   } catch (err) {
-    throw err;
+    logger.log({
+      level: "error",
+      message: `status 500, failed to remove user from session, error: ${e}`,
+      label: `session: ${id} user: ${userToRemove}`
+    });
+    res.status(500).send(e);
   }
 };
 

@@ -3,6 +3,8 @@ const metadata = require("../controllers/metadata");
 const files = require("../controllers/files");
 const tokens = require("../controllers/tokens");
 const redis = require("../controllers/redis");
+const logger = require("../services/logger.js");
+
 
 module.exports = (app) => {
   app.get(
@@ -91,7 +93,17 @@ module.exports = (app) => {
           faviconUrl: faviconUrl,
           fileName: res.locals.metadata.name,
         });
+        logger.log({
+          level: "info",
+          message: "index successfully render ",
+          label: `session: ${id}`
+        });
       } catch (e) {
+        logger.log({
+          level: "error",
+          message: `status 500, failed to render index, error: ${e}`,
+          label: `session: ${req.params.id}`
+        });
         res.status(500).send(e);
       }
     }
@@ -104,6 +116,11 @@ module.exports = (app) => {
       user = req.user;
       redis.removeUserFromSession(id, user);
     } catch (e) {
+      logger.log({
+        level: "error",
+        message: `status 500, failed to remove user from session, error: ${e}`,
+        label: `session: ${id} user: ${user}`
+      });
       res.status(500).send(e);
     }
   });

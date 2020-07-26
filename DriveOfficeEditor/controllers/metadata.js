@@ -1,8 +1,19 @@
 const metadataService = require("../services/metadataService");
+const logger = require("../services/logger.js");
+
+const permissions = {
+  READONLY: "readonly",
+  WRITE: "write",
+};
 const operations = {
   VIEW: "view",
   EDIT: "edit",
   EDIT_NEW: "editNew",
+};
+const roles = {
+  OWNER: "OWNER",
+  READ: "READ",
+  WRITE: "WRITE",
 };
 
 const roles = {
@@ -24,13 +35,28 @@ exports.loadMetadata = async (req, res, next) => {
         if (res.locals.metadata.hasOwnProperty("permission")) {
           delete res.locals.metadata["permission"];
         }
+        logger.log({
+          level: "info",
+          message: "metadata is valid",
+          label: `session ${req.params.id}`,
+        });
         next();
       } catch (error) {
-        return res.status(500).send("File does not exist");
+        logger.log({
+          level: "error",
+          message: "status 404: File does not exist",
+          label: `session: ${req.params.id}`,
+        });
+        return res.status(404).send("File does not exist");
       }
     }
   } catch (e) {
-    return res.status(500).send("File does not exist");
+    logger.log({
+      level: "error",
+      message: "status 404: File does not exist",
+      label: `session: ${req.params.id}`,
+    });
+    return res.status(404).send("File does not exist");
   }
 };
 
@@ -42,10 +68,20 @@ exports.checkPermissionsOnFile = (req, res, next) => {
     } else if (metadata.role == roles.READ) {
       req.query.operation = operations.VIEW;
     } else {
-      return res.status(404).send("You do not have the right permission!");
+      logger.log({
+        level: "error",
+        message: "status 403: Permissoin denied",
+        label: `user: ${req.user.id}`,
+      });
+      return res.status(403).send("You do not have the right permission!");
     }
+    logger.log({
+      level: "info",
+      message: "Permissoin granted",
+      label: `user: ${req.user.id}`,
+    });
     next();
   } catch (e) {
-    return res.status(404).send("You do not have the right permission!");
+    return res.status(403).send("You do not have the right permission!");
   }
 };
