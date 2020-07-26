@@ -30,6 +30,7 @@ services:
             -  MAX_REDIS_SESSION_TIME=86400 #maximum time for session on redis
             -  DRIVE_UPDATE_TIME=30
             -  REDIS_PASSWORD=mozart
+            -  CLEANUP_ENABLED=true
 
         ports: 
             - "8082:8080"

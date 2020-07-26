@@ -30,6 +30,7 @@ services:
             -  MAX_REDIS_SESSION_TIME=${MAX_REDIS_SESSION_TIME} #maximum time for session on redis
             -  DRIVE_UPDATE_TIME=${DRIVE_UPDATE_TIME}
             -  REDIS_PASSWORD=${REDIS_PASSWORD}
+            -  CLEANUP_ENABLED=true
         ports: 
             - "8082:8080"
         volumes:
@@ -40,6 +41,7 @@ services:
     node-app:
         build: ./DriveOfficeEditor
         environment:
+            -  NODE_TLS_REJECT_UNAUTHORIZED=0
             -  WOPI_URL=${WOPI_URL}
             -  REDIS_HOST=${REDIS_HOST}
             -  REDIS_PORT=${REDIS_PORT}

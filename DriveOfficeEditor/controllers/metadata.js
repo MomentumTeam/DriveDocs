@@ -16,6 +16,12 @@ const roles = {
   WRITE: "WRITE",
 };
 
+const roles = {
+  OWNER: "OWNER",
+  READ: "READ",
+  WRITE: "WRITE",
+};
+
 exports.loadMetadata = async (req, res, next) => {
   try {
     if (req.query.operation == operations.EDIT_NEW) {
@@ -32,14 +38,14 @@ exports.loadMetadata = async (req, res, next) => {
         logger.log({
           level: "info",
           message: "metadata is valid",
-          label: `session ${req.params.id}`
+          label: `session ${req.params.id}`,
         });
         next();
       } catch (error) {
         logger.log({
           level: "error",
           message: "status 404: File does not exist",
-          label: `session: ${req.params.id}`
+          label: `session: ${req.params.id}`,
         });
         return res.status(404).send("File does not exist");
       }
@@ -48,12 +54,11 @@ exports.loadMetadata = async (req, res, next) => {
     logger.log({
       level: "error",
       message: "status 404: File does not exist",
-      label: `session: ${req.params.id}`
+      label: `session: ${req.params.id}`,
     });
     return res.status(404).send("File does not exist");
   }
 };
-
 
 exports.checkPermissionsOnFile = (req, res, next) => {
   try {
@@ -66,14 +71,14 @@ exports.checkPermissionsOnFile = (req, res, next) => {
       logger.log({
         level: "error",
         message: "status 403: Permissoin denied",
-        label: `user: ${req.user.id}`
+        label: `user: ${req.user.id}`,
       });
       return res.status(403).send("You do not have the right permission!");
     }
     logger.log({
       level: "info",
       message: "Permissoin granted",
-      label: `user: ${req.user.id}`
+      label: `user: ${req.user.id}`,
     });
     next();
   } catch (e) {

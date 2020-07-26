@@ -18,6 +18,7 @@ namespace DriveWopi
         public static string RedisHost;
         public static string DriveUrl;
         public static int AccessTokenExpiringTime;
+        public static bool CleanUpEnabled;
 
         public static int DriveUpdateTime;
         public static string  AllSessionsRedisKey = "AllSessions";
@@ -44,6 +45,7 @@ namespace DriveWopi
             DriveUrl =  Environment.GetEnvironmentVariable("DRIVE_URL");
             AccessTokenExpiringTime =  int.Parse(Environment.GetEnvironmentVariable("TOKEN_EXPIRE"));
             AuthorizationToken=Environment.GetEnvironmentVariable("AUTHORIZATION_TOKEN");
+            CleanUpEnabled = bool.Parse(Environment.GetEnvironmentVariable("CLEANUP_ENABLED"));
 
             //Time period to perform cleanUp
             Closewait =  int.Parse(Environment.GetEnvironmentVariable("CLOSE_WAIT"));       

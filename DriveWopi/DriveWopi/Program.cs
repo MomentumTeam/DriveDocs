@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using DriveWopi.Models;
+using System.Net;
 
 namespace DriveWopi
 {
@@ -20,6 +21,8 @@ namespace DriveWopi
             {
                 logger.Debug("init main");
                 // Config.logger = logger;
+                ServicePointManager.ServerCertificateValidationCallback += 
+            (sender,cert,chain,sslPolicyErrors) => true;
                 SessionManager manager = new SessionManager();
                 CreateHostBuilder(args).Build().Run();
             }
