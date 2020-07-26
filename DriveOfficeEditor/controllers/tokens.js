@@ -1,12 +1,12 @@
 const jwt = require("jsonwebtoken");
-const { v4 } = require("uuid");
+// const { v4 } = require("uuid");
 const { promisify } = require("util");
 const metadataService = require("../services/metadataService");
 const logger = require("../services/logger.js");
 
-const getUid = (userId) => {
-  return jwt.sign({ token: userId }, process.env.JWT_SECRET, { expiresIn: "1h" });
-};
+// const getUid = (userId) => {
+//   return jwt.sign({ token: userId }, process.env.JWT_SECRET, { expiresIn: "1h" });
+// };
 
 // exports.refreshTokensForSessionsMembers = async (req, res, next) => {
 //   try {
@@ -41,10 +41,10 @@ const getUid = (userId) => {
 
 exports.generateAccessToken = async (req, res, next) => {
   try {
-    const uid = getUid(req.user.id);
+    // const uid = getUid(req.user.id);
     const dataToSign = {
       user: { ...req.user, authorization: metadataService.getAuthorizationHeader(req.user) },
-      uid: uid,
+      // uid: uid,
       created: Date.now(),
       operation: req.query.operation ? req.query.operation : "edit",
     };

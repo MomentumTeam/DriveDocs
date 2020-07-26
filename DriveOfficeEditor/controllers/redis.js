@@ -56,7 +56,7 @@ exports.removeUserFromSession = async (id, userToRemove) => {
     logger.log({
       level: "info",
       message: "user is successfully remove",
-      label: `session: ${id} user: ${userToRemove}`
+      label: `session: ${id} user: ${userToRemove.id}`
     });
   } catch (err) {
     logger.log({

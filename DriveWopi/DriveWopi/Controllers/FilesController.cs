@@ -162,7 +162,7 @@ namespace DriveWopi.Controllers
                 if (!AccessTokenVerifier.VerifyAccessToken(id, (string)metadata["id"], (string)token["created"]))
                 {
                     Config.logger.LogError("status:500 accessToken is illegal");
-                    return StatusCode(500); 
+                    return StatusCode(500);
                 }
 
                 Session editSession = Session.GetSessionFromRedis(id, client);
@@ -222,6 +222,7 @@ namespace DriveWopi.Controllers
                             if (editSession.Save(content, user["id"]))
                             {
                                 editSession.ChangesMade = true;
+                                editSession.UserForUpload = new User(user["id"], user["authorization"]);
                                 editSession.SaveToRedis();
                                 Config.logger.LogDebug("status 200, the session {0} saved in redis", editSession.SessionId);
                                 return StatusCode(200);
@@ -240,11 +241,12 @@ namespace DriveWopi.Controllers
                             return StatusCode(409);
                         }
                     //TODO case "RELATIVE_PUT"
-                    default:{
-                        Config.logger.LogError("status 500, Put fail");
-                        return StatusCode(500);
-                    }
-                        
+                    default:
+                        {
+                            Config.logger.LogError("status 500, Put fail");
+                            return StatusCode(500);
+                        }
+
                 }
             }
             catch (Exception e)
@@ -288,7 +290,7 @@ namespace DriveWopi.Controllers
                 string fileName = editSession.LocalFilePath;
                 if (!FilesService.FileExists(fileName))
                 {
-                    Config.logger.LogError("status:404 the file {0} is not exsist",fileName);
+                    Config.logger.LogError("status:404 the file {0} is not exsist", fileName);
                     return StatusCode(404);
                 }
                 string lockValue, operation, xWopiLock, xWopiOldLock = "";

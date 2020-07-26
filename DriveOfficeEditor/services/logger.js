@@ -1,4 +1,5 @@
 const winston = require("winston");
+require('winston-daily-rotate-file');
 const { combine, timestamp, label, printf } = winston.format;
 
 const myFormat = printf(({ level, message, label, timestamp }) => {
@@ -22,8 +23,7 @@ const logger = winston.createLogger({
   // level: 'info',
   handleExceptions: true,
   json: true,
-  maxsize: 5242880, // 5MB
-  maxFiles: 5,
+  maxFiles: '7d',
   colorize: false,
   format: combine(
     timestamp(),

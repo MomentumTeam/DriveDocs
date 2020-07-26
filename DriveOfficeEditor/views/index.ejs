@@ -48,16 +48,22 @@
 
     <script type="text/javascript">
 
-        window.onbeforeunload = (event) =>{
-           if(event.clientY < 0 || (!event.clientY)){
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", `/closeSession/${location.pathname.split('/')[3]}`, true);
-            xhr.onreadystatechange = function() { 
-                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                    //console.log()
+        window.onbeforeunload = (event) => {
+            if (event.clientY < 0 || (!event.clientY)) {
+                var xhr = new XMLHttpRequest();
+                let id;
+                if(location.pathname.includes('?')){
+                    id = location.pathname.split('?')[0].split('/')[3];
+                } else {
+                    id = location.pathname.split('/')[3]
                 }
-             }
-            xhr.send();
+                xhr.open("POST", `/closeSession/${id}`, true);
+                xhr.onreadystatechange = function () {
+                    if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                        //console.log()
+                    }
+                }
+                xhr.send();
             }
         }
 
@@ -68,7 +74,7 @@
         //var fileName = <%= fileName%>;
 
         // The title should be set for accessibility
-        office_frame.title="DriveDocs";
+        office_frame.title = "DriveDocs";
 
         // This attribute allows true fullscreen mode in slideshow view
         // when using PowerPoint's 'view' action.

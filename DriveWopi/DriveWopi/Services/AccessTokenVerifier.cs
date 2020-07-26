@@ -24,14 +24,14 @@ namespace DriveWopi.Services
 
                 Dictionary<string, Object> bigDict = JsonConvert.DeserializeObject<Dictionary<string, Object>>(jsonString);
                 Dictionary<string, Object> dataDict = JsonConvert.DeserializeObject<Dictionary<string, Object>>(bigDict["data"].ToString());
-                string uid = dataDict["uid"].ToString();
+                // string uid = dataDict["uid"].ToString();
                 string create = dataDict["created"].ToString();
                 string operation = dataDict["operation"].ToString();
                 string template = dataDict.ContainsKey("template") ? dataDict["template"].ToString() : null;
                 Dictionary<string, string> user = JsonConvert.DeserializeObject<Dictionary<string, string>>(dataDict["user"].ToString());
                 Dictionary<string, string> metadata = dataDict.ContainsKey("metadata") ? JsonConvert.DeserializeObject<Dictionary<string, string>>(dataDict["metadata"].ToString()) : null;
 
-                dict["uid"] = uid;
+                // dict["uid"] = uid;
                 dict["operation"] = operation;
                 dict["user"] = user;
                 dict["created"] = create;
@@ -54,29 +54,29 @@ namespace DriveWopi.Services
 
 
 
-        public static string GetUidFromRedis(string userId, IRedisClient client)
-        {
-            try
-            {
-                string uid = RedisService.Get(userId, client);
-                return uid;
-            }
-            catch (Exception ex)
-            {
-                Config.logger.LogError("GetUidFromRedis of {0} fail error:", userId, ex.Message);
-                throw ex;
-            }
+        // public static string GetUidFromRedis(string userId, IRedisClient client)
+        // {
+        //     try
+        //     {
+        //         string uid = RedisService.Get(userId, client);
+        //         return uid;
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         Config.logger.LogError("GetUidFromRedis of {0} fail error:", userId, ex.Message);
+        //         throw ex;
+        //     }
 
-        }
-        public static void RemoveUidFromRedis(string userId, IRedisClient client)
-        {
-            RedisService.Remove(userId, client);
-        }
+        // }
+        // public static void RemoveUidFromRedis(string userId, IRedisClient client)
+        // {
+        //     RedisService.Remove(userId, client);
+        // }
 
-        public static bool VerifyAccessToken(string fileId, string uidFromToken, string created)
+        public static bool VerifyAccessToken(string fileId, string idFromToken, string created)
         {
             //TODO check expiring time
-            if (uidFromToken.Equals(fileId) && DateTimeOffset.Now.ToUnixTimeMilliseconds() - Convert.ToDouble(created) < Config.AccessTokenExpiringTime)
+            if (idFromToken.Equals(fileId) && DateTimeOffset.Now.ToUnixTimeMilliseconds() - Convert.ToDouble(created) < Config.AccessTokenExpiringTime)
             {
                 //RemoveUidFromRedis(userId , client);
                 return true;
