@@ -71,7 +71,7 @@ exports.checkPermissionsOnFile = (req, res, next) => {
     }
     logger.log({
       level: "info",
-      message: "Permissoin granted",
+      message: "Permission granted",
       label: `user: ${req.user.id}`,
     });
     next();
