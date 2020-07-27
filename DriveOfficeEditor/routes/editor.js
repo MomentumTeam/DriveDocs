@@ -13,74 +13,7 @@ module.exports = (app) => {
     metadata.loadMetadata,
     metadata.checkPermissionsOnFile,
     tokens.generateAccessToken,
-    //tokens.refreshTokensForSessionsMembers,
     files.generateUrl,
-
-    //   (req, res) => {
-    //     let pathRewrite = { "^/api/files/(.*)": "/" };
-    //     if (
-    //       req.originalUrl.includes("RemoteUls") ||
-    //       req.originalUrl.includes("OneNote") ||
-    //       req.originalUrl.includes("ResReader") ||
-    //       req.originalUrl.includes("proofing")
-    //     ) {
-    //       pathRewrite = function(path, req) {
-    //         return path
-    //           .replace("/api/files/OneNote.ashx", "/we/OneNote.ashx")
-    //           .replace("/api/files/RemoteUls.ashx", "/we/RemoteUls.ashx")
-    //           .replace("/api/files/ResReader.ashx", "/we/ResReader.ashx")
-    //           .replace("/api/files/proofing.ashx", "/we/proofing.ashx");
-    //       };
-    //     }
-
-    //     createProxyMiddleware({
-    //       target: res.locals.proxyUrl,
-    //       changeOrigin: true,
-    //       pathRewrite: pathRewrite,
-    //       ws: true,
-    //       headers: {
-    //         "Access-Control-Allow-Origin": "*",
-    //         "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PUT, PATCH, DELETE"
-    //       }
-    //     })(req, res);
-    //   }
-    // );
-
-    // app.use("*", (req, res) => {
-    //   let pathRewrite = {};
-    //   if (req.originalUrl.includes("/api/files")) {
-    //     pathRewrite = function(path, req) {
-    //       return path.replace("/api/files", "/");
-    //     };
-    //   }
-    //   if (
-    //     req.originalUrl.includes("RemoteUls") ||
-    //     req.originalUrl.includes("OneNote") ||
-    //     req.originalUrl.includes("ResReader") ||
-    //     req.originalUrl.includes("proofing")
-    //   ) {
-    //     pathRewrite = function(path, req) {
-    //       return path
-    //         .replace("/api/files/OneNote.ashx", "/we/OneNote.ashx")
-    //         .replace("/api/files/RemoteUls.ashx", "/we/RemoteUls.ashx")
-    //         .replace("/api/files/ResReader.ashx", "/we/ResReader.ashx")
-    //         .replace("/api/files/proofing.ashx", "/we/proofing.ashx");
-    //     };
-    //   }
-
-    //   createProxyMiddleware({
-    //     target: `${process.env.OFFICE_ONLINE_URL}`,
-    //     changeOrigin: true,
-    //     pathRewrite: pathRewrite,
-    //     ws: true,
-    //     headers: {
-    //       "Access-Control-Allow-Origin": "*",
-    //       "Access-Control-Allow-Methods": "GET, POST, OPTIONS, PUT, PATCH, DELETE"
-    //     }
-    //   })(req, res);
-    // });
-
-    // UNCOMMENT THIS TO RETURN TO OLD VERSION
     (req, res) => {
       try {
         id = req.params.id;
@@ -108,7 +41,6 @@ module.exports = (app) => {
       }
     }
   );
-  // UNCOMMENT THIS TO RETURN TO OLD VERSION
 
   app.post("/closeSession/:id", authenitcation.isAuthenticated, (req, res) => {
     try {

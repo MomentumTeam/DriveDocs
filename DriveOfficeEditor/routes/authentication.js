@@ -9,7 +9,6 @@ module.exports = (app) => {
   });
 
   app.post('/success', passport.authenticate('shraga'), function (req, res, next) {
-    console.log(req.user);
     return res.redirect(req.user.relayState);
   });
 };

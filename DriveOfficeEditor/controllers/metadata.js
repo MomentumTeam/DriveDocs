@@ -1,10 +1,10 @@
 const metadataService = require("../services/metadataService");
 const logger = require("../services/logger.js");
 
-const permissions = {
-  READONLY: "readonly",
-  WRITE: "write",
-};
+// const permissions = {
+//   READONLY: "readonly",
+//   WRITE: "write",
+// };
 const operations = {
   VIEW: "view",
   EDIT: "edit",

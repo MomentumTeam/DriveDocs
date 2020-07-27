@@ -97,7 +97,6 @@ namespace DriveWopi.Models
                 CheckFileInfo cfi = new CheckFileInfo();
                 cfi.SupportsCoauth = true;
                 cfi.BaseFileName = name;
-                //cfi.OwnerId = m_login;
                 cfi.UserFriendlyName = userName;
                 cfi.UserId = userId;
                 lock (_FileInfo)
@@ -113,14 +112,7 @@ namespace DriveWopi.Models
                         cfi.Size = _FileInfo.Length;
                     }
                 }
-
-                //cfi.Version = DateTime.Now.ToString("s");
-               cfi.Version = DateTime.Now.ToString("s");
-               
-               // cfi.HostEmbeddedEditUrl = Config.HostUrl + "/files/" + this._SessionId + "operation=edit";
-               // cfi.HostEmbeddedViewUrl = Config.HostUrl + "/files/" + this._SessionId + "operation=view";
-                //cfi.HostEditUrl = Config.HostUrl + "/files/" + this._SessionId + "operation=edit";
-                // cfi.HostViewUrl = Config.HostUrl + "/files/" + this._SessionId + "operation=view";
+                cfi.Version = DateTime.Now.ToString("s");
                 cfi.SupportsCoauth = true;
                 cfi.SupportsCobalt = false;
                 cfi.SupportsFolders = true;
@@ -181,7 +173,6 @@ namespace DriveWopi.Models
 
         public static Session GetSessionFromRedis(string sessionId, IRedisClient client)
         {
-            //TODO Get from Redis and decode to Session object and return
             try
             {
                 string session = RedisService.Get(sessionId, client);
@@ -191,11 +182,9 @@ namespace DriveWopi.Models
                 }
                 else
                 {
-                    // Session sessionObj = JsonConvert.DeserializeObject<Session>(session.ToString());
                     Dictionary<string, object> deserializedSessionDict = JsonConvert.DeserializeObject<Dictionary<string, Object>>(session.ToString(), new JsonSerializerSettings()
                     { ContractResolver = new IgnorePropertiesResolver(new[] { "Client" }) });
                     List<Dictionary<string, object>> UsersListDict = JsonConvert.DeserializeObject<List<Dictionary<string, Object>>>(deserializedSessionDict["Users"].ToString());
-
                     Dictionary<string, object> userForUploadDict = deserializedSessionDict["UserForUpload"] == null ? null : JsonConvert.DeserializeObject<Dictionary<string, object>>(deserializedSessionDict["UserForUpload"].ToString());
                     User userForUpload = userForUploadDict == null ? null : new User((string)userForUploadDict["Id"], (DateTime)userForUploadDict["LastUpdated"], (string)userForUploadDict["Authorization"]);
                     Session sessionObj = new Session((string)deserializedSessionDict["SessionId"], (string)deserializedSessionDict["LocalFilePath"]);
@@ -341,7 +330,7 @@ namespace DriveWopi.Models
             }
             catch (Exception e)
             {
-                Config.logger.LogError("GetFileContent of {0} fail error: {1}", _FileInfo.FullName ,e.Message);
+                Config.logger.LogError("GetFileContent of {0} fail error: {1}", _FileInfo.FullName, e.Message);
                 throw e;
             }
         }
@@ -350,9 +339,6 @@ namespace DriveWopi.Models
         {
             _LockStatus = LockStatus.LOCK;
             _LockString = lockString;
-            //Start timer
-            //m_timer.Stop();
-            //m_timer.Start();
         }
         public void UnlockSession(string lockString)
         {
@@ -377,7 +363,7 @@ namespace DriveWopi.Models
             }
             catch (Exception e)
             {
-                Config.logger.LogError("UserIsInSession of {0} fail error: {1}",userId, e.Message);
+                Config.logger.LogError("UserIsInSession of {0} fail error: {1}", userId, e.Message);
                 throw e;
             }
         }
@@ -403,7 +389,7 @@ namespace DriveWopi.Models
             }
             catch (Exception e)
             {
-                Config.logger.LogDebug("status:500, Save of {0} fail, error: {1} ",  e.Message);
+                Config.logger.LogDebug("status:500, Save of {0} fail, error: {1} ", e.Message);
                 throw e;
             }
         }
