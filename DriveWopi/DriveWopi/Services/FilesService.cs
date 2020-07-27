@@ -34,7 +34,6 @@ namespace DriveWopi.Services
                     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     if (!Config.Mimetypes.ContainsKey(fileInfo.Extension.ToString().ToLower()))
                     {
-                        //ask liora
                         throw new Exception();
                     }
                     var body = new { title = fileInfo.Name.ToString(), mimeType = Config.Mimetypes[fileInfo.Extension.ToString().ToLower()] };
@@ -71,7 +70,6 @@ namespace DriveWopi.Services
         {
             try
             {
-                //string uploadId = await getUploadId(fileInfo, authorization, fileId);
                 Task<string> t = Task<string>.Run(async () =>
                 {
                     try

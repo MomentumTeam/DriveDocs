@@ -18,12 +18,6 @@ const config = {
 };
 passport.use(
   new shraga.Strategy(config, (profile, done) => {
-    logger.log({
-      level: "info",
-      message: `My Profile Is: ${profile}`,
-      label: `user: ${user.id}`
-    });
-    console.log(`My Profile Is: ${profile}`);
     const array = profile.RelayState.split("/");
     const fileId = array[array.length - 1];
     const user = {
@@ -34,6 +28,11 @@ passport.use(
       relayState: profile.RelayState,
       fileId: fileId,
     };
+    logger.log({
+      level: "info",
+      message: 'finish passport middleware',
+      label: `user: ${user.id}`
+    });
     return done(null, user);
   })
 );

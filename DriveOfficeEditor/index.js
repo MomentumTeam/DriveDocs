@@ -6,7 +6,7 @@ const editor = require("./routes/editor");
 const auth = require("./routes/authentication");
 const app = express();
 // require("dotenv").config();
-const logger = require("../services/logger.js");
+const logger = require("./services/logger.js");
 app.use(cookieParser());
 app.set("view engine", "ejs");
 app.use(

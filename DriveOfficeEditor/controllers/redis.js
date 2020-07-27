@@ -67,13 +67,3 @@ exports.removeUserFromSession = async (id, userToRemove) => {
     res.status(500).send(e);
   }
 };
-
-// exports.removeUserFromSession = async (id, userToRemove) => {
-//   console.log("remove user from session");
-//   try {
-//     const response = axios.delete(`${process.env.WOPI_URL}/users/session/${id}/user/${userToRemove.id}`);
-//     console.log(response);
-//   } catch (err) {
-//     throw err;
-//   }
-// };

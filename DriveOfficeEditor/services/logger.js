@@ -1,26 +1,20 @@
 const winston = require("winston");
 require('winston-daily-rotate-file');
-const { combine, timestamp, label, printf } = winston.format;
+const { combine, timestamp, printf } = winston.format;
 
 const myFormat = printf(({ level, message, label, timestamp }) => {
   return `${timestamp} [${label}] ${level}: ${message}`;
 });
 
-var options = {
-  file: {
-    level: "info",
-    filename: "../logs/app.log",
-  },
-  // console: {
-  //   level: "debug",
-  //   handleExceptions: true,
-  //   json: false,
-  //   colorize: true,
-  // },
-};
+const date = () => {
+  var today = new Date();
+  var dd = String(today.getDate()).padStart(2, '0');
+  var mm = String(today.getMonth() + 1).padStart(2, '0'); 
+  var yyyy = today.getFullYear();
+  return dd + '.' + mm + '.' + yyyy;
+}
 
 const logger = winston.createLogger({
-  // level: 'info',
   handleExceptions: true,
   json: true,
   maxFiles: '7d',
@@ -30,9 +24,8 @@ const logger = winston.createLogger({
     myFormat
   ),
   transports: [
-    new winston.transports.File({ filename: '../logs/error.log', level: 'error' }),
-    new winston.transports.File({ filename: '../logs/info.log', level: 'info' }),
-    // new winston.transports.Console(options.console)
+    new winston.transports.File({ filename: `../logs/DriveOfficeEditor/error/errorFrom:${date()}.log`, level: 'error' }),
+    new winston.transports.File({ filename: `../logs/DriveOfficeEditor/info/infoFrom:${date()}.log`, level: 'info' }),
   ],
   exitOnError: false, // do not exit on handled exceptions
 });

@@ -11,13 +11,7 @@ namespace DriveWopi.Models
 {
     public class SessionManager
     {
-
-        // public SessionManager(ILogger<SessionManager> logger)
-        // {
-
-        // }
         private static volatile SessionManager _Instance;
-
         private static object _SyncObj = new object();
         private Timer _Timer;
 
@@ -73,7 +67,6 @@ namespace DriveWopi.Models
                     }
 
                     usersCountBefore = session.Users == null ? 0 : session.Users.Count;
-                    // Zero users in the sessions
                     if (usersCountBefore == 0)
                     {
                         logger.Debug("Zero users in the session {0} before", session.SessionId);
