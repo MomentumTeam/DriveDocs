@@ -5,13 +5,13 @@ const tokens = require("../controllers/tokens");
 const redis = require("../controllers/redis");
 const logger = require("../services/logger.js");
 
-
 module.exports = (app) => {
   app.get(
     "/api/files/:id",
     authenitcation.isAuthenticated,
     metadata.loadMetadata,
     metadata.checkPermissionsOnFile,
+    metadata.checkSizeOfFile,
     tokens.generateAccessToken,
     files.generateUrl,
     (req, res) => {
@@ -29,13 +29,13 @@ module.exports = (app) => {
         logger.log({
           level: "info",
           message: "index successfully render ",
-          label: `session: ${id}`
+          label: `session: ${id}`,
         });
       } catch (e) {
         logger.log({
           level: "error",
           message: `status 500, failed to render index, error: ${e}`,
-          label: `session: ${req.params.id}`
+          label: `session: ${req.params.id}`,
         });
         res.status(500).send(e);
       }
@@ -51,7 +51,7 @@ module.exports = (app) => {
       logger.log({
         level: "error",
         message: `status 500, failed to remove user from session, error: ${e}`,
-        label: `session: ${id} user: ${user}`
+        label: `session: ${id} user: ${user}`,
       });
       res.status(500).send(e);
     }

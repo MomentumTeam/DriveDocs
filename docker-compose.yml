@@ -55,6 +55,10 @@ services:
             # - 'SECRET=thisIsASecret'
             -  DRIVE_SECRET=${DRIVE_SECRET}
             -  REDIS_PASSWORD=${REDIS_PASSWORD}
+            -  MAX_SIZE_DOCX=${MAX_SIZE_DOCX}
+            -  MAX_SIZE_PPTX=${MAX_SIZE_PPTX}
+            -  MAX_SIZE_XLSX=${MAX_SIZE_XLSX}
+            -  MAX_SIZE_PDF=${MAX_SIZE_PDF}
 
         depends_on:
             - redis-server

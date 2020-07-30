@@ -90,11 +90,27 @@ namespace DriveWopi.Models
         {
             return _FileInfo.Exists;
         }
+
+        public static string HostNameByType(string fileType){
+            switch(fileType){
+                case("docx"):
+                    return "Drive Docs";
+                case("xlsx"):
+                    return "Drive Sheets";
+                case("pptx"):
+                    return "Drive Slides";
+                default:
+                    return "Drive Docs";
+            }
+        }
         public CheckFileInfo GetCheckFileInfo(string userId, string userName, string name)
         {
             try
             {
+                string[] splitArray = _FileInfo.FullName.Split(".");
+                string fileType = (splitArray==null || splitArray.Length==0)?"docx":splitArray[splitArray.Length-1].ToLower();
                 CheckFileInfo cfi = new CheckFileInfo();
+                cfi.BreadcrumbBrandName = fileType==null?"Drive Docs":HostNameByType(fileType);
                 cfi.SupportsCoauth = true;
                 cfi.BaseFileName = name;
                 cfi.UserFriendlyName = userName;
@@ -132,7 +148,6 @@ namespace DriveWopi.Models
                 throw e;
             }
         }
-
 
         public void AddUser(string id)
         {

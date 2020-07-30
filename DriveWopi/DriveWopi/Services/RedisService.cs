@@ -22,32 +22,64 @@ namespace DriveWopi.Services
                 Config.logger.LogDebug("problem with Redisclient creation, error:"+e.Message);
                 throw e;
             }
-
         }
 
         public static string Get(string key, IRedisClient client)
         {
-            string value = client.Get<string>(key);
-            return value;
+            try{
+                string value = client.Get<string>(key);
+                return value;
+            }
+            catch(Exception ex){
+                Config.logger.LogDebug("problem with getting from Redis, error:"+ex.Message);
+                throw ex;
+
+            }
         }
 
         public static List<string> GetList(string key, IRedisClient client)
         {
-            return client.GetAllItemsFromList(key);
+            try{
+                return client.GetAllItemsFromList(key);
+            }
+            catch(Exception ex){
+                Config.logger.LogDebug("problem with GetList from Redis, error:"+ex.Message);
+                throw ex;
+            }
+
         }
 
         public static void Set(string key, string value, IRedisClient client)
         {
-            client.Set(key, value);
+            try{
+                client.Set(key, value);
+            }
+            catch(Exception ex){
+                Config.logger.LogDebug("problem with set to Redis, error:"+ex.Message);
+                throw ex;
+            }
         }
 
         public static void Remove(string key, IRedisClient client)
         {
-            client.Remove(key);
+            try{
+                client.Remove(key);
+            }
+            catch(Exception ex){
+                Config.logger.LogDebug("problem with remove from Redis, error:"+ex.Message);
+                throw ex;
+            }
         }
         public static void AddItemToList(string key, string value, IRedisClient client)
         {
-            client.AddItemToList(key, value);
+            try{
+                client.AddItemToList(key, value);
+            }
+            catch(Exception ex){
+                Config.logger.LogDebug("problem with AddItemToList in Redis, error:"+ex.Message);
+                throw ex;
+            }
+ 
         }
     }
 }

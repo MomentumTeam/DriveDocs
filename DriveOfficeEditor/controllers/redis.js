@@ -17,7 +17,7 @@ client.on("connect", () => {
   logger.log({
     level: "info",
     message: "redis is connect",
-    label: "redis up"
+    label: "redis up",
   });
 });
 client.on("error", function (error) {
@@ -56,13 +56,13 @@ exports.removeUserFromSession = async (id, userToRemove) => {
     logger.log({
       level: "info",
       message: "user is successfully remove",
-      label: `session: ${id} user: ${userToRemove.id}`
+      label: `session: ${id} user: ${userToRemove.id}`,
     });
   } catch (err) {
     logger.log({
       level: "error",
-      message: `status 500, failed to remove user from session, error: ${e}`,
-      label: `session: ${id} user: ${userToRemove}`
+      message: `status 500, failed to remove user from session, error: ${err}`,
+      label: `session: ${id} user: ${userToRemove}`,
     });
     res.status(500).send(e);
   }
