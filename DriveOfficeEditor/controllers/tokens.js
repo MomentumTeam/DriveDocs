@@ -12,29 +12,25 @@ exports.generateAccessToken = async (req, res, next) => {
   try {
     // const uid = getUid(req.user.id);
     const dataToSign = {
-      user: { ...req.user, authorization: metadataService.getAuthorizationHeader(req.user) },
-      // uid: uid,
+      user: { id: req.user["id"], name: req.user["name"], authorization: metadataService.getAuthorizationHeader(req.user) },
       created: Date.now(),
-      operation: req.query.operation ? req.query.operation : "edit",
     };
     if (res.locals.metadata) {
-      dataToSign.metadata = res.locals.metadata;
+      dataToSign.metadata = {
+        id: res.locals.metadata["id"],
+        name: res.locals.metadata["name"],
+        type: res.locals.metadata["type"],
+      };
     }
-    if (req.query.template) {
-      dataToSign.template = req.query.template;
-    }
-    const jwtToken = jwt.sign(
-      {
-        data: dataToSign,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "24h" }
-    );
+    //if (req.query.template) {
+    //  dataToSign.template = req.query.template;
+    //}
+    const jwtToken = jwt.sign(dataToSign, process.env.JWT_SECRET, { expiresIn: "24h" });
     res.locals.accessToken = jwtToken;
     logger.log({
       level: "info",
-      message: "accessToken successfully created",
-      label: `user: ${req.user.id}`
+      message: "accessToken successfuly created",
+      label: `user: ${req.user.id}`,
     });
     next();
   } catch (e) {

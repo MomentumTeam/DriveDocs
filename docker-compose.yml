@@ -59,6 +59,10 @@ services:
             -  MAX_SIZE_PPTX=${MAX_SIZE_PPTX}
             -  MAX_SIZE_XLSX=${MAX_SIZE_XLSX}
             -  MAX_SIZE_PDF=${MAX_SIZE_PDF}
+            -  FAVICON_DOCX=${FAVICON_DOCX}
+            -  FAVICON_PPTX=${FAVICON_PPTX}
+            -  FAVICON_XLSX=${FAVICON_XLSX}
+            -  FAVICON_PDF=${FAVICON_PDF}
 
         depends_on:
             - redis-server

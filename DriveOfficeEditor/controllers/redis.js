@@ -31,6 +31,23 @@ client.on("error", function (error) {
 const getAsync = promisify(client.get).bind(client);
 const setAsync = promisify(client.set).bind(client);
 
+exports.set = async (key, value) => {
+  try {
+    await setAsync(key, value);
+  } catch (e) {
+    throw e;
+  }
+};
+
+exports.get = async (key) => {
+  try {
+    const value = await getAsync(key);
+    return value;
+  } catch (e) {
+    throw e;
+  }
+};
+
 exports.removeUserFromSession = async (id, userToRemove) => {
   console.log("remove user from session");
   try {

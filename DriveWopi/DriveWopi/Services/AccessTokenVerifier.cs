@@ -22,17 +22,17 @@ namespace DriveWopi.Services
                 string jsonString = Jose.JWT.Decode(jwt, secretKey);
                 Dictionary<string, Object> dict = new Dictionary<string, object>();
 
-                Dictionary<string, Object> bigDict = JsonConvert.DeserializeObject<Dictionary<string, Object>>(jsonString);
-                Dictionary<string, Object> dataDict = JsonConvert.DeserializeObject<Dictionary<string, Object>>(bigDict["data"].ToString());
-                // string uid = dataDict["uid"].ToString();
+                Dictionary<string, Object> dataDict = JsonConvert.DeserializeObject<Dictionary<string, Object>>(jsonString);
+                //Dictionary<string, Object> dataDict = JsonConvert.DeserializeObject<Dictionary<string, Object>>(bigDict["data"].ToString());
+
                 string create = dataDict["created"].ToString();
-                string operation = dataDict["operation"].ToString();
+                //string operation = dataDict["operation"].ToString();
                 string template = dataDict.ContainsKey("template") ? dataDict["template"].ToString() : null;
                 Dictionary<string, string> user = JsonConvert.DeserializeObject<Dictionary<string, string>>(dataDict["user"].ToString());
                 Dictionary<string, string> metadata = dataDict.ContainsKey("metadata") ? JsonConvert.DeserializeObject<Dictionary<string, string>>(dataDict["metadata"].ToString()) : null;
 
                 // dict["uid"] = uid;
-                dict["operation"] = operation;
+                //dict["operation"] = operation;
                 dict["user"] = user;
                 dict["created"] = create;
                 if (metadata != null)
