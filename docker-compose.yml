@@ -63,6 +63,7 @@ services:
             -  FAVICON_PPTX=${FAVICON_PPTX}
             -  FAVICON_XLSX=${FAVICON_XLSX}
             -  FAVICON_PDF=${FAVICON_PDF}
+            -  OFFICE_ONLINE_URL_PPTX=${OFFICE_ONLINE_URL_PPTX}
 
         depends_on:
             - redis-server

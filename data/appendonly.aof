@@ -1258,3 +1258,13 @@ $24
 5f22af64fda73c0011ba0a46
 $830
 "{\"SessionId\":\"5f22af64fda73c0011ba0a46\",\"ChangesMade\":false,\"UserForUpload\":null,\"LastUpdated\":\"2020-07-30T13:34:58.7565101+00:00\",\"LocalFilePath\":\"/sample_files/5f22af64fda73c0011ba0a46.docx\",\"Users\":[{\"Id\":\"5e5688324203fc40043591aa\",\"LastUpdated\":\"2020-07-30T13:34:58.7651352+00:00\",\"Authorization\":\"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsIm5hbWUiOiLXoNeZ15nXp9eZINeQ15PXmdeT16EiLCJkaXNwbGF5TmFtZSI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJqb2IiOiLXqNeV16bXlyIsInJlbGF5U3RhdGUiOiIvYXBpL2ZpbGVzLzVmMTgyMzhiNjQ0MGJiMDAxMWYxNDRjZiIsImZpbGVJZCI6IjVmMTgyMzhiNjQ0MGJiMDAxMWYxNDRjZiIsImlhdCI6MTU5NjExMDcwNywiZXhwIjoxNTk2MTk3MTA3LCJmaXJzdE5hbWUiOiLXqNeV16bXlyIsImxhc3ROYW1lIjoiIn0.Wsu2-13IBR6KOb_gr41uG7yqM2t1PN0o92OYwQGFNTQ\"}],\"LockStatus\":0,\"LockString\":\"\"}"
+*2
+$3
+DEL
+$24
+5f22af64fda73c0011ba0a46
+*2
+$3
+DEL
+$11
+AllSessions

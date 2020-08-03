@@ -72,8 +72,8 @@ exports.generateUrl = (req, res, next) => {
           });
           break;
         case fileTypes.PPTX:
-          url = `${process.env.OFFICE_ONLINE_URL}/p/PowerPointFrame.aspx?PowerPointView=EditView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
-          proxyUrl = `${process.env.OFFICE_ONLINE_URL}/p/PowerPointFrame.aspx?PowerPointView=EditView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
+          url = `${process.env.OFFICE_ONLINE_URL_PPTX}/p/PowerPointFrame.aspx?PowerPointView=EditView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
+          proxyUrl = `${process.env.OFFICE_ONLINE_URL_PPTX}/p/PowerPointFrame.aspx?PowerPointView=EditView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
           // /p/resources/1037/FavIcon_Ppt.ico
           faviconUrl = `${process.env.FAVICON_PPTX}`;
           logger.log({
@@ -117,8 +117,8 @@ exports.generateUrl = (req, res, next) => {
           });
           break;
         case fileTypes.PPTX:
-          url = `${process.env.OFFICE_ONLINE_URL}/p/PowerPointFrame.aspx?PowerPointView=ReadingView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
-          proxyUrl = `${process.env.OFFICE_ONLINE_URL}/p/PowerPointFrame.aspx?PowerPointView=ReadingView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
+          url = `${process.env.OFFICE_ONLINE_URL_PPTX}/p/PowerPointFrame.aspx?PowerPointView=ReadingView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
+          proxyUrl = `${process.env.OFFICE_ONLINE_URL_PPTX}/p/PowerPointFrame.aspx?PowerPointView=ReadingView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
           faviconUrl = `${process.env.FAVICON_PPTX}`;
           logger.log({
             level: "info",
@@ -157,8 +157,8 @@ exports.generateUrl = (req, res, next) => {
           faviconUrl = `${process.env.FAVICON_DOCX}`;
           break;
         case fileTypes.PPTX:
-          url = `${process.env.OFFICE_ONLINE_URL}/p/PowerPointFrame.aspx?PowerPointView=ReadingView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
-          proxyUrl = `${process.env.OFFICE_ONLINE_URL}/p/PowerPointFrame.aspx?PowerPointView=ReadingView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
+          url = `${process.env.OFFICE_ONLINE_URL_PPTX}/p/PowerPointFrame.aspx?PowerPointView=ReadingView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
+          proxyUrl = `${process.env.OFFICE_ONLINE_URL_PPTX}/p/PowerPointFrame.aspx?PowerPointView=ReadingView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
           faviconUrl = `${process.env.FAVICON_PPTX}`;
           break;
         case fileTypes.XLSX:
