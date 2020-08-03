@@ -217,7 +217,8 @@ namespace DriveWopi.Controllers
                 switch (operation)
                 {
                     case "PUT":
-                        if (xWopiLock == null || lockValue.Equals(xWopiLock))
+                        //if (xWopiLock == null || lockValue.Equals(xWopiLock))
+                        if (xWopiLock == null || true)
                         {
                             if (editSession.Save(content, user["id"]))
                             {
