@@ -147,7 +147,6 @@ namespace DriveWopi.Controllers
 
         public async Task<IActionResult> PutFile(string id, [FromQuery] string access_token)
         {
-            Console.WriteLine("Put file!");
             Config.logger.LogDebug("enter PutFile");
             try
             {
