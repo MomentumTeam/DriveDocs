@@ -387,25 +387,19 @@ namespace DriveWopi.Models
         {
             try
             {
+                Services.FilesService.Save(_FileInfo.Name, new_content);
                 User user = _Users.Find(x => x.Id.Equals(user_id));
                 if (user != null)
                 {
-                    Services.FilesService.Save(_FileInfo.Name, new_content);
                     _LastUpdated = DateTime.Now;
                     user.LastUpdated = DateTime.Now;
-                    return true;
                 }
-                else
-                {
-                    AddUser(user_id);
-                    Console.WriteLine(user_id + " not in session refresh the page");
-                    return false;
-                }
+                return true;
             }
             catch (Exception e)
             {
                 Config.logger.LogDebug("status:500, Save of {0} fail, error: {1} ", e.Message);
-                throw e;
+                return false;
             }
         }
     }

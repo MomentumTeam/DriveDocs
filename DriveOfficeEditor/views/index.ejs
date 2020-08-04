@@ -49,6 +49,8 @@
     <script type="text/javascript">
 
         window.onbeforeunload = (event) => {
+            //location.reload();
+            window.location.reload(true); 
             if (event.clientY < 0 || (!event.clientY)) {
                 var xhr = new XMLHttpRequest();
                 let id;
