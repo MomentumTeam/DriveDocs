@@ -1,9 +1,10 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-// const bodyParser = require("body-parser");
+const bodyParser = require("body-parser");
 const session = require("express-session");
 const editor = require("./routes/editor");
 const auth = require("./routes/authentication");
+const newPage = require("./routes/newPage");
 const app = express();
 // require("dotenv").config();
 const logger = require("./services/logger.js");
@@ -18,6 +19,7 @@ app.use(
   })
 );
 auth(app);
+newPage(app);
 editor(app);
 
 app.listen(process.env.PORT, () => logger.log({

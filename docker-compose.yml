@@ -5,7 +5,7 @@ services:
         container_name: redis-server
         command: redis-server --appendonly yes --requirepass "mozart"
         ports: 
-            - "6379:6379"
+            - "6380:6379"
         volumes:
         - ./data:/data
         restart: on-failure
@@ -69,7 +69,8 @@ services:
             - redis-server
             - wopi
         ports: 
-            - "3000:3000"
+            - "3002:3000"
         restart: on-failure
         volumes: 
             - ./logs:/logs
+            - ./templates:/templates

@@ -18,15 +18,13 @@ const config = {
 };
 passport.use(
   new shraga.Strategy(config, (profile, done) => {
-    const array = profile.RelayState.split("/");
-    const fileId = array[array.length - 1];
+    profile.RelayState = profile.RelayState.replace('%26','&');
     const user = {
       id: profile.id,
       name: profile.name.firstName + " " + profile.name.lastName,
       displayName: profile.displayName,
       job: profile.job,
       relayState: profile.RelayState,
-      fileId: fileId,
     };
     logger.log({
       level: "info",
@@ -36,5 +34,4 @@ passport.use(
     return done(null, user);
   })
 );
-
 module.exports = passport;

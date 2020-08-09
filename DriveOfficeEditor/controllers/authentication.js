@@ -14,7 +14,7 @@ exports.isAuthenticated = (req, res, next) => {
         message: "status:401 is not Authenticated",
         label: "user is not Authenticated"
       });
-      return res.redirect("/login?RelayState=" + req.originalUrl);
+      return res.redirect("/login?RelayState=" + encodeURIComponent(req.originalUrl.replace('&','%26')));
     }
   } catch (e) {
     logger.log({
