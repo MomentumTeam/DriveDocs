@@ -161,6 +161,7 @@ namespace DriveWopi.Controllers
                 Dictionary<string, string> metadata = (Dictionary<string, string>)token["metadata"];
                 if (!AccessTokenVerifier.VerifyAccessToken(id, (string)metadata["id"], (string)token["created"]))
                 {
+                    Console.WriteLine("problem with access token!");
                     Config.logger.LogError("status:500 accessToken is illegal");
                     return StatusCode(500);
                 }
@@ -168,6 +169,7 @@ namespace DriveWopi.Controllers
                 Session editSession = Session.GetSessionFromRedis(id, client);
                 if (editSession == null)
                 {
+                    Console.WriteLine("The session is null");
                     Config.logger.LogError("status:500 the session is null");
                     return StatusCode(500);
                 }
@@ -175,6 +177,7 @@ namespace DriveWopi.Controllers
 
                 if (!FilesService.FileExists(fileName))
                 {
+                    Console.WriteLine("The file does not exist!");
                     Config.logger.LogError("status:404 the file is not exsist");
                     return StatusCode(404);
                 }
@@ -194,6 +197,7 @@ namespace DriveWopi.Controllers
                 Request.Headers.TryGetValue("X-WOPI-Override", out var xWopiOverrideHeader);
                 if (xWopiOverrideHeader.Count != 1 || string.IsNullOrWhiteSpace(xWopiOverrideHeader.FirstOrDefault()))
                 {
+                    Console.WriteLine("X-WOPI-Override header not found");
                     Config.logger.LogError("status:400, X-WOPI-Override header not found");
                     return StatusCode(400);
                 }
@@ -218,6 +222,7 @@ namespace DriveWopi.Controllers
                 {
                     case "PUT":
                         if (xWopiLock == null || lockValue.Equals(xWopiLock))
+                        //if (xWopiLock == null || true)
                         {
                             if (editSession.Save(content, user["id"]))
                             {
