@@ -45,7 +45,7 @@ services:
         image: 'redis'
         command: redis-server --requirepass mozart
         ports: 
-            - "6379:6379"
+            - "6380:6379"
         deploy:
             replicas: 1
             restart_policy:

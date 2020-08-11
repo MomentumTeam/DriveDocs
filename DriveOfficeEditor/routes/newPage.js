@@ -4,7 +4,7 @@ const tokens = require("../controllers/tokens");
 
 module.exports = (app) => {
     app.get(
-      "/api/newEmptyFile",
+      "/api/blank",
       authenitcation.isAuthenticated,
       drive.uploadNewFileToDrive,
       (req, res) => {

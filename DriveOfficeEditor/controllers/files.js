@@ -1,9 +1,18 @@
 const logger = require("../services/logger.js");
+const axios = require("axios");
+
+const convertTypes = {
+  DOC: "doc", 
+  XLS: "xls",
+  PPT: "ppt"
+}
+
 const fileTypes = {
   DOCX: "docx",
   XLSX: "xlsx",
   PPTX: "pptx",
   PDF: "pdf",
+  ...convertTypes
 };
 
 const operations = {
@@ -33,6 +42,15 @@ exports.generateUrl = (req, res, next) => {
       });
       return res.status(501).send("File type not supported!");
     }
+
+    if(Object.values(convertTypes).includes(fileType)) {
+      //downloadfilefromdrive
+      axios.post('52.169.254.71:3005/convert');
+      //post request to /convert
+      //the file is in convert directory
+      //update the file in drive
+    }
+
 
     if (operation == operations.EDIT_NEW && fileType == fileTypes.PDF) {
       logger.log({

@@ -5,9 +5,9 @@ services:
         container_name: redis-server
         command: redis-server --appendonly yes --requirepass "mozart"
         ports: 
-            - "6380:6379"
-        volumes:
-        - ./data:/data
+            - "6379:6379"
+        # volumes:
+        # - ./data:/data
         restart: on-failure
     wopi:
         build: ./DriveWopi/DriveWopi
@@ -68,9 +68,17 @@ services:
         depends_on:
             - redis-server
             - wopi
+            # - convert-formats
         ports: 
             - "3002:3000"
         restart: on-failure
         volumes: 
             - ./logs:/logs
             - ./templates:/templates
+    # convert-formats:
+    #     build: ./convertFormat
+    #     ports: 
+    #         - "5000:5000"
+    #     restart: on-failure
+        # volumes: 
+        #     - ./sample_files:/sample_files
