@@ -70,7 +70,7 @@ services:
             - wopi
             # - convert-formats
         ports: 
-            - "3002:3000"
+            - "3000:3000"
         restart: on-failure
         volumes: 
             - ./logs:/logs
