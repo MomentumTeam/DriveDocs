@@ -67,3 +67,31 @@ async function upload(filedata, parentId, accessToken) {
     throw error;
   }
 }
+
+async function updateFile(fileId, filedata, accessToken) {
+  //TODO Update the file in Drive
+}
+
+// client.Headers.Set("Auth-Type", "Docs");
+// client.Headers.Set("Authorization", authorization);
+// client.DownloadFile(Config.DriveUrl + "/api/files/" + idToDownload + "?alt=media", localPath);
+
+exports.downloadFileFromDrive = async (idToDownload, accessToken) => {
+  try {
+    console.log("start downloading");
+    console.log(`accessToken = ${accessToken}`);
+    console.log(`idToDownload = ${idToDownload}`);
+    const config = {
+      method: "GET",
+      url: `${process.env.DRIVE_URL}/api/files/${idToDownload}?alt=media`,
+      headers: {
+        Authorization: accessToken,
+        "Auth-Type": "Docs",
+      },
+    };
+    const response = await axios(config);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

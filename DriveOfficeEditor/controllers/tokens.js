@@ -10,9 +10,10 @@ const logger = require("../services/logger.js");
 
 exports.generateAccessToken = async (req, res, next) => {
   try {
+    res.locals.driveAccessToken = metadataService.getAuthorizationHeader(req.user);
     // const uid = getUid(req.user.id);
     const dataToSign = {
-      user: { id: req.user["id"], name: req.user["name"], authorization: metadataService.getAuthorizationHeader(req.user) },
+      user: { id: req.user["id"], name: req.user["name"], authorization: res.locals.driveAccessToken },
       created: Date.now(),
     };
     if (res.locals.metadata) {

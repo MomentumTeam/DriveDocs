@@ -1,5 +1,11 @@
 version: '3'
 services: 
+    convert-service:
+        build: ./versed/
+        container_name: convertService
+        ports: 
+            - "3005:3000"
+        restart: on-failure
     redis-server:
         image: 'redis:alpine'
         container_name: redis-server
@@ -64,6 +70,7 @@ services:
             -  FAVICON_XLSX=${FAVICON_XLSX}
             -  FAVICON_PDF=${FAVICON_PDF}
             -  OFFICE_ONLINE_URL_PPTX=${OFFICE_ONLINE_URL_PPTX}
+            -  CONVERT_SERVICE_URL=${CONVERT_SERVICE_URL}
 
         depends_on:
             - redis-server

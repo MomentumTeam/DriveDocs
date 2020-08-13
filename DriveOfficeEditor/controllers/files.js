@@ -1,18 +1,25 @@
 const logger = require("../services/logger.js");
 const axios = require("axios");
+const drive = require("../controllers/drive.js");
 
 const convertTypes = {
-  DOC: "doc", 
+  DOC: "doc",
   XLS: "xls",
-  PPT: "ppt"
-}
+  PPT: "ppt",
+};
+
+const convertTo = {
+  doc: "docx",
+  xls: "xlsx",
+  ppt: "pptx",
+};
 
 const fileTypes = {
   DOCX: "docx",
   XLSX: "xlsx",
   PPTX: "pptx",
   PDF: "pdf",
-  ...convertTypes
+  ...convertTypes,
 };
 
 const operations = {
@@ -27,10 +34,10 @@ exports.setEditNewLocals = (req, res, next) => {
   next();
 };
 
-exports.generateUrl = (req, res, next) => {
+exports.generateUrl = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const fileType = res.locals.metadata.type;
+    const fileType = res.locals.metadata.type.toLowerCase();
     let operation = req.query.operation;
     let url, faviconUrl, proxyUrl;
 
@@ -42,15 +49,6 @@ exports.generateUrl = (req, res, next) => {
       });
       return res.status(501).send("File type not supported!");
     }
-
-    if(Object.values(convertTypes).includes(fileType)) {
-      //downloadfilefromdrive
-      axios.post('52.169.254.71:3005/convert');
-      //post request to /convert
-      //the file is in convert directory
-      //update the file in drive
-    }
-
 
     if (operation == operations.EDIT_NEW && fileType == fileTypes.PDF) {
       logger.log({
@@ -77,6 +75,24 @@ exports.generateUrl = (req, res, next) => {
       });
     }
 
+    if (Object.values(convertTypes).includes(fileType)) {
+      console.log("START CONVERT PROCESS...");
+      let newFormat = convertTo[fileType];
+      await convert.convertAndUpdateInDrive(id, newFormat, res.locals.driveAccessToken);
+      fileType = newFormat;
+    }
+    // const file = await drive.downloadFileFromDrive(id, res.locals.driveAccessToken);
+    // console.log(file);
+    // console.log("DOWNLOAD  FINISHED");
+
+    // axios.post(`52.169.254.71:3005/convert/${id}`,{ newType:  },{
+    //   headers: { Authorization: res.locals.accessToken, "Auth-Type": "Docs" },
+    // });
+
+    //post request to /convert
+    //the file is in convert directory
+    //update the file in drive
+    // }
     if (operation == operations.EDIT) {
       switch (fileType) {
         case fileTypes.DOCX:
