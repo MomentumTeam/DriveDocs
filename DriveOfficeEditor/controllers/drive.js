@@ -89,9 +89,11 @@ exports.downloadFileFromDrive = async (idToDownload, accessToken) => {
         "Auth-Type": "Docs",
       },
     };
+    
     const response = await axios(config);
     return response.data;
   } catch (error) {
+    console.log("error: "+ error);
     throw error;
   }
 };

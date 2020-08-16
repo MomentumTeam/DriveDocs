@@ -1,6 +1,7 @@
 const logger = require("../services/logger.js");
 const axios = require("axios");
 const drive = require("../controllers/drive.js");
+const convert =require("../controllers/convert");
 
 const convertTypes = {
   DOC: "doc",
@@ -78,9 +79,13 @@ exports.generateUrl = async (req, res, next) => {
     if (Object.values(convertTypes).includes(fileType)) {
       console.log("START CONVERT PROCESS...");
       let newFormat = convertTo[fileType];
-      await convert.convertAndUpdateInDrive(id, newFormat, res.locals.driveAccessToken);
+      console.log("newFormat: "+newFormat)
+    
+      await convert.convertAndUpdateInDrive(id, newFormat,fileType, res.locals.driveAccessToken);
+      console.log("FINISHED CONVERT PROCESS...");
       fileType = newFormat;
     }
+
     // const file = await drive.downloadFileFromDrive(id, res.locals.driveAccessToken);
     // console.log(file);
     // console.log("DOWNLOAD  FINISHED");
