@@ -1,7 +1,7 @@
 version: '3'
 services: 
     convert-service:
-        build: ./versed/
+        build: ./versed
         container_name: convertService
         ports: 
             - "3005:3000"
@@ -13,7 +13,7 @@ services:
         ports: 
             - "6379:6379"
         # volumes:
-        # - ./data:/data
+        #     - ./data:/data
         restart: on-failure
     wopi:
         build: ./DriveWopi/DriveWopi

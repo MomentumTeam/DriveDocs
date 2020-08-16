@@ -19,11 +19,12 @@ exports.uploadNewFileToDrive = async (req, res, next) => {
   if (!types.includes(req.query.type)) {
     return res.status(500).send("status 500: type must be docx,pptx, or xlsx!");
   }
-  const path = `${req.query.name}.${req.query.type}`;
+  const path = `..${process.env.TEMPLATE_FOLDER}/${req.query.name}.${req.query.type}`;
   res.locals.path = path;
   fs.openSync(path, "w");
   const data = new FormData();
   data.append("file", fs.createReadStream(path));
+  fs.unlinkSync(path)
   const accessToken = metadataService.getAuthorizationHeader(req.user);
   let fileId;
   try {
