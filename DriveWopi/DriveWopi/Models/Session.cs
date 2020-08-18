@@ -138,6 +138,7 @@ namespace DriveWopi.Models
                 cfi.SupportsUpdate = true;
                 cfi.UserCanWrite = true;
                 cfi.LicenseCheckForEditIsEnabled = true;
+                cfi.ClientUrl = Config.WebDAV_Server+"/"+_FileInfo.Name;
                 cfi.SupportsGetLock = true;
                 Config.logger.LogDebug("GetCheckFileInfo of file {0} Success", name);
                 return cfi;

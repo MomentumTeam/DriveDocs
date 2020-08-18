@@ -31,6 +31,8 @@ services:
             -  DRIVE_UPDATE_TIME=${DRIVE_UPDATE_TIME}
             -  REDIS_PASSWORD=${REDIS_PASSWORD}
             -  CLEANUP_ENABLED=true
+            -  WEBDAV_URL=${WEBDAV_URL}
+            -  LOCAL_OFFICE_FOLDER=${LOCAL_OFFICE_FOLDER}
         ports: 
             - "8082:8080"
         volumes:
@@ -52,7 +54,6 @@ services:
             -  SHRAGA_URL=${SHRAGA_URL}
             -  AUTHORIZATION_TOKEN=${AUTHORIZATION_TOKEN}
             -  DRIVE_URL=${DRIVE_URL}
-            # - 'SECRET=thisIsASecret'
             -  DRIVE_SECRET=${DRIVE_SECRET}
             -  REDIS_PASSWORD=${REDIS_PASSWORD}
             -  MAX_SIZE_DOCX=${MAX_SIZE_DOCX}
@@ -64,7 +65,8 @@ services:
             -  FAVICON_XLSX=${FAVICON_XLSX}
             -  FAVICON_PDF=${FAVICON_PDF}
             -  OFFICE_ONLINE_URL_PPTX=${OFFICE_ONLINE_URL_PPTX}
-
+            -  WEBDAV_URL=${WEBDAV_URL}
+            -  LOCAL_OFFICE_FOLDER=${LOCAL_OFFICE_FOLDER}
         depends_on:
             - redis-server
             - wopi
@@ -75,6 +77,7 @@ services:
         volumes: 
             - ./logs:/logs
             - ./templates:/templates
+            - ./localOfficeFiles:/localOfficeFiles
     # convert-formats:
     #     build: ./convertFormat
     #     ports: 

@@ -21,6 +21,8 @@ namespace DriveWopi
         public static bool CleanUpEnabled;
 
         public static int DriveUpdateTime;
+
+        public static string WebDAV_Server;
         public static string  AllSessionsRedisKey = "AllSessions";
         public static string AuthorizationToken;
         public static Dictionary<string, string> Mimetypes = new Dictionary<string, string>(){
@@ -46,6 +48,8 @@ namespace DriveWopi
             AccessTokenExpiringTime =  int.Parse(Environment.GetEnvironmentVariable("TOKEN_EXPIRE"));
             AuthorizationToken=Environment.GetEnvironmentVariable("AUTHORIZATION_TOKEN");
             CleanUpEnabled = bool.Parse(Environment.GetEnvironmentVariable("CLEANUP_ENABLED"));
+            WebDAV_Server =  Environment.GetEnvironmentVariable("WEBDAV_URL");
+        
 
             //Time period to perform cleanUp
             Closewait =  int.Parse(Environment.GetEnvironmentVariable("CLOSE_WAIT"));       
