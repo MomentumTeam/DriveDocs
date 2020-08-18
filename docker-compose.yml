@@ -2,9 +2,6 @@ version: '3'
 services: 
     convert-service:
         build: ./versed
-        environment:
-            -  DOWNLOADS_FOLDER=${DOWNLOADS_FOLDER}
-            -  CONVERTED_FOLDER=${CONVERTED_FOLDER}
         container_name: convertService
         ports: 
             - "3005:3000"
@@ -76,13 +73,14 @@ services:
             -  FAVICON_PDF=${FAVICON_PDF}
             -  OFFICE_ONLINE_URL_PPTX=${OFFICE_ONLINE_URL_PPTX}
             -  CONVERT_SERVICE_URL=${CONVERT_SERVICE_URL}
+            -  CONVERT_FOLDER=${CONVERT_FOLDER}
 
         depends_on:
             - redis-server
             - wopi
             # - convert-formats
         ports: 
-            - "3000:3000"
+            - "3002:3000"
         restart: on-failure
         volumes: 
             - ./logs:/logs

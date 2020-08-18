@@ -38,7 +38,7 @@ exports.setEditNewLocals = (req, res, next) => {
 exports.generateUrl = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const fileType = res.locals.metadata.type.toLowerCase();
+    let fileType = res.locals.metadata.type.toLowerCase();
     let operation = req.query.operation;
     let url, faviconUrl, proxyUrl;
 
@@ -218,3 +218,5 @@ exports.generateUrl = async (req, res, next) => {
     return res.status(500).send(e);
   }
 };
+
+exports.checkIfNeedConvert 

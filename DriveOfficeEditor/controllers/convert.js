@@ -4,7 +4,6 @@ const FormData = require("form-data");
 const drive = require("../controllers/drive.js");
 const request = require('request');
 
-
 exports.convertAndUpdateInDrive = async (fileId, newFormat, oldFormat, driveAccessToken, accessToken) => {
   const oldName = `${fileId}.${oldFormat}`;
   const newName = `${fileId}.${newFormat}`;
@@ -18,6 +17,8 @@ exports.convertAndUpdateInDrive = async (fileId, newFormat, oldFormat, driveAcce
   form.append('file', fs.createReadStream(downloadedFilePath));
   form.append('format', newFormat);
   req.pipe(fs.createWriteStream(convertedFilePath));
-  
   fs.unlinkSync(downloadedFilePath);
+  
+  await drive.updateFile(fileId, convertedFilePath, driveAccessToken);
+  fs.unlinkSync(convertedFilePath);
 };
