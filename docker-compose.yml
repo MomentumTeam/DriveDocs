@@ -2,6 +2,9 @@ version: '3'
 services: 
     convert-service:
         build: ./versed
+        environment:
+            -  DOWNLOADS_FOLDER=${DOWNLOADS_FOLDER}
+            -  CONVERTED_FOLDER=${CONVERTED_FOLDER}
         container_name: convertService
         ports: 
             - "3005:3000"
@@ -51,6 +54,8 @@ services:
             -  WOPI_URL=${WOPI_URL}
             -  REDIS_HOST=${REDIS_HOST}
             -  REDIS_PORT=${REDIS_PORT}
+            -  DOWNLOADS_FOLDER=${DOWNLOADS_FOLDER}
+            -  CONVERTED_FOLDER=${CONVERTED_FOLDER}
             -  OFFICE_EDITOR_URL=${OFFICE_EDITOR_URL}
             -  OFFICE_ONLINE_URL=${OFFICE_ONLINE_URL}
             -  PORT=${PORT_NODE}
@@ -82,10 +87,6 @@ services:
         volumes: 
             - ./logs:/logs
             - ./templates:/templates
-    # convert-formats:
-    #     build: ./convertFormat
-    #     ports: 
-    #         - "5000:5000"
-    #     restart: on-failure
-        # volumes: 
-        #     - ./sample_files:/sample_files
+            - ./downloads:/downloads
+            - ./convertedFiles:/convertedFiles
+   

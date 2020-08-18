@@ -1,20 +1,23 @@
 const fs = require('fs');
-const request = require('request');
+const axios = require("axios");
+const FormData = require("form-data");
 const drive = require("../controllers/drive.js");
+const request = require('request');
 
-exports.convertAndUpdateInDrive = async (fileId, newFormat, oldFormat, driveAccessToken) => {
-  console.log("convertAndUpdateInDrive")
-  const file= await drive.downloadFileFromDrive(fileId, driveAccessToken);
-  // let readableFile=fs.createReadStream(`${fileId}.${fileType}`);
-  // console.log(readableFile);
-  console.log("DOWNLreplaceOAD FINISHED");
 
-  // let req = request.post('52.169.254.71:3005/convert');
-  // let form = req.form();
-  // form.append('file', fs.createReadStream(file));
-  // form.append('format', newFormat);
-  // req.pipe(fs.createWriteStream('image.gif'));
+exports.convertAndUpdateInDrive = async (fileId, newFormat, oldFormat, driveAccessToken, accessToken) => {
+  const oldName = `${fileId}.${oldFormat}`;
+  const newName = `${fileId}.${newFormat}`;
+  const downloadedFilePath = `../..${process.env.DOWNLOADS_FOLDER}/${oldName}`;
+  const convertedFilePath = `../..${process.env.CONVERTED_FOLDER}/${newName}`;
+
+  await drive.downloadFileFromDrive(fileId, downloadedFilePath, driveAccessToken, accessToken);
   
-  //TODO Call the api of Versed in order to convert the file
-  //TODO update in drive according to the new converted file with drive.updateFile()
+  const req = request.post(`${process.env.CONVERT_SERVICE_URL}/convert`);
+  const form = req.form();
+  form.append('file', fs.createReadStream(downloadedFilePath));
+  form.append('format', newFormat);
+  req.pipe(fs.createWriteStream(convertedFilePath));
+  
+  fs.unlinkSync(downloadedFilePath);
 };

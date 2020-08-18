@@ -29,7 +29,8 @@
     "winston-daily-rotate-file": "4.5.0",
     "fs": "0.0.1-security", 
     "form-data": "3.0.0",
-    "util":"0.12.3"
+    "util":"0.12.3",
+    "request":"2.88.2"
 
   }
 }

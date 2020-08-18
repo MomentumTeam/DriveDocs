@@ -3,6 +3,7 @@ const axios = require("axios");
 var FormData = require("form-data");
 const metadataService = require("../services/metadataService");
 const logger = require("../services/logger.js");
+const { Console } = require("console");
 
 const types = ["docx", "pptx", "xlsx"];
 
@@ -70,29 +71,30 @@ async function upload(filedata, parentId, accessToken) {
 }
 
 async function updateFile(fileId, filedata, accessToken) {
-  //TODO Update the file in Drive
 }
 
-// client.Headers.Set("Auth-Type", "Docs");
-// client.Headers.Set("Authorization", authorization);
-// client.DownloadFile(Config.DriveUrl + "/api/files/" + idToDownload + "?alt=media", localPath);
-
-exports.downloadFileFromDrive = async (idToDownload, accessToken) => {
+exports.downloadFileFromDrive = async (idToDownload, downloadedFilePath, accessToken) => {
   try {
-    console.log("start downloading");
-    console.log(`accessToken = ${accessToken}`);
-    console.log(`idToDownload = ${idToDownload}`);
+    const writer=fs.createWriteStream(downloadedFilePath);
+    const url=`${process.env.DRIVE_URL}/api/files/${idToDownload}?alt=media`;
     const config = {
       method: "GET",
-      url: `${process.env.DRIVE_URL}/api/files/${idToDownload}?alt=media`,
+      responseType: 'stream',
+      url,
       headers: {
         Authorization: accessToken,
         "Auth-Type": "Docs",
       },
     };
-    
-    const response = await axios(config);
-    return response.data;
+
+    const response = await axios(config); 
+    response.data.pipe(writer)
+
+    return new Promise((resolve, reject) => {
+      writer.on('finish', resolve)
+      writer.on('error', reject)
+    })
+
   } catch (error) {
     console.log("error: "+ error);
     throw error;

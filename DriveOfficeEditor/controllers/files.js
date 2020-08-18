@@ -77,27 +77,14 @@ exports.generateUrl = async (req, res, next) => {
     }
 
     if (Object.values(convertTypes).includes(fileType)) {
-      console.log("START CONVERT PROCESS...");
+      console.log("STARTING CONVERT PROCESS...");
       let newFormat = convertTo[fileType];
-      console.log("newFormat: "+newFormat)
-    
-      await convert.convertAndUpdateInDrive(id, newFormat,fileType, res.locals.driveAccessToken);
-      console.log("FINISHED CONVERT PROCESS...");
+
+      await convert.convertAndUpdateInDrive(id, newFormat,fileType, res.locals.driveAccessToken,res.locals.accessToken);
+      console.log("CONVERT PROCESS IS FINISHED...");
       fileType = newFormat;
     }
 
-    // const file = await drive.downloadFileFromDrive(id, res.locals.driveAccessToken);
-    // console.log(file);
-    // console.log("DOWNLOAD  FINISHED");
-
-    // axios.post(`52.169.254.71:3005/convert/${id}`,{ newType:  },{
-    //   headers: { Authorization: res.locals.accessToken, "Auth-Type": "Docs" },
-    // });
-
-    //post request to /convert
-    //the file is in convert directory
-    //update the file in drive
-    // }
     if (operation == operations.EDIT) {
       switch (fileType) {
         case fileTypes.DOCX:
