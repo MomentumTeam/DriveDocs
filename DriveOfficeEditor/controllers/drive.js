@@ -3,6 +3,8 @@ const axios = require("axios");
 var FormData = require("form-data");
 const metadataService = require("../services/metadataService");
 const logger = require("../services/logger.js");
+const mime = require('mime-types');
+const path = require('path');
 
 const types = ["docx", "pptx", "xlsx"];
 
@@ -69,19 +71,34 @@ async function upload(filedata, parentId, accessToken) {
   }
 }
 
-async function updateFile(fileId, filedata, accessToken) {
-  //TODO Update the file in Drive
+exports.updateFile = async (fileId, filePath, accessToken) => {
+  const size = getFileSize(filePath); //
+  mimeType = mime.contentType(path.extname(filePath))
+  const data = new FormData();
+  data.append('file', fs.createReadStream(filePath));
+  const uploadId = await getUploadId(size, fileId, accessToken); 
+  const config = {
+      method: 'post',
+      url: `${process.env.DRIVE_URL}/api/upload?uploadType=resumable&uploadId=${uploadId}`,
+      headers: { 
+          'Content-Range': `bytes 0-${size-1}/${size}`, 
+          'Authorization': accessToken,
+          "Auth-Type": "Docs",
+          ...data.getHeaders(),
+          "X-Mime-Type" : mimeType
+      },
+  data : data
+  };
+  try { 
+    const response = await axios(config);
+    console.log(response.data)
+ } catch(error) {
+   console.log(error.message);
+ }
 }
-
-// client.Headers.Set("Auth-Type", "Docs");
-// client.Headers.Set("Authorization", authorization);
-// client.DownloadFile(Config.DriveUrl + "/api/files/" + idToDownload + "?alt=media", localPath);
 
 exports.downloadFileFromDrive = async (idToDownload, accessToken) => {
   try {
-    console.log("start downloading");
-    console.log(`accessToken = ${accessToken}`);
-    console.log(`idToDownload = ${idToDownload}`);
     const config = {
       method: "GET",
       url: `${process.env.DRIVE_URL}/api/files/${idToDownload}?alt=media`,
@@ -98,3 +115,26 @@ exports.downloadFileFromDrive = async (idToDownload, accessToken) => {
     throw error;
   }
 };
+
+async function getUploadId (size, fileId, accessToken) {
+  const config = { 
+    method: 'PUT',
+    url: `${process.env.DRIVE_URL}/api/upload/${fileId}`,
+    headers: { 
+      'Authorization': accessToken, 
+      "Auth-Type": "Docs",
+      'X-Content-Length': size,
+    },
+  };
+  try { 
+     const response = await axios(config);
+     return response.headers["x-uploadid"];
+  } catch(error) {
+    console.log(error.message);
+  }
+}
+
+function getFileSize (filePath) {
+  const stats = fs.statSync(filePath);
+  return `${stats.size}`;
+}

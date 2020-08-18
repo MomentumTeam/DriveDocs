@@ -38,7 +38,7 @@ exports.setEditNewLocals = (req, res, next) => {
 exports.generateUrl = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const fileType = res.locals.metadata.type.toLowerCase();
+    let fileType = res.locals.metadata.type.toLowerCase();
     let operation = req.query.operation;
     let url, faviconUrl, proxyUrl;
 
@@ -80,25 +80,17 @@ exports.generateUrl = async (req, res, next) => {
       console.log("START CONVERT PROCESS...");
       let newFormat = convertTo[fileType];
       console.log("newFormat: "+newFormat)
-    
       await convert.convertAndUpdateInDrive(id, newFormat,fileType, res.locals.driveAccessToken);
       console.log("FINISHED CONVERT PROCESS...");
       fileType = newFormat;
+      console.log("operation1"+ operation)
     }
 
-    // const file = await drive.downloadFileFromDrive(id, res.locals.driveAccessToken);
-    // console.log(file);
-    // console.log("DOWNLOAD  FINISHED");
+    console.log("operation2"+operation);
 
-    // axios.post(`52.169.254.71:3005/convert/${id}`,{ newType:  },{
-    //   headers: { Authorization: res.locals.accessToken, "Auth-Type": "Docs" },
-    // });
-
-    //post request to /convert
-    //the file is in convert directory
-    //update the file in drive
-    // }
     if (operation == operations.EDIT) {
+      console.log("operation edit");
+      console.log(fileType);
       switch (fileType) {
         case fileTypes.DOCX:
           url = `${process.env.OFFICE_ONLINE_URL}/we/wordeditorframe.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
@@ -221,6 +213,7 @@ exports.generateUrl = async (req, res, next) => {
       message: "url save in res.locals",
       label: `session: ${req.params.id}`,
     });
+    console.log("next")
     next();
   } catch (e) {
     logger.log({
@@ -231,3 +224,5 @@ exports.generateUrl = async (req, res, next) => {
     return res.status(500).send(e);
   }
 };
+
+exports.checkIfNeedConvert 

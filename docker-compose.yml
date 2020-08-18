@@ -77,11 +77,12 @@ services:
             - wopi
             # - convert-formats
         ports: 
-            - "3000:3000"
+            - "3002:3000"
         restart: on-failure
         volumes: 
             - ./logs:/logs
             - ./templates:/templates
+            - ./convertedFiles:/convertedFiles
     # convert-formats:
     #     build: ./convertFormat
     #     ports: 
