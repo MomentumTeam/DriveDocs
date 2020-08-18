@@ -77,20 +77,15 @@ exports.generateUrl = async (req, res, next) => {
     }
 
     if (Object.values(convertTypes).includes(fileType)) {
-      console.log("START CONVERT PROCESS...");
+      console.log("STARTING CONVERT PROCESS...");
       let newFormat = convertTo[fileType];
-      console.log("newFormat: "+newFormat)
-      await convert.convertAndUpdateInDrive(id, newFormat,fileType, res.locals.driveAccessToken);
-      console.log("FINISHED CONVERT PROCESS...");
+
+      await convert.convertAndUpdateInDrive(id, newFormat,fileType, res.locals.driveAccessToken,res.locals.accessToken);
+      console.log("CONVERT PROCESS IS FINISHED...");
       fileType = newFormat;
-      console.log("operation1"+ operation)
     }
 
-    console.log("operation2"+operation);
-
     if (operation == operations.EDIT) {
-      console.log("operation edit");
-      console.log(fileType);
       switch (fileType) {
         case fileTypes.DOCX:
           url = `${process.env.OFFICE_ONLINE_URL}/we/wordeditorframe.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
@@ -213,7 +208,6 @@ exports.generateUrl = async (req, res, next) => {
       message: "url save in res.locals",
       label: `session: ${req.params.id}`,
     });
-    console.log("next")
     next();
   } catch (e) {
     logger.log({

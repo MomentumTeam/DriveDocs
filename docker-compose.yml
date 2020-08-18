@@ -51,6 +51,8 @@ services:
             -  WOPI_URL=${WOPI_URL}
             -  REDIS_HOST=${REDIS_HOST}
             -  REDIS_PORT=${REDIS_PORT}
+            -  DOWNLOADS_FOLDER=${DOWNLOADS_FOLDER}
+            -  CONVERTED_FOLDER=${CONVERTED_FOLDER}
             -  OFFICE_EDITOR_URL=${OFFICE_EDITOR_URL}
             -  OFFICE_ONLINE_URL=${OFFICE_ONLINE_URL}
             -  PORT=${PORT_NODE}
@@ -83,11 +85,6 @@ services:
         volumes: 
             - ./logs:/logs
             - ./templates:/templates
+            - ./downloads:/downloads
             - ./convertedFiles:/convertedFiles
-    # convert-formats:
-    #     build: ./convertFormat
-    #     ports: 
-    #         - "5000:5000"
-    #     restart: on-failure
-        # volumes: 
-        #     - ./sample_files:/sample_files
+   

@@ -97,19 +97,28 @@ exports.updateFile = async (fileId, filePath, accessToken) => {
  }
 }
 
-exports.downloadFileFromDrive = async (idToDownload, accessToken) => {
+exports.downloadFileFromDrive = async (idToDownload, downloadedFilePath, accessToken) => {
   try {
+    const writer=fs.createWriteStream(downloadedFilePath);
+    const url=`${process.env.DRIVE_URL}/api/files/${idToDownload}?alt=media`;
     const config = {
       method: "GET",
-      url: `${process.env.DRIVE_URL}/api/files/${idToDownload}?alt=media`,
+      responseType: 'stream',
+      url,
       headers: {
         Authorization: accessToken,
         "Auth-Type": "Docs",
       },
     };
-    
-    const response = await axios(config);
-    return response.data;
+
+    const response = await axios(config); 
+    response.data.pipe(writer)
+
+    return new Promise((resolve, reject) => {
+      writer.on('finish', resolve)
+      writer.on('error', reject)
+    })
+
   } catch (error) {
     console.log("error: "+ error);
     throw error;
