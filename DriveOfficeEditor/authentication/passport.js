@@ -18,7 +18,9 @@ const config = {
 };
 passport.use(
   new shraga.Strategy(config, (profile, done) => {
-    profile.RelayState = profile.RelayState.replace('%26','&');
+    if (profile != undefined && profile != null && profile.RelayState != undefined && profile.RelayState != null) {
+      profile.RelayState = profile.RelayState.replace("%26", "&");
+    }
     const user = {
       id: profile.id,
       name: profile.name.firstName + " " + profile.name.lastName,
@@ -28,8 +30,8 @@ passport.use(
     };
     logger.log({
       level: "info",
-      message: 'finish passport middleware',
-      label: `user: ${user.id}`
+      message: "finish passport middleware",
+      label: `user: ${user.id}`,
     });
     return done(null, user);
   })

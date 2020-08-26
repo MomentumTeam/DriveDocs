@@ -169,7 +169,7 @@ namespace DriveWopi.Controllers
                 Session editSession = Session.GetSessionFromRedis(id, client);
                 if (editSession == null)
                 {
-                    Console.WriteLine("The session is null");
+                    // Console.WriteLine("The session is null");
                     Config.logger.LogError("status:500 the session is null");
                     return StatusCode(500);
                 }

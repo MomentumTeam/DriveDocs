@@ -276,6 +276,24 @@ namespace DriveWopi.Models
                 throw e;
             }
         }
+
+        public void DeleteSessionFromAllSessionsInRedis(string sessionId, IRedisClient client){
+            try{
+                List<Session> allSessions = GetAllSessions(client);
+                List<Session> updatedSessions = new List<Session>();
+                foreach(Session s in allSessions){
+                    if(s!=null && (!s.SessionId.Equals(sessionId))){
+                        updatedSessions.Add(s);
+                    }
+                }
+                UpdateSessionsListInRedis(updatedSessions,client);
+
+            }
+            catch(Exception ex){
+                throw ex;
+            }
+
+        }
         public void SaveToRedis()
         {
             try

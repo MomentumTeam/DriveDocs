@@ -16,7 +16,6 @@ module.exports = (app) => {
     localOffice.downloadFromDrive,
     localOffice.redirectToLocalOffice
   );
-
   //   app.post("/closeSession/:id", authenitcation.isAuthenticated, (req, res) => {
   //     try {
   //       id = req.params.id;
@@ -31,7 +30,6 @@ module.exports = (app) => {
   //       res.status(500).send(e);
   //     }
   //   });
-
   //   app.get("/isalive", (req, res) => {
   //     return res.send("alive");
   //   });
