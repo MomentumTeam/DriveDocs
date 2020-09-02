@@ -34,6 +34,10 @@ exports.loadMetadata = async (req, res, next) => {
       try {
         const fileId = req.query.template ? req.query.template : req.params.id;
         let metadata = await metadataService.getMetadata(fileId, req.user);
+        console.log("req.user = ");
+        console.log(req.user);
+        console.log("metadata = ");
+        console.log(metadata);
         metadata.type = metadata.name.substring(metadata.name.lastIndexOf(".") + 1, metadata.name.length).toLowerCase();
         res.locals.metadata = metadata;
         if (res.locals.metadata.hasOwnProperty("permission")) {

@@ -14,7 +14,17 @@ module.exports = (app) => {
     metadata.checkSizeOfFile,
     tokens.generateAccessToken,
     localOffice.downloadFromDrive,
-    localOffice.redirectToLocalOffice
+    localOffice.initRedisSession,
+    localOffice.redirectToLocalOffice,
+    // (req, res) => {
+    //   try {
+    //     res.render("localOffice", {
+    //       link: res.locals.link
+    //     });
+    //   } catch (e) {
+    //       res.status(500).send(e);
+    //   }
+    // }
   );
   //   app.post("/closeSession/:id", authenitcation.isAuthenticated, (req, res) => {
   //     try {

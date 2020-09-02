@@ -22,6 +22,7 @@ exports.generateAccessToken = async (req, res, next) => {
         type: res.locals.metadata["type"],
       };
     }
+    res.locals.dataToSign = dataToSign;
     //if (req.query.template) {
     //  dataToSign.template = req.query.template;
     //}
