@@ -34,4 +34,4 @@ RUN apt-get update && \
     apt-get install -y --allow-unauthenticated libx11-dev
 WORKDIR /app
 COPY --from=build-env /app/out .
-ENTRYPOINT ["dotnet", "DriveWopi.dll"]
+ENTRYPOINT ["dotnet", "pptConverter.dll"]

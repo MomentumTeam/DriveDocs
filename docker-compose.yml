@@ -44,6 +44,17 @@ services:
             - ./templates:/templates
             - ./logs:/logs
         restart: on-failure
+    ppt-converter:
+        build: ./pptConverter
+        environment: 
+            -  DOWNLOADS_FOLDER=${DOWNLOADS_FOLDER}
+            -  CONVERTED_FOLDER=${CONVERTED_FOLDER}
+            -  PPT_CONVERT_PORT=${PPT_CONVERT_PORT}
+        ports:
+            - "3010:3010"
+        volumes:
+            - ./downloads:/downloads
+            - ./convertedFiles2:/convertedFiles2
     node-app:
         build: ./DriveOfficeEditor
         environment:
@@ -73,12 +84,14 @@ services:
             -  FAVICON_PDF=${FAVICON_PDF}
             -  OFFICE_ONLINE_URL_PPTX=${OFFICE_ONLINE_URL_PPTX}
             -  CONVERT_SERVICE_URL=${CONVERT_SERVICE_URL}
-            -  CONVERT_FOLDER=${CONVERT_FOLDER}
+            -  TEMPLATE_FOLDER=${TEMPLATE_FOLDER}
+            -  PPT_CONVERTER_URL=${PPT_CONVERTER_URL}
 
         depends_on:
             - redis-server
             - wopi
-            # - convert-formats
+            - convert-service
+            - ppt-converter
         ports: 
             - "3002:3000"
         restart: on-failure
@@ -86,5 +99,5 @@ services:
             - ./logs:/logs
             - ./templates:/templates
             - ./downloads:/downloads
-            - ./convertedFiles:/convertedFiles
+            - ./convertedFiles2:/convertedFiles2
    

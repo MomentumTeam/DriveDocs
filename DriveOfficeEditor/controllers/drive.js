@@ -21,7 +21,7 @@ exports.uploadNewFileToDrive = async (req, res, next) => {
   if (!types.includes(req.query.type)) {
     return res.status(500).send("status 500: type must be docx,pptx, or xlsx!");
   }
-  const path = `..${process.env.TEMPLATE_FOLDER}/${req.query.name}.${req.query.type}`;
+  const path = `${process.env.TEMPLATE_FOLDER}/${req.query.name}.${req.query.type}`;
   res.locals.path = path;
   fs.openSync(path, "w");
   const data = new FormData();
@@ -30,7 +30,8 @@ exports.uploadNewFileToDrive = async (req, res, next) => {
   const accessToken = metadataService.getAuthorizationHeader(req.user);
   let fileId;
   try {
-    fileId = await upload(data, req.query.parentId, accessToken);
+    console.log(req.query)
+    fileId = await upload(data, req.query.parent, accessToken);
     res.locals.fileId = fileId;
     next();
   } catch (error) {
@@ -76,7 +77,7 @@ exports.updateFile = async (fileId, filePath, accessToken) => {
   mimeType = mime.contentType(path.extname(filePath))
   const data = new FormData();
   data.append('file', fs.createReadStream(filePath));
-  const uploadId = await getUploadId(size, fileId, accessToken); 
+  const uploadId = await getUploadId(size, fileId, accessToken);
   const config = {
       method: 'post',
       url: `${process.env.DRIVE_URL}/api/upload?uploadType=resumable&uploadId=${uploadId}`,
@@ -91,9 +92,8 @@ exports.updateFile = async (fileId, filePath, accessToken) => {
   };
   try { 
     const response = await axios(config);
-    console.log(response.data)
  } catch(error) {
-   console.log(error.message);
+   throw error;
  }
 }
 
@@ -115,12 +115,11 @@ exports.downloadFileFromDrive = async (idToDownload, downloadedFilePath, accessT
     response.data.pipe(writer)
 
     return new Promise((resolve, reject) => {
-      writer.on('finish', resolve)
-      writer.on('error', reject)
+      writer.on('finish', resolve);
+      writer.on('error', reject);
     })
 
   } catch (error) {
-    console.log("error: "+ error);
     throw error;
   }
 };
@@ -139,11 +138,18 @@ async function getUploadId (size, fileId, accessToken) {
      const response = await axios(config);
      return response.headers["x-uploadid"];
   } catch(error) {
-    console.log(error.message);
+    throw error;
   }
 }
 
 function getFileSize (filePath) {
-  const stats = fs.statSync(filePath);
-  return `${stats.size}`;
+  try{
+    const stats = fs.statSync(filePath);
+    console.log(stats.size);
+    return `${stats.size}`;
+  }
+  catch(error){
+    throw error;
+  }
+
 }

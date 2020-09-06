@@ -35,6 +35,12 @@ exports.setEditNewLocals = (req, res, next) => {
   next();
 };
 
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}  
+
 exports.generateUrl = async (req, res, next) => {
   try {
     const id = req.params.id;
@@ -79,12 +85,13 @@ exports.generateUrl = async (req, res, next) => {
     if (Object.values(convertTypes).includes(fileType)) {
       console.log("STARTING CONVERT PROCESS...");
       let newFormat = convertTo[fileType];
-
-      await convert.convertAndUpdateInDrive(id, newFormat,fileType, res.locals.driveAccessToken,res.locals.accessToken);
-      console.log("CONVERT PROCESS IS FINISHED...");
-      fileType = newFormat;
+        await convert.convertAndUpdateInDrive(id, newFormat,fileType, res.locals.driveAccessToken,res.locals.accessToken);
+        fileType = newFormat;
+        return res.redirect("/api/files/"+req.params.id);
+      
+      
+      
     }
-
     if (operation == operations.EDIT) {
       switch (fileType) {
         case fileTypes.DOCX:
