@@ -33,6 +33,7 @@ services:
             -  CLEANUP_ENABLED=true
             -  WEBDAV_URL=${WEBDAV_URL}
             -  LOCAL_OFFICE_FOLDER=${LOCAL_OFFICE_FOLDER}
+            -  OFFICE_EDITOR_URL=${OFFICE_EDITOR_URL}
         ports: 
             - "8082:8080"
         volumes:

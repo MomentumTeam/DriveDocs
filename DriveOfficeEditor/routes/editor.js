@@ -4,6 +4,7 @@ const files = require("../controllers/files");
 const tokens = require("../controllers/tokens");
 const redis = require("../controllers/redis");
 const logger = require("../services/logger.js");
+const drive = require("../controllers/drive");
 
 module.exports = (app) => {
   app.get(
@@ -60,4 +61,23 @@ module.exports = (app) => {
   app.get("/isalive", (req, res) => {
     return res.send("alive");
   });
+
+  app.get("/updateAndDownload/:id",
+    authenitcation.isAuthenticated,
+    metadata.loadMetadata,
+    metadata.checkPermissionsOnFile,
+    files.updateFile,
+    drive.redirectToDownload,
+    (req, res) => {
+      
+      try {
+        res.render("downloadLink", {
+          link: res.locals.link
+        });
+      } catch (e) {
+          res.status(500).send(e);
+      }
+    } 
+  );
+
 };

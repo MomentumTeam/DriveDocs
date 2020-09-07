@@ -140,6 +140,7 @@ namespace DriveWopi.Models
                 cfi.LicenseCheckForEditIsEnabled = true;
                 cfi.ClientUrl = Config.WebDAV_Server+"/"+_FileInfo.Name;
                 cfi.SupportsGetLock = true;
+                cfi.DownloadUrl = Config.OfficeEditorUrl + "/updateAndDownload/"+SessionId;
                 Config.logger.LogDebug("GetCheckFileInfo of file {0} Success", name);
                 return cfi;
             }

@@ -27,6 +27,21 @@ exports.setEditNewLocals = (req, res, next) => {
   next();
 };
 
+
+exports.updateFile = async (req,res,next) => {
+  try{
+    const url = `${process.env.WOPI_URL}/update/${req.params.id}`;
+    const res = await axios.get(url);
+    next();
+  }
+  catch(err){
+    res.status(500).send(err);
+  }
+
+
+
+}
+
 exports.generateUrl = (req, res, next) => {
   try {
     const id = req.params.id;
