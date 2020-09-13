@@ -69,15 +69,15 @@ module.exports = (app) => {
     files.updateFile,
     drive.redirectToDownload,
     (req, res) => {
-      
       try {
         res.render("downloadLink", {
           link: res.locals.link
         });
+        // return res.redirect(res.locals.link);
       } catch (e) {
-          res.status(500).send(e);
+        res.status(500).send(e);
       }
-    } 
+    }
   );
 
 };
