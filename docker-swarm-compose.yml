@@ -1,0 +1,126 @@
+version: '3.2'
+volumes:
+    sample_files:
+        driver: nfs
+        driver_opts:
+            type: 'nfs'
+            o: 'addr=221.181.76.116,nolock,soft,rw,nfsvers=4'
+            device: ":/nfsdata/sample_files"
+    templates:
+        driver: nfs
+        driver_opts:
+            type: 'nfs'
+            o: 'addr=221.181.76.116,nolock,soft,rw,nfsvers=4'
+            device: ":/nfsdata/templates"
+    data:
+        driver: nfs
+        driver_opts:
+            type: 'nfs'
+            o: 'addr=221.181.76.116,nolock,soft,rw,nfsvers=4'
+            device: ":/nfsdata/data"
+    logs:
+        driver: nfs
+        driver_opts:
+            type: 'nfs'
+            o: 'addr=221.181.76.116,nolock,soft,rw,nfsvers=4'
+            device: ":/nfsdata/logs"                        
+    
+services: 
+    nfs:
+        image: 'itsthenetwork/nfs-server-alpine'
+        ports: 
+            - "2049:2049"
+        deploy:
+            replicas: 1
+            restart_policy:
+              condition: on-failure
+            placement:
+              constraints: 
+              - node.role == manager
+        environment:
+            -  SHARED_DIRECTORY=/nfs.1
+        volumes:
+            -  /nfsdata:/nfs.1 
+    redis-server:
+        image: 'redis'
+        command: redis-server --requirepass mozart
+        ports: 
+            - "6380:6379"
+        deploy:
+            replicas: 1
+            restart_policy:
+              condition: on-failure
+        depends_on:
+            - nfs
+        volumes:
+            - data:/data
+    wopi:
+        image: dockerizeddrivedocsdev_wopi
+        depends_on:
+            - redis-server
+            - nfs
+        environment:
+            -  REDIS_HOST=221.181.76.116
+            -  REDIS_PORT=6379
+            -  DRIVE_URL=https://drive-integration.k6s.prod.services.idf
+            -  PORT=8080
+            -  JWT_SECRET=niceSecret
+            -  FOLDER=/sample_files
+            -  TEMPLATE_FOLDER=/templates
+            -  AUTHORIZATION_TOKEN=Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsImFkZnNJZCI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJnZW5lc2lzSWQiOiI1ZTU2ODgzMjQyMDNmYzQwMDQzNTkxYWEiLCJuYW1lIjp7ImZpcnN0TmFtZSI6Iteg15nXmden15kiLCJsYXN0TmFtZSI6IteQ15PXmdeT16EifSwiZGlzcGxheU5hbWUiOiJ0MjM0NTg3ODlAamVsbG8uY29tIiwicHJvdmlkZXIiOiJHZW5lc2lzIiwiZW50aXR5VHlwZSI6ImRpZ2ltb24iLCJjdXJyZW50VW5pdCI6Im5pdHJvIHVuaXQiLCJkaXNjaGFyZ2VEYXkiOiIyMDIyLTExLTMwVDIyOjAwOjAwLjAwMFoiLCJyYW5rIjoibWVnYSIsImpvYiI6Iteo15XXpteXIiwicGhvbmVOdW1iZXJzIjpbIjA1Mi0xMjM0NTY3Il0sImFkZHJlc3MiOiLXqNeX15XXkSDXlNee157Xqten15nXnSAzNCIsInBob3RvIjpudWxsLCJqdGkiOiI0YzRmMzYwMS00OTQ0LTQ3M2MtOTEyMi1hNjVjMGU5YmI0YWUiLCJpYXQiOjE1OTQxMDE0NjksImV4cCI6MTU5NjY5MzQ2OSwiZmlyc3ROYW1lIjoi16DXmdeZ16fXmSIsImxhc3ROYW1lIjoi15DXk9eZ15PXoSJ9.QlEuP5nO8S7uZ7P66RtMOTWABRRFAA11dER03SI2KQk
+            -  DRIVE_SECRET=docs@secret
+            -  TOKEN_EXPIRE=86400000
+            -  TIME_OUT=30000 #Time period to perform cleanUp in milliseconds
+            -  CLOSE_WAIT=3600 #Time before the session is deleted after not being updated in seconds
+            -  REMOVE_WAIT_USER=1200 #Time before the user is deleted from the session after begin inactive in seconds
+            -  MAX_REDIS_SESSION_TIME=86400 #maximum time for session on redis
+            -  DRIVE_UPDATE_TIME=30
+            -  REDIS_PASSWORD=mozart
+            -  CLEANUP_ENABLED=false
+        ports: 
+            - "8082:8080"
+        volumes:
+            - sample_files:/sample_files
+            - templates:/templates
+            - logs:/logs
+        deploy:
+            replicas: 2
+            restart_policy:
+              condition: on-failure
+
+    node-app:
+        image: dockerizeddrivedocsdev_node-app
+        environment:
+            -  NODE_TLS_REJECT_UNAUTORIZED=0
+            # -  WOPI_URL=https://wopi.prod.services.idf
+            -  WOPI_URL=http://221.181.76.116:8082
+            -  REDIS_HOST=221.181.76.116
+            -  REDIS_PORT=6379
+            -  OFFICE_ONLINE_URL=http://221.181.76.118
+            # -  OFFICE_ONLINE_URL=http://picuoos001.services.idf
+            -  PORT=3000
+            # -  OFFICE_EDITOR_URL=https://drivedocs.prod.services.idf
+            -  OFFICE_EDITOR_URL=http://221.181.76.116
+            -  JWT_SECRET=niceSecret
+            -  SHRAGA_URL=https://shraga.prod.services.idf
+            -  AUTHORIZATION_TOKEN=Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsImFkZnNJZCI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJnZW5lc2lzSWQiOiI1ZTU2ODgzMjQyMDNmYzQwMDQzNTkxYWEiLCJuYW1lIjp7ImZpcnN0TmFtZSI6Iteg15nXmden15kiLCJsYXN0TmFtZSI6IteQ15PXmdeT16EifSwiZGlzcGxheU5hbWUiOiJ0MjM0NTg3ODlAamVsbG8uY29tIiwicHJvdmlkZXIiOiJHZW5lc2lzIiwiZW50aXR5VHlwZSI6ImRpZ2ltb24iLCJjdXJyZW50VW5pdCI6Im5pdHJvIHVuaXQiLCJkaXNjaGFyZ2VEYXkiOiIyMDIyLTExLTMwVDIyOjAwOjAwLjAwMFoiLCJyYW5rIjoibWVnYSIsImpvYiI6Iteo15XXpteXIiwicGhvbmVOdW1iZXJzIjpbIjA1Mi0xMjM0NTY3Il0sImFkZHJlc3MiOiLXqNeX15XXkSDXlNee157Xqten15nXnSAzNCIsInBob3RvIjpudWxsLCJqdGkiOiI0YzRmMzYwMS00OTQ0LTQ3M2MtOTEyMi1hNjVjMGU5YmI0YWUiLCJpYXQiOjE1OTQxMDE0NjksImV4cCI6MTU5NjY5MzQ2OSwiZmlyc3ROYW1lIjoi16DXmdeZ16fXmSIsImxhc3ROYW1lIjoi15DXk9eZ15PXoSJ9.QlEuP5nO8S7uZ7P66RtMOTWABRRFAA11dER03SI2KQk
+            -  DRIVE_URL=http://drive-integration.k6s.prod.services.idf
+            -  DRIVE_SECRET=docs@secret
+            -  REDIS_PASSPORT=mozart
+            -  MAX_SIZE_DOCX=52428800
+            -  MAX_SIZE_PPTX=314572800
+            -  MAX_SIZE_XLXS=5242880
+            -  MAX_SIZE_PDF=314572800
+        depends_on:
+            - redis-server
+            - wopi
+            - nfs
+        ports: 
+            - "80:3000"
+            - "3000:3000"
+        volumes:
+            - logs:/logs
+        deploy:
+            replicas: 1
+            restart_policy:
+              condition: on-failure

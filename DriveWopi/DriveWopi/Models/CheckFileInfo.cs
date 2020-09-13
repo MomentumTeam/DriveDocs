@@ -50,8 +50,6 @@ namespace DriveWopi.Models
 
         public bool DisablePrint { get; set; }
 
-        public bool DisableTranslation { get; set; }
-
         public string DownloadUrl { get; set; }
 
         public bool EditModePostMessage { get; set; }
@@ -91,6 +89,8 @@ namespace DriveWopi.Models
         public bool ProtectInClient { get; set; }
 
         public string SignInUrl { get; set; }
+
+        public bool DisableTranslation { get; set; }
 
         public bool ReadOnly { get; set; }
 
@@ -168,8 +168,12 @@ namespace DriveWopi.Models
 
         public bool WorkflowPostMessage { get; set; }
 
+        public bool InsertImagePostMessage { get; set; }
+
         public CheckFileInfo()
         {
+            InsertImagePostMessage = true;
+            DisableTranslation = true;
             AllowAdditionalMicrosoftServices = false;
             AllowExternalMarketplace = false;
             BreadcrumbBrandName = "DriveDocs";

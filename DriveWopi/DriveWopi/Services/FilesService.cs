@@ -10,47 +10,40 @@ using System.Net;
 using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using System.Text;
+using Microsoft.Extensions.Logging;
+using ServiceStack.Redis;
 
 namespace DriveWopi.Services
 {
     public class FilesService
     {
-
-        public static string GenerateAuthorizationToken(string userId)
+        public static string GenerateAuthorizationToken(User user)
         {
-            //TODO
-
-           // return "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNTY4ODMyNDIwM2ZjNDAwNDM1OTFhYSIsImFkZnNJZCI6InQyMzQ1ODc4OUBqZWxsby5jb20iLCJnZW5lc2lzSWQiOiI1ZTU2ODgzMjQyMDNmYzQwMDQzNTkxYWEiLCJuYW1lIjp7ImZpcnN0TmFtZSI6Iteg15nXmden15kiLCJsYXN0TmFtZSI6IteQ15PXmdeT16EifSwiZGlzcGxheU5hbWUiOiJ0MjM0NTg3ODlAamVsbG8uY29tIiwicHJvdmlkZXIiOiJHZW5lc2lzIiwiZW50aXR5VHlwZSI6ImRpZ2ltb24iLCJjdXJyZW50VW5pdCI6Im5pdHJvIHVuaXQiLCJkaXNjaGFyZ2VEYXkiOiIyMDIyLTExLTMwVDIyOjAwOjAwLjAwMFoiLCJyYW5rIjoibWVnYSIsImpvYiI6Iteo15XXpteXIiwicGhvbmVOdW1iZXJzIjpbIjA1Mi0xMjM0NTY3Il0sImFkZHJlc3MiOiLXqNeX15XXkSDXlNee157Xqten15nXnSAzNCIsInBob3RvIjpudWxsLCJqdGkiOiJmZjQ2ODJjMy1lZDI3LTRkODItYmFjNi1iZWFhYTgzNDVmNzAiLCJpYXQiOjE1OTIyMzAxOTUsImV4cCI6MTU5NDgyMjE5NSwiZmlyc3ROYW1lIjoi16DXmdeZ16fXmSIsImxhc3ROYW1lIjoi15DXk9eZ15PXoSJ9.4caytinSKCQMDGSHq0p0Fl--NypOOiKC8Df5W7RCPkY";
-            return Config.AuthorizationToken;
-        
-        
+            return user.Authorization;
         }
 
-        public async static Task<string> getUploadId(FileInfo fileInfo, string authorization)
+        public async static Task<string> getUploadId(FileInfo fileInfo, string authorization, string fileId)
         {
             try
             {
-                using (var httpClient = new HttpClient())
+                HttpClientHandler clientHandler = new HttpClientHandler();
+                clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+                using (var httpClient = new HttpClient(clientHandler))
                 {
                     string uploadId = "";
+                    httpClient.DefaultRequestHeaders.Add("Auth-Type", "Docs");
                     httpClient.DefaultRequestHeaders.Add("X-Content-Length", fileInfo.Length.ToString());
                     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    var fileId = fileInfo.Name.ToString();
-                    int index = fileId.IndexOf(".");
-                    if (index > 0)
-                    {
-                        fileId = fileId.Substring(0, index);
-                    }
                     if (!Config.Mimetypes.ContainsKey(fileInfo.Extension.ToString().ToLower()))
                     {
                         throw new Exception();
                     }
                     var body = new { title = fileInfo.Name.ToString(), mimeType = Config.Mimetypes[fileInfo.Extension.ToString().ToLower()] };
-                    // Construct the JSON to Put.
                     string convertedBody = JsonConvert.SerializeObject(body, new JsonSerializerSettings());
                     HttpContent content = new StringContent(convertedBody, System.Text.Encoding.UTF8, "application/json");
-                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, Config.DriveUrl + "/api/upload/"+fileId);
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Put, Config.DriveUrl + "/api/upload/" + fileId);
                     request.Headers.Add("X-Content-Length", fileInfo.Length.ToString());
+                    request.Headers.Add("Auth-Type", "Docs");
                     request.Headers.Add("Authorization", authorization);
                     request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     request.Content = content;
@@ -60,40 +53,78 @@ namespace DriveWopi.Services
                     if (headers.TryGetValues("X-Uploadid", out values))
                     {
                         uploadId = values.First();
+                        Config.logger.LogDebug("uploadId to drive is: "+ uploadId);
                     }
                     else
                     {
-                        throw new Exception();
+                        Config.logger.LogError("uploadId creation fail "+fileId);
+                        if(response.StatusCode == HttpStatusCode.NotFound){
+                            Config.logger.LogError("Got an exception in GetUploadId - file not found");
+                            HandleNotFoundCase(fileId);
+                        }
+                        return null;
                     }
                     return uploadId;
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                Config.logger.LogError("Got an exception in GetUploadId:" + ex.Message);
+                return null;
             }
         }
-        public async static void UpdateFileInDrive(FileInfo fileInfo, string authorization)
+
+        public static void HandleNotFoundCase(string fileId) 
+        {
+            try{
+                IRedisClient client = RedisService.GenerateRedisClient();
+                Session s = Session.GetSessionFromRedis(fileId, client);
+                s.DeleteSessionFromRedis();
+                s.DeleteSessionFromAllSessionsInRedis(fileId,client);
+                s.RemoveLocalFile();
+            }
+            catch(Exception ex){
+                throw ex;
+            }
+
+        }
+        public static bool UpdateFileInDrive(FileInfo fileInfo, string authorization, string fileId)
         {
             try
             {
-                string uploadId = await getUploadId(fileInfo, authorization);
+                Task<string> t = Task<string>.Run(async () =>
+                {
+                    try
+                    {
+                        string uploadId = await getUploadId(fileInfo, authorization, fileId);
+                        return uploadId;
+                    }
+                    catch (Exception e)
+                    {
+                        return null;
+                    }
+                });
+                t.Wait();
+                string uploadId = t.Result;
+                if (uploadId == null)
+                {
+                    return false;
+                }
                 using (var client = new WebClient())
                 {
-                    client.Headers.Set("Authorization", authorization);
-
                     client.Headers.Set("Content-Range", "bytes 0-" + (fileInfo.Length - 1) + "/" + fileInfo.Length);
-                    Console.WriteLine(uploadId + "");
-                    byte[] responseArray = client.UploadFile(Config.DriveUrl + "/api/upload?uploadType=resumable&uploadId=" + uploadId, fileInfo.FullName);
-                    Console.WriteLine("\nResponse Received. The contents of the file uploaded are:\n{0}", System.Text.Encoding.ASCII.GetString(responseArray));
-                    Console.WriteLine("UpdateFileInDrive");
-                    // return true;
+                    client.Headers.Set("Authorization", authorization);
+                    client.Headers.Set("Auth-Type", "Docs");
+                    string url = Config.DriveUrl + "/api/upload?uploadType=resumable&uploadId=" + uploadId;
+                    byte[] responseArray = client.UploadFile(url, fileInfo.FullName);
+                    Config.logger.LogDebug("UpdateFileInDrive success");
+                    return true;
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-
-                throw e;
+                Config.logger.LogError("Got an exception in UploadFileInDrive:" + ex.Message);
+                return false;
             }
         }
         public static void DownloadFileFromDrive(string idToDownload, string localPath, string authorization)
@@ -102,53 +133,18 @@ namespace DriveWopi.Services
             {
                 using (var client = new WebClient())
                 {
+                    client.Headers.Set("Auth-Type", "Docs");
                     client.Headers.Set("Authorization", authorization);
-                    //client.Encoding = Encoding.UTF8;
-                    //string fileName = Config.Folder+"\\"+localPath;
-                    //TODO download from Drive Service
-                    //byte[] data = client.DownloadData(Config.DriveServiceUrl+"/files/download/" + idToDownload);//, Config.Folder+"/"+name);
                     client.DownloadFile(Config.DriveUrl + "/api/files/" + idToDownload + "?alt=media", localPath);
-                    // BinaryWriter writer = new BinaryWriter(File.OpenWrite(fileName));     
-                    //  writer.Write(data);
-                    //  writer.Flush();
-                    //  writer.Close();
-                    //File.WriteAllBytes(Config.Folder+"/"+name,data);
-                    Console.WriteLine("");
                 }
+                Config.logger.LogDebug("DownloadFileFromDrive success, fileId: "+idToDownload);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                Config.logger.LogError("DownloadFileFromDrive fail, error: " + ex.Message);
+                throw ex;
             }
 
-        }
-
-
-        public static void UpdateFileInDrive(string idToUpdate, string localPath, string authorization)
-        {
-            try
-            {
-                using (var client = new WebClient())
-                {
-                    client.Headers.Set("Authorization", authorization);
-
-                    //client.Encoding = Encoding.UTF8;
-                    // string fileName = Config.Folder+"\\"+localPath;
-                    //TODO download from Drive Service
-                    //byte[] data = client.DownloadData(Config.DriveServiceUrl+"/files/download/" + idToDownload);//, Config.Folder+"/"+name);
-                    //client.DownloadFile("http://atan-drv.northeurope.cloudapp.azure.com/api/files/"+idToDownload+"?alt=media", fileName);
-                    // BinaryWriter writer = new BinaryWriter(File.OpenWrite(fileName));     
-                    //  writer.Write(data);
-                    //  writer.Flush();
-                    //  writer.Close();
-                    //File.WriteAllBytes(Config.Folder+"/"+name,data);
-                    Console.WriteLine("hello");
-                }
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
         }
 
         public static void CopyTemplate(string template, string id)
@@ -159,9 +155,10 @@ namespace DriveWopi.Services
                 string dest = Config.Folder + "/" + id;
                 File.Copy(source, dest, true);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                Config.logger.LogError("CopyTemplate fail, error: " + ex.Message);
+                throw ex;
             }
         }
         public static void CreateBlankFile(string path)
@@ -185,9 +182,9 @@ namespace DriveWopi.Services
                 }
                 File.Copy(source, dest, true);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                throw ex;
             }
         }
 
@@ -201,10 +198,12 @@ namespace DriveWopi.Services
                 {
                     fileStream.Write(newContent, 0, newContent.Length);
                 }
+                Config.logger.LogDebug("Save file success, fileId: "+id);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                Config.logger.LogError("Save file fail, error: " + ex.Message);
+                throw ex;
             }
 
         }
@@ -224,9 +223,10 @@ namespace DriveWopi.Services
                     return ms.ToArray();
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                Config.logger.LogError("GetByteArrayFromStream fail, error: " + ex.Message);
+                throw ex;
             }
         }
 
@@ -236,6 +236,7 @@ namespace DriveWopi.Services
             {
                 if (!FileExists(filePath))
                 {
+                    Config.logger.LogError("GetFileContent fail, file isnt exists");
                     throw new DriveFileNotFoundException(filePath);
                 }
                 //string filePath = GeneratePath(id);
@@ -251,9 +252,10 @@ namespace DriveWopi.Services
                 ms.Position = 0;
                 return ms.ToArray();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                Config.logger.LogError("GetFileContent fail, error: " + ex.Message);
+                throw ex;
             }
 
         }
@@ -262,12 +264,12 @@ namespace DriveWopi.Services
         {
             try
             {
-                //string filePath = GeneratePath(id);
                 return File.Exists(filePath);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                throw e;
+                Config.logger.LogError("FileExists fail, error: " + ex.Message);
+                throw ex;
             }
 
         }
@@ -281,6 +283,21 @@ namespace DriveWopi.Services
         public static string GeneratePath(string id)
         {
             return Config.Folder + "/" + id;
+        }
+
+        public static void RemoveFile(string path)
+        {
+            Console.WriteLine(path);
+            try
+            {
+                File.Delete(path);
+            }
+            catch (Exception ex)
+            {
+                Config.logger.LogError("FileExists RemoveFile, error: " + ex.Message);
+                throw ex;
+            }
+
         }
     }
 }

@@ -12,7 +12,7 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
 
-    <link rel="shortcut icon" href=<%= faviconUrl%> />
+    <link rel="shortcut icon" href=<%=faviconUrl %> />
 
     <style type="text/css">
         body {
@@ -48,16 +48,24 @@
 
     <script type="text/javascript">
 
-        window.onbeforeunload = (event) =>{
-           if(event.clientY < 0 || (!event.clientY)){
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", `/closeSession/${location.pathname.split('/')[3]}`, true);
-            xhr.onreadystatechange = function() { 
-                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                    //console.log()
+        window.onbeforeunload = (event) => {
+            //location.reload();
+            window.location.reload(true); 
+            if (event.clientY < 0 || (!event.clientY)) {
+                var xhr = new XMLHttpRequest();
+                let id;
+                if(location.pathname.includes('?')){
+                    id = location.pathname.split('?')[0].split('/')[3];
+                } else {
+                    id = location.pathname.split('/')[3]
                 }
-             }
-            xhr.send();
+                xhr.open("POST", `/closeSession/${id}`, true);
+                xhr.onreadystatechange = function () {
+                    if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                        //console.log()
+                    }
+                }
+                xhr.send();
             }
         }
 
@@ -65,10 +73,10 @@
         var office_frame = document.createElement('iframe');
         office_frame.name = 'office_frame';
         office_frame.id = 'office_frame';
-        //var fileName = <%= fileName%>;
+        // var fileName = <%= fileName%>;
 
         // The title should be set for accessibility
-        office_frame.title="DriveDocs";
+        office_frame.title = "DriveDocs";
 
         // This attribute allows true fullscreen mode in slideshow view
         // when using PowerPoint's 'view' action.

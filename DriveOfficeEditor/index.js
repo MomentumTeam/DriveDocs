@@ -4,11 +4,11 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const editor = require("./routes/editor");
 const auth = require("./routes/authentication");
+const localOffice = require("./routes/localOffice");
+const newPage = require("./routes/newPage");
 const app = express();
-//process.env.WOPI_URL = process.env.WOPI_URL_LIHI;
-//process.env.DRIVE_SERVICE_URL = process.env.DRIVE_SERVICE_URL_LIHI;
-//process.env.REDIS_HOST = process.env.WOPI_URL_LIHI;
-//process.env.REDIS_PORT = process.env.WOPI_URL_LIHI;
+// require("dotenv").config();
+const logger = require("./services/logger.js");
 app.use(cookieParser());
 app.set("view engine", "ejs");
 app.use(
@@ -20,6 +20,14 @@ app.use(
   })
 );
 auth(app);
+newPage(app);
 editor(app);
+localOffice(app);
 
-app.listen(process.env.PORT, () => console.log(`Drive Office Editor is listening at http://localhost:${process.env.PORT}`));
+app.listen(process.env.PORT, () =>
+  logger.log({
+    level: "info",
+    message: `Drive Office Editor is listening at http://localhost:${process.env.PORT}`,
+    label: "DriveOfficeEditor up",
+  })
+);

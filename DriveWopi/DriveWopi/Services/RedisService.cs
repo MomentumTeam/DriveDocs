@@ -1,51 +1,85 @@
 using System;
 using ServiceStack.Redis;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
+using Microsoft.VisualBasic;
+
 namespace DriveWopi.Services
 {
     public class RedisService
     {
-        static RedisService()
+        public static IRedisClient GenerateRedisClient()
         {
-        }
-
-        public static IRedisClient GenerateRedisClient(){
-            try{
-            RedisManagerPool manager = new RedisManagerPool(Config.RedisHost);
-           //Console.WriteLine("REDIS HOST variable = "+Environment.GetEnvironmentVariable("REDIS_HOST"));
-        //    RedisManagerPool manager = new RedisManagerPool(Environment.GetEnvironmentVariable("REDIS_HOST"));
-            IRedisClient client =  client = manager.GetClient();
-            return client;
+            try
+            {
+                RedisManagerPool manager = new RedisManagerPool(Config.RedisHost);
+                IRedisClient client = client = manager.GetClient();
+                return client;
             }
-            catch(Exception e){
+            catch (Exception e)
+            {
+                Config.logger.LogDebug("problem with Redisclient creation, error:"+e.Message);
                 throw e;
             }
-
         }
 
         public static string Get(string key, IRedisClient client)
         {
-            string value = client.Get<string>(key);
-            return value;
+            try{
+                string value = client.Get<string>(key);
+                return value;
+            }
+            catch(Exception ex){
+                Config.logger.LogDebug("problem with getting from Redis, error:"+ex.Message);
+                throw ex;
+
+            }
         }
 
-        public static List<string> GetList(string key , IRedisClient client)
+        public static List<string> GetList(string key, IRedisClient client)
         {
-            return client.GetAllItemsFromList(key);
+            try{
+                return client.GetAllItemsFromList(key);
+            }
+            catch(Exception ex){
+                Config.logger.LogDebug("problem with GetList from Redis, error:"+ex.Message);
+                throw ex;
+            }
+
         }
 
-        public static void Set(string key, string value , IRedisClient client)
+        public static void Set(string key, string value, IRedisClient client)
         {
-            client.Set(key, value);
+            try{
+                client.Set(key, value);
+            }
+            catch(Exception ex){
+                Config.logger.LogDebug("problem with set to Redis, error:"+ex.Message);
+                throw ex;
+            }
         }
 
-        public static void Remove(string key , IRedisClient client)
+        public static void Remove(string key, IRedisClient client)
         {
-            client.Remove(key);
-        }        
-        public static void AddItemToList (string key, string value , IRedisClient client)
+            try{
+                client.Remove(key);
+            }
+            catch(Exception ex){
+                Config.logger.LogDebug("problem with remove from Redis, error:"+ex.Message);
+                throw ex;
+            }
+        }
+        public static void AddItemToList(string key, string value, IRedisClient client)
         {
-            client.AddItemToList(key, value);
+            try{
+                client.AddItemToList(key, value);
+            }
+            catch(Exception ex){
+                Config.logger.LogDebug("problem with AddItemToList in Redis, error:"+ex.Message);
+                throw ex;
+            }
+ 
         }
     }
 }
