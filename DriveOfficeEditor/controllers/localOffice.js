@@ -33,6 +33,8 @@ exports.webdavDownloadAndPermissions = async (req, res, next) => {
       webDavFileName: res.locals.webDavFileName,
       permission: res.locals.permission
     }
+    console.log("req.user=");
+    console.log(req.user);
     await axios.post(`${process.env.WEBDAV_MANAGER_URL}/downloadToWebdav`, body);
     next();
   }
@@ -42,8 +44,8 @@ exports.webdavDownloadAndPermissions = async (req, res, next) => {
 };
 
 exports.setFolderAndFileName = (req, res, next) => {
-  res.locals.webDavFolder = req.user.id;
-  res.locals.webDavFileName = `${res.params.id}.${res.locals.metadata.type}`;
+  res.locals.webDavFolder = res.locals.metadata.type;
+  res.locals.webDavFileName = `${req.params.id}.${res.locals.metadata.type}`;
   next();
 };
 
