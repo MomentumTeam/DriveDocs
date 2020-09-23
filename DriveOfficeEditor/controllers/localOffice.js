@@ -33,8 +33,6 @@ exports.webdavDownloadAndPermissions = async (req, res, next) => {
       webDavFileName: res.locals.webDavFileName,
       permission: res.locals.permission
     }
-    console.log("req.user=");
-    console.log(req.user);
     await axios.post(`${process.env.WEBDAV_MANAGER_URL}/downloadToWebdav`, body);
     next();
   }
@@ -52,12 +50,26 @@ exports.setFolderAndFileName = (req, res, next) => {
 exports.initRedisSession = async (req, res, next) => {
   try {
     const redisKey = `local.${req.params.id}`;
-    res.locals.redisKey = redisKey;
-    const session = res.locals.dataToSign;
-    session["lastUpdated"] = session["created"];
-    delete session["created"];
-    session["webDavFolder"] = res.locals.webDavFolder;
-    session["webDavFileName"] = res.locals.webDavFileName;
+    const existingSession = await redis.get(redisKey);
+    const session = existingSession == null ? {} : JSON.parse(existingSession);
+    console.log("session = ");
+    console.log(session);
+    const user = {
+      id: req.user.id,
+      name: req.user.name,
+      authorization: res.locals.authorization,
+      permission: res.locals.permission
+    };
+    if (existingSession != null) {
+      session.users.push(user);
+    }
+    else {
+      session.users = [user];
+      session.id = req.params.id;
+      session.webDavFolder = res.locals.webDavFolder;
+      session.webDavFileName = res.locals.webDavFileName;
+    }
+
     res.locals.session = session;
     console.log("session = ");
     console.log(session);
@@ -65,6 +77,8 @@ exports.initRedisSession = async (req, res, next) => {
     next();
   }
   catch (err) {
+    console.log("error redis:");
+    console.log(err);
     return res.status(500).send("error in initializing session in Redis");
   }
 };
@@ -99,7 +113,7 @@ exports.redirectToLocalOffice = (req, res, next) => {
       });
     }
 
-    const webDavPath = `${process.env.WEBDAV_URL}/${res.locals.webDavFolder}/${res.locals.webDavFileName}`;
+    const webDavPath = `${process.env.WEBDAV_URL}/files/${res.locals.webDavFolder}/${res.locals.webDavFileName}`;
 
     if (operation == operations.EDIT) {
       switch (fileType) {

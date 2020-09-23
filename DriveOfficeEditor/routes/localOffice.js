@@ -11,7 +11,6 @@ module.exports = (app) => {
     authenitcation.isAuthenticated,
     metadata.loadMetadata,
     metadata.checkPermissionsOnFile,
-    // metadata.checkSizeOfFile,
     tokens.generateAccessToken,
     localOffice.setFolderAndFileName,
     localOffice.webdavDownloadAndPermissions,
