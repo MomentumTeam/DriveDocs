@@ -68,6 +68,7 @@ services:
             -  OFFICE_ONLINE_URL_PPTX=${OFFICE_ONLINE_URL_PPTX}
             -  WEBDAV_URL=${WEBDAV_URL}
             -  LOCAL_OFFICE_FOLDER=${LOCAL_OFFICE_FOLDER}
+            -  WEBDAV_MANAGER_URL=${WEBDAV_MANAGER_URL}
         depends_on:
             - redis-server
             - wopi

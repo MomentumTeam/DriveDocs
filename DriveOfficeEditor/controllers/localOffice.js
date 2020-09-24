@@ -23,67 +23,63 @@ const operations = {
   EDIT_NEW: "editNew",
 };
 
-exports.initRedisSession = async (req,res,next) => {
-  try{
-     const redisKey = `local.${req.params.id}`;
-     res.locals.redisKey = redisKey;
-     const session = res.locals.dataToSign;
-     session["lastUpdated"] = session["created"];
-     delete session["created"];
-     session["localFilePath"] = res.locals.localFilePath;
-     session["localFileName"] = res.locals.localFileName;  
-     res.locals.session = session;
-     console.log("session = ");
-     console.log(session);
-     await redis.set(redisKey,JSON.stringify(session));
-     next();
+exports.webdavDownloadAndPermissions = async (req, res, next) => {
+  try {
+    let body = {
+      fileId: req.params.id,
+      authorization: res.locals.authorization,
+      userId: req.user.id,
+      webDavFolder: res.locals.webDavFolder,
+      webDavFileName: res.locals.webDavFileName,
+      permission: res.locals.permission
+    }
+    await axios.post(`${process.env.WEBDAV_MANAGER_URL}/downloadToWebdav`, body);
+    next();
   }
-  catch(err){
-    return res.status(500).send("error in initializing session in Redis");
+  catch (err) {
+    return res.error(err);
   }
-
 };
 
-exports.downloadFromDrive = async (req, res, next) => {
-  try {
-    const idToDownload = req.params.id;
-    const fileType = res.locals.metadata.type;
-    const localFileName = `${idToDownload}.${fileType}`;
+exports.setFolderAndFileName = (req, res, next) => {
+  res.locals.webDavFolder = res.locals.metadata.type;
+  res.locals.webDavFileName = `${req.params.id}.${res.locals.metadata.type}`;
+  next();
+};
 
-    const path = `${process.env.LOCAL_OFFICE_FOLDER}/${localFileName}`;
-    const path2 = `${process.env.LOCAL_OFFICE_FOLDER}/blabla.docx`;
-    console.log(`idToDownload=${idToDownload}  fileType=${fileType}  localFileName=${localFileName}  path=${path}`);
-    // const writer = fs.createWriteStream(path,{mode: fs.constants.S_IWOTH});
-    // const writer = fs.createWriteStream(path);
-    const writer = fs.createWriteStream(path2);
-    res.locals.localFilePath = path;
-    res.locals.localFileName = localFileName;
-    const accessToken = metadataService.getAuthorizationHeader(req.user);
-    console.log(`accessToken=${accessToken}`);
-    console.log(`url=${process.env.DRIVE_URL}/api/files/${idToDownload}?alt=media`);
-    const config = {
-      method: "GET",
-      url: `${process.env.DRIVE_URL}/api/files/${idToDownload}?alt=media`,
-      responseType: "stream",
-      headers: {
-        Authorization: accessToken,
-        "Auth-Type": "Docs",
-      },
+exports.initRedisSession = async (req, res, next) => {
+  try {
+    const redisKey = `local.${req.params.id}`;
+    const existingSession = await redis.get(redisKey);
+    const session = existingSession == null ? {} : JSON.parse(existingSession);
+    console.log("session = ");
+    console.log(session);
+    const user = {
+      id: req.user.id,
+      name: req.user.name,
+      authorization: res.locals.authorization,
+      permission: res.locals.permission
     };
-    const response = await axios(config);
-    response.data.pipe(writer);
-    writer.on("finish", () => {
-      console.log("FINISH!");
-      next();
-    });
-    writer.on("error", () => {
-      console.log("ERROR!");
-      return res.status(500).send("error");
-    });
-  } catch (error) {
-    console.log("error: " + error);
-    writer.end();
-    return res.status(500).send(error);
+    if (existingSession != null) {
+      session.users.push(user);
+    }
+    else {
+      session.users = [user];
+      session.id = req.params.id;
+      session.webDavFolder = res.locals.webDavFolder;
+      session.webDavFileName = res.locals.webDavFileName;
+    }
+
+    res.locals.session = session;
+    console.log("session = ");
+    console.log(session);
+    await redis.set(redisKey, JSON.stringify(session));
+    next();
+  }
+  catch (err) {
+    console.log("error redis:");
+    console.log(err);
+    return res.status(500).send("error in initializing session in Redis");
   }
 };
 
@@ -117,39 +113,28 @@ exports.redirectToLocalOffice = (req, res, next) => {
       });
     }
 
-    const localFileName = res.locals.localFileName;
+    const webDavPath = `${process.env.WEBDAV_URL}/files/${res.locals.webDavFolder}/${res.locals.webDavFileName}`;
 
     if (operation == operations.EDIT) {
       switch (fileType) {
         case fileTypes.DOCX:
-          return res.redirect(`ms-word:ofe|u|${process.env.WEBDAV_URL}/${localFileName}`);
-          // res.locals.link = `ms-word:ofe|u|${process.env.WEBDAV_URL}/${localFileName}`;
-          // break;
-          case fileTypes.PPTX:
-          return res.redirect(`ms-powerpoint:ofe|u|${process.env.WEBDAV_URL}/${localFileName}`);
-          // res.locals.link = `ms-powerpoint:ofe|u|${process.env.WEBDAV_URL}/${localFileName}`;
-          // break;
-          case fileTypes.XLSX:
-          return res.redirect(`ms-excel:ofe|u|${process.env.WEBDAV_URL}/${localFileName}`);
-          // res.locals.link = `ms-excel:ofe|u|${process.env.WEBDAV_URL}/${localFileName}`;
-          // break;
+          return res.redirect(`ms-word:ofe|u|${webDavPath}`);
+        case fileTypes.PPTX:
+          return res.redirect(`ms-powerpoint:ofe|u|${webDavPath}`);
+
+        case fileTypes.XLSX:
+          return res.redirect(`ms-excel:ofe|u|${webDavPath}`);
         default:
           return res.status(500).send("file type not supported");
       }
     } else {
       switch (fileType) {
         case fileTypes.DOCX:
-          return res.redirect(`ms-word:ofv|u|${process.env.WEBDAV_URL}/${localFileName}`);
-          // res.locals.link = `ms-word:ofv|u|${process.env.WEBDAV_URL}/${localFileName}`;
-          // break;
+          return res.redirect(`ms-word:ofv|u|${webDavPath}`);
         case fileTypes.PPTX:
-          return res.redirect(`ms-powerpoint:ofv|u|${process.env.WEBDAV_URL}/${localFileName}`);
-          // res.locals.link = `ms-powerpoint:ofv|u|${process.env.WEBDAV_URL}/${localFileName}`;
-          // break;
+          return res.redirect(`ms-powerpoint:ofv|u|${webDavPath}`);
         case fileTypes.XLSX:
-          return res.redirect(`ms-excel:ofv|u|${process.env.WEBDAV_URL}/${localFileName}`);
-          // res.locals.link = `ms-excel:ofv|u|${process.env.WEBDAV_URL}/${localFileName}`;
-          // break;
+          return res.redirect(`ms-excel:ofv|u|${webDavPath}`);
         default:
           return res.status(500).send("file type not supported");
       }
