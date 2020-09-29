@@ -28,10 +28,8 @@ namespace pptConverter.Controllers
             Console.WriteLine(pptPath);
             Console.WriteLine(pptxPath);
             Presentation presentation = new Presentation();
-
             //load the PPT file from disk
             presentation.LoadFromFile(pptPath);
-
             //save the PPT document to PPTX file format
             presentation.SaveToFile(pptxPath, FileFormat.Pptx2013);
             return Ok("ok");

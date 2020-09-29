@@ -22,12 +22,9 @@ const generateAuthorizationHeader = (userObj) => {
     const hour = 60 * minute;
     const day = 24 * hour;
     const expiresIn = day * 1;
-
     const iat = Math.floor(Date.now() / 1000);
     const exp = iat + expiresIn;
-
     const user = { ...userObj, iat, exp };
-
     const name = handleUserName(user);
 
     user.firstName = name.firstName;
