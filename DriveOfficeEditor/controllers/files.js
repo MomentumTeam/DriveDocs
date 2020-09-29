@@ -107,7 +107,7 @@ exports.generateUrl = async (req, res, next) => {
     logger.log({
       level: "error",
       message: `Status 500, failed to create url, error: ${e}`,
-      label: `session: ${req.params.id}`,
+      label: `fileId: ${req.params.id}`,
     });
     return res.status(500).send(e);
   }
