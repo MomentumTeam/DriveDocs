@@ -6,6 +6,7 @@ const logger = require("../services/logger.js");
 
 exports.generateAccessToken = async (req, res, next) => {
   try {
+    res.locals.driveAccessToken = metadataService.getAuthorizationHeader(req.user);
     const authorization = metadataService.getAuthorizationHeader(req.user);
     res.locals.authorization = authorization;
     const dataToSign = {

@@ -1,5 +1,11 @@
 version: '3'
 services: 
+    convert-service:
+        build: ./versed
+        container_name: convertService
+        ports: 
+            - "3005:3000"
+        restart: on-failure
     redis-server:
         image: 'redis:alpine'
         container_name: redis-server
@@ -7,7 +13,7 @@ services:
         ports: 
             - "6379:6379"
         # volumes:
-        # - ./data:/data
+        #     - ./data:/data
         restart: on-failure
     wopi:
         build: ./DriveWopi/DriveWopi
@@ -41,6 +47,17 @@ services:
             - ./templates:/templates
             - ./logs:/logs
         restart: on-failure
+    ppt-converter:
+        build: ./pptConverter
+        environment: 
+            -  DOWNLOADS_FOLDER=${DOWNLOADS_FOLDER}
+            -  CONVERTED_FOLDER=${CONVERTED_FOLDER}
+            -  PPT_CONVERT_PORT=${PPT_CONVERT_PORT}
+        ports:
+            - "3010:3010"
+        volumes:
+            - ./downloads:/downloads
+            - ./convertedFiles2:/convertedFiles2
     node-app:
         build: ./DriveOfficeEditor
         environment:
@@ -48,6 +65,8 @@ services:
             -  WOPI_URL=${WOPI_URL}
             -  REDIS_HOST=${REDIS_HOST}
             -  REDIS_PORT=${REDIS_PORT}
+            -  DOWNLOADS_FOLDER=${DOWNLOADS_FOLDER}
+            -  CONVERTED_FOLDER=${CONVERTED_FOLDER}
             -  OFFICE_EDITOR_URL=${OFFICE_EDITOR_URL}
             -  OFFICE_ONLINE_URL=${OFFICE_ONLINE_URL}
             -  PORT=${PORT_NODE}
@@ -55,6 +74,7 @@ services:
             -  SHRAGA_URL=${SHRAGA_URL}
             -  AUTHORIZATION_TOKEN=${AUTHORIZATION_TOKEN}
             -  DRIVE_URL=${DRIVE_URL}
+            # - 'SECRET=thisIsASecret'
             -  DRIVE_SECRET=${DRIVE_SECRET}
             -  REDIS_PASSWORD=${REDIS_PASSWORD}
             -  MAX_SIZE_DOCX=${MAX_SIZE_DOCX}
@@ -66,24 +86,23 @@ services:
             -  FAVICON_XLSX=${FAVICON_XLSX}
             -  FAVICON_PDF=${FAVICON_PDF}
             -  OFFICE_ONLINE_URL_PPTX=${OFFICE_ONLINE_URL_PPTX}
-            -  WEBDAV_URL=${WEBDAV_URL}
+            -  CONVERT_SERVICE_URL=${CONVERT_SERVICE_URL}
+            -  TEMPLATE_FOLDER=${TEMPLATE_FOLDER}
+            -  PPT_CONVERTER_URL=${PPT_CONVERTER_URL}
+	    -  WEBDAV_URL=${WEBDAV_URL}
             -  LOCAL_OFFICE_FOLDER=${LOCAL_OFFICE_FOLDER}
             -  WEBDAV_MANAGER_URL=${WEBDAV_MANAGER_URL}
         depends_on:
             - redis-server
             - wopi
-            # - convert-formats
+            - convert-service
+            - ppt-converter
         ports: 
             - "3000:3000"
         restart: on-failure
         volumes: 
             - ./logs:/logs
             - ./templates:/templates
+            - ./downloads:/downloads
             - ./localOfficeFiles:/localOfficeFiles
-    # convert-formats:
-    #     build: ./convertFormat
-    #     ports: 
-    #         - "5000:5000"
-    #     restart: on-failure
-        # volumes: 
-        #     - ./sample_files:/sample_files
+            - ./convertedFiles2:/convertedFiles2

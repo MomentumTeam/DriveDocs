@@ -19,6 +19,7 @@ app.use(
     saveUninitialized: true,
   })
 );
+
 auth(app);
 newPage(app);
 editor(app);

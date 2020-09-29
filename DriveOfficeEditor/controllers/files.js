@@ -1,18 +1,26 @@
 const logger = require("../services/logger.js");
 const axios = require("axios");
+const drive = require("../controllers/drive.js");
+const convert = require("../controllers/convert");
 
 const convertTypes = {
-  DOC: "doc", 
+  DOC: "doc",
   XLS: "xls",
-  PPT: "ppt"
-}
+  PPT: "ppt",
+};
+
+const convertTo = {
+  doc: "docx",
+  xls: "xlsx",
+  ppt: "pptx",
+};
 
 const fileTypes = {
   DOCX: "docx",
   XLSX: "xlsx",
   PPTX: "pptx",
   PDF: "pdf",
-  ...convertTypes
+  ...convertTypes,
 };
 
 const operations = {
@@ -27,25 +35,16 @@ exports.setEditNewLocals = (req, res, next) => {
   next();
 };
 
-
-exports.updateFile = async (req,res,next) => {
-  try{
-    const url = `${process.env.WOPI_URL}/update/${req.params.id}`;
-    const res = await axios.get(url);
-    next();
-  }
-  catch(err){
-    res.status(500).send(err);
-  }
-
-
-
+function sleep(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
 }
 
-exports.generateUrl = (req, res, next) => {
+exports.generateUrl = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const fileType = res.locals.metadata.type;
+    let fileType = res.locals.metadata.type.toLowerCase();
     let operation = req.query.operation;
     let url, faviconUrl, proxyUrl;
 
@@ -57,15 +56,6 @@ exports.generateUrl = (req, res, next) => {
       });
       return res.status(501).send("File type not supported!");
     }
-
-    if(Object.values(convertTypes).includes(fileType)) {
-      //downloadfilefromdrive
-      axios.post('52.169.254.71:3005/convert');
-      //post request to /convert
-      //the file is in convert directory
-      //update the file in drive
-    }
-
 
     if (operation == operations.EDIT_NEW && fileType == fileTypes.PDF) {
       logger.log({
@@ -92,6 +82,16 @@ exports.generateUrl = (req, res, next) => {
       });
     }
 
+    if (Object.values(convertTypes).includes(fileType)) {
+      console.log("STARTING CONVERT PROCESS...");
+      let newFormat = convertTo[fileType];
+      await convert.convertAndUpdateInDrive(id, newFormat, fileType, res.locals.driveAccessToken, res.locals.accessToken);
+      fileType = newFormat;
+      return res.redirect("/api/files/" + req.params.id);
+
+
+
+    }
     if (operation == operations.EDIT) {
       switch (fileType) {
         case fileTypes.DOCX:
@@ -225,3 +225,5 @@ exports.generateUrl = (req, res, next) => {
     return res.status(500).send(e);
   }
 };
+
+exports.checkIfNeedConvert 

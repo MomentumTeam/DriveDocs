@@ -40,6 +40,9 @@ namespace DriveWopi.Controllers
         {
             try
             {
+                // Presentation pre = new Presentation();
+                // pre.LoadFromFile(Config.Folder + "/sample.ppt");
+                // pre.SaveToFile(Config.Folder + "/" + "ToPPTX.pptx", FileFormat.Pptx2010);
                 Config.logger.LogDebug("enter CheckFileInfo");
                 if (string.IsNullOrEmpty(access_token))
                 {
@@ -75,6 +78,7 @@ namespace DriveWopi.Controllers
                     editSession.SaveToRedis();
                     Config.logger.LogDebug("add new user {0} to session {1}", user["id"], id);
                 }
+                Console.WriteLine(metadata["name"]);
                 CheckFileInfo checkFileInfo = editSession.GetCheckFileInfo(user["id"], user["name"], metadata["name"]);
                 return Ok(checkFileInfo);
             }
