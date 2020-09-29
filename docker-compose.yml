@@ -37,6 +37,9 @@ services:
             -  DRIVE_UPDATE_TIME=${DRIVE_UPDATE_TIME}
             -  REDIS_PASSWORD=${REDIS_PASSWORD}
             -  CLEANUP_ENABLED=true
+            -  WEBDAV_URL=${WEBDAV_URL}
+            -  LOCAL_OFFICE_FOLDER=${LOCAL_OFFICE_FOLDER}
+            -  OFFICE_EDITOR_URL=${OFFICE_EDITOR_URL}
         ports: 
             - "8082:8080"
         volumes:
@@ -86,18 +89,20 @@ services:
             -  CONVERT_SERVICE_URL=${CONVERT_SERVICE_URL}
             -  TEMPLATE_FOLDER=${TEMPLATE_FOLDER}
             -  PPT_CONVERTER_URL=${PPT_CONVERTER_URL}
-
+	    -  WEBDAV_URL=${WEBDAV_URL}
+            -  LOCAL_OFFICE_FOLDER=${LOCAL_OFFICE_FOLDER}
+            -  WEBDAV_MANAGER_URL=${WEBDAV_MANAGER_URL}
         depends_on:
             - redis-server
             - wopi
             - convert-service
             - ppt-converter
         ports: 
-            - "3002:3000"
+            - "3000:3000"
         restart: on-failure
         volumes: 
             - ./logs:/logs
             - ./templates:/templates
             - ./downloads:/downloads
+            - ./localOfficeFiles:/localOfficeFiles
             - ./convertedFiles2:/convertedFiles2
-   

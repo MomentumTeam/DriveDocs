@@ -53,6 +53,18 @@ exports.uploadNewFileToDrive = async (req, res, next) => {
   }
 };
 
+exports.redirectToDownload = (req,res,next) => {
+  try{
+    res.locals.link = `${process.env.DRIVE_URL}/api/files/${req.params.id}?alt=media`;
+    // return res.redirect(downloadUrl); 
+    // return res.render(html);
+    next();
+  }
+  catch{
+    return  res.status(500).send("error");
+  }
+}
+
 async function upload(filedata, parentId, accessToken) {
   try {
     const config = {

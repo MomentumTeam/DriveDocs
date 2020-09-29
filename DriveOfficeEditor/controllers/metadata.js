@@ -67,9 +67,11 @@ exports.loadMetadata = async (req, res, next) => {
 exports.checkPermissionsOnFile = (req, res, next) => {
   try {
     const metadata = res.locals.metadata;
+    res.locals.permission = "write";
     if (metadata.role == roles.OWNER || metadata.role == roles.WRITE) {
       req.query.operation = req.query.operation ? req.query.operation : operations.EDIT;
     } else if (metadata.role == roles.READ) {
+      res.locals.permission = "read";
       req.query.operation = operations.VIEW;
     } else {
       logger.log({

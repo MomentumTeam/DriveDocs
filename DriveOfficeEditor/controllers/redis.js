@@ -3,7 +3,6 @@ const redis = require("redis");
 const jwt = require("jsonwebtoken");
 const logger = require("../services/logger.js");
 
-console.log(process.env.REDIS_PASSWORD);
 const client = redis.createClient({
   url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
   socket_keepalive: true,

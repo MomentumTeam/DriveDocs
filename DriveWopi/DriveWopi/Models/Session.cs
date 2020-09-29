@@ -138,7 +138,9 @@ namespace DriveWopi.Models
                 cfi.SupportsUpdate = true;
                 cfi.UserCanWrite = true;
                 cfi.LicenseCheckForEditIsEnabled = true;
+                cfi.ClientUrl = Config.WebDAV_Server+"/"+_FileInfo.Name;
                 cfi.SupportsGetLock = true;
+                cfi.DownloadUrl = Config.OfficeEditorUrl + "/updateAndDownload/"+SessionId;
                 Config.logger.LogDebug("GetCheckFileInfo of file {0} Success", name);
                 return cfi;
             }
@@ -274,6 +276,24 @@ namespace DriveWopi.Models
                 Config.logger.LogError("UpdateSessionsListInRedis fail error:" + e.Message);
                 throw e;
             }
+        }
+
+        public void DeleteSessionFromAllSessionsInRedis(string sessionId, IRedisClient client){
+            try{
+                List<Session> allSessions = GetAllSessions(client);
+                List<Session> updatedSessions = new List<Session>();
+                foreach(Session s in allSessions){
+                    if(s!=null && (!s.SessionId.Equals(sessionId))){
+                        updatedSessions.Add(s);
+                    }
+                }
+                UpdateSessionsListInRedis(updatedSessions,client);
+
+            }
+            catch(Exception ex){
+                throw ex;
+            }
+
         }
         public void SaveToRedis()
         {

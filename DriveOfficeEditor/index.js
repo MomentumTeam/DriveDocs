@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const editor = require("./routes/editor");
 const auth = require("./routes/authentication");
+const localOffice = require("./routes/localOffice");
 const newPage = require("./routes/newPage");
 const app = express();
 // require("dotenv").config();
@@ -22,9 +23,12 @@ app.use(
 auth(app);
 newPage(app);
 editor(app);
+localOffice(app);
 
-app.listen(process.env.PORT, () => logger.log({
-  level: "info",
-  message: `Drive Office Editor is listening at http://localhost:${process.env.PORT}`,
-  label: "DriveOfficeEditor up"
-}));
+app.listen(process.env.PORT, () =>
+  logger.log({
+    level: "info",
+    message: `Drive Office Editor is listening at http://localhost:${process.env.PORT}`,
+    label: "DriveOfficeEditor up",
+  })
+);

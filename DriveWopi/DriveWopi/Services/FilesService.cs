@@ -11,6 +11,7 @@ using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using ServiceStack.Redis;
 
 namespace DriveWopi.Services
 {
@@ -56,8 +57,12 @@ namespace DriveWopi.Services
                     }
                     else
                     {
-                        Config.logger.LogError("uploadId creation is fail");
-                        throw new Exception();
+                        Config.logger.LogError("uploadId creation fail "+fileId);
+                        if(response.StatusCode == HttpStatusCode.NotFound){
+                            Config.logger.LogError("Got an exception in GetUploadId - file not found");
+                            HandleNotFoundCase(fileId);
+                        }
+                        return null;
                     }
                     return uploadId;
                 }
@@ -67,6 +72,21 @@ namespace DriveWopi.Services
                 Config.logger.LogError("Got an exception in GetUploadId:" + ex.Message);
                 return null;
             }
+        }
+
+        public static void HandleNotFoundCase(string fileId) 
+        {
+            try{
+                IRedisClient client = RedisService.GenerateRedisClient();
+                Session s = Session.GetSessionFromRedis(fileId, client);
+                s.DeleteSessionFromRedis();
+                s.DeleteSessionFromAllSessionsInRedis(fileId,client);
+                s.RemoveLocalFile();
+            }
+            catch(Exception ex){
+                throw ex;
+            }
+
         }
         public static bool UpdateFileInDrive(FileInfo fileInfo, string authorization, string fileId)
         {
