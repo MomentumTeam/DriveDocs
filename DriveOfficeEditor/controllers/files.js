@@ -40,7 +40,7 @@ exports.generateUrl = async (req, res, next) => {
 
     if (Object.values(config.typesToConvert).includes(fileType)) {
       let newFormat = config.toConvertedType[fileType];
-      await convert.convertAndUpdateInDrive(id, newFormat, fileType, res.locals.driveAccessToken, res.locals.accessToken);
+      await convert.convertAndUpdateInDrive(id, newFormat, fileType, res.locals.authorization, res.locals.accessToken);
       fileType = newFormat;
       return res.redirect("/api/files/" + req.params.id);
     }

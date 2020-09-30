@@ -33,15 +33,15 @@ const generateAuthorizationHeader = (userObj) => {
     const authorization = jwt.sign(JSON.parse(JSON.stringify(user)), driveSecret);
     logger.log({
       level: "info",
-      message: `authorization created successfully ${authorization}`,
+      message: `Authorization token created successfully`,
       label: `user: ${userObj.id}`
     });
     return "Bearer " + authorization;
   } catch (e) {
     logger.log({
       level: "error",
-      message: `authorization creation fail, error: ${e}`,
-      label: `user: ${userObj.id}`
+      message: `Authorization token creation failed, error: ${e}`,
+      label: `User: ${userObj.id}`
     });
     throw e;
   }
@@ -53,8 +53,8 @@ exports.getAuthorizationHeader = (userObj) => {
   } catch (e) {
     logger.log({
       level: "error",
-      message: `authorization creation fail, error: ${e}`,
-      label: `user: ${userObj.id}`
+      message: `Authorization creation failed, error: ${e}`,
+      label: `User: ${userObj.id}`
     });
     throw e;
   }
@@ -71,8 +71,8 @@ exports.getMetadata = async (fileId, user) => {
   } catch (error) {
     logger.log({
       level: "error",
-      message: `getMetadata fail, error: ${error}`,
-      label: `session: ${fileId} user: ${userObj.id}`
+      message: `GetMetadata failed, error: ${error}`,
+      label: `Session: ${fileId}, User: ${userObj.id}`
     });
     throw error;
   }

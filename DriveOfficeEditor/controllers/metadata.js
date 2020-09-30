@@ -1,82 +1,60 @@
 const metadataService = require("../services/metadataService");
 const logger = require("../services/logger.js");
+const { config } = require("../config/config");
 
-const fileTypes = {
-  DOCX: "docx",
-  XLSX: "xlsx",
-  PPTX: "pptx",
-  PDF: "pdf",
-};
-
-const operations = {
-  VIEW: "view",
-  EDIT: "edit",
-  EDIT_NEW: "editNew",
-};
-const roles = {
-  OWNER: "OWNER",
-  READ: "READ",
-  WRITE: "WRITE",
-};
-
-const sizes = {
-  DOCX: parseInt(process.env.MAX_SIZE_DOCX),
-  PPTX: parseInt(process.env.MAX_SIZE_PPTX),
-  XLSX: parseInt(process.env.MAX_SIZE_XLSX),
-  PDF: parseInt(process.env.MAX_SIZE_PDF),
-};
+const PDF = config.fileTypes.PDF;
+const operations = config.operations;
+const roles = config.roles;
+const maxSizes = config.maxSizes;
+const permissions = config.permissions;
 
 exports.loadMetadata = async (req, res, next) => {
   try {
-    if (req.query.operation == operations.EDIT_NEW) {
-      next();
-    } else {
-      try {
-        const fileId = req.query.template ? req.query.template : req.params.id;
-        let metadata = await metadataService.getMetadata(fileId, req.user);
-        metadata.type = metadata.name.substring(metadata.name.lastIndexOf(".") + 1, metadata.name.length).toLowerCase();
-        res.locals.metadata = metadata;
-        if (res.locals.metadata.hasOwnProperty("permission")) {
-          delete res.locals.metadata["permission"];
-        }
-        logger.log({
-          level: "info",
-          message: "metadata is valid",
-          label: `session ${req.params.id}`,
-        });
-        next();
-      } catch (error) {
-        logger.log({
-          level: "error",
-          message: "status 404: File does not exist, error: " + error,
-          label: `session: ${req.params.id}`,
-        });
-        return res.status(404).send("File does not exist");
+    try {
+      const fileId = req.params.id;
+      let metadata = await metadataService.getMetadata(fileId, req.user);
+      metadata.type = metadata.name.substring(metadata.name.lastIndexOf(".") + 1, metadata.name.length).toLowerCase();
+      res.locals.metadata = metadata;
+      if (res.locals.metadata.hasOwnProperty("permission")) {
+        delete res.locals.metadata["permission"];
       }
+      logger.log({
+        level: "info",
+        message: "Received Metadata of file successfuly",
+        label: `fileId ${req.params.id}`,
+      });
+      next();
+    } catch (error) {
+      logger.log({
+        level: "error",
+        message: "Status 500: Error in receiving the metadata: " + error,
+        label: `session: ${req.params.id}`,
+      });
+      return res.status(500).send("Error in receiving the metadata, or file may not exist");
     }
   } catch (e) {
     logger.log({
       level: "error",
-      message: "status 404: File does not exist",
+      message: "status 500: Error in receiving the metadata",
       label: `session: ${req.params.id}`,
     });
-    return res.status(404).send("File does not exist");
+    return res.status(500).send("Error in receiving the metadata, or file may not exist");
   }
 };
 
 exports.checkPermissionsOnFile = (req, res, next) => {
   try {
     const metadata = res.locals.metadata;
-    res.locals.permission = "write";
+    res.locals.permission = permissions.WRITE;
     if (metadata.role == roles.OWNER || metadata.role == roles.WRITE) {
       req.query.operation = req.query.operation ? req.query.operation : operations.EDIT;
     } else if (metadata.role == roles.READ) {
-      res.locals.permission = "read";
+      res.locals.permission = permissions.READ;
       req.query.operation = operations.VIEW;
     } else {
       logger.log({
         level: "error",
-        message: "status 403: Permissoin denied",
+        message: "Status 403: Permission denied",
         label: `user: ${req.user.id}`,
       });
       return res.status(403).send("You do not have the right permission!");
@@ -95,43 +73,27 @@ exports.checkPermissionsOnFile = (req, res, next) => {
 exports.checkSizeOfFile = (req, res, next) => {
   try {
     const metadata = res.locals.metadata;
-    let maxSize = 0;
-    switch (metadata.type) {
-      case fileTypes.DOCX:
-        maxSize = sizes.DOCX;
-        break;
-      case fileTypes.PPTX:
-        maxSize = sizes.PPTX;
-        break;
-      case fileTypes.XLSX:
-        maxSize = sizes.XLSX;
-        break;
-      case fileTypes.PDF:
-        maxSize = sizes.PDF;
-        break;
-      default:
-        maxSize = sizes.PDF;
-    }
+    const maxSize = maxSizes[metadata.type] != undefined ? maxSizes[metadata.type] : maxSizes[PDF];
     if (metadata.size > maxSize) {
       logger.log({
         level: "error",
-        message: "status 413: the file is too big",
+        message: `Status 413: The file is too big since its size is ${metadata.size}`,
         label: `file: ${req.params.id}`,
       });
-      return res.status(413).send("the file is too big");
+      return res.status(413).send(`The file is too big since its size is ${metadata.size}`);
     }
     logger.log({
       level: "info",
-      message: `the size of file is ok`,
+      message: `Size is ok`,
       label: `file: ${req.params.id}`,
     });
     next();
   } catch (e) {
     logger.log({
       level: "error",
-      message: `status 413: the file is too big, error: ${e}`,
+      message: `Status 500: Error in determining the file size: ${e}`,
       label: `file: ${req.params.id}`,
     });
-    return res.status(413).send("the file is too big");
+    return res.status(500).send("the file is too big");
   }
 };

@@ -26,6 +26,7 @@ const fileTypes = {
     ...xTypes,
     ...typesToConvert,
     PDF: "pdf",
+    pdf: "pdf"
 };
 
 const operations = {
@@ -34,10 +35,29 @@ const operations = {
     EDIT_NEW: "editNew",
 };
 
+const typeToLocalOffice = {
+    [fileType.DOCX]: 'word',
+    [fileType.DOC]: 'word',
+    [fileType.PPTX]: 'powerpoint',
+    [fileType.PPT]: 'powerpoint',
+    [fileType.XLSX]: 'excel',
+    [fileType.XLS]: 'excel'
+};
+
+const operationToLocalFlag = {
+    [operations.EDIT]: 'ofe',
+    [operations.VIEW]: 'ofv',
+};
+
 const roles = {
     OWNER: "OWNER",
     READ: "READ",
     WRITE: "WRITE",
+};
+
+const permissions = {
+    WRITE: "write",
+    READ: "read"
 };
 
 const maxSizes = {
@@ -49,7 +69,10 @@ const maxSizes = {
 
 exports.config = {
     fileTypes,
+    permissions,
     xTypes,
+    typeToLocalOffice,
+    operationToLocalFlag,
     toConvertedType,
     fileTypes,
     operations,

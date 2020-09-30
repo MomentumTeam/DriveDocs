@@ -1,12 +1,10 @@
 const jwt = require("jsonwebtoken");
-const { promisify } = require("util");
 const metadataService = require("../services/metadataService");
 const logger = require("../services/logger.js");
 
 
 exports.generateAccessToken = async (req, res, next) => {
   try {
-    res.locals.driveAccessToken = metadataService.getAuthorizationHeader(req.user);
     const authorization = metadataService.getAuthorizationHeader(req.user);
     res.locals.authorization = authorization;
     const dataToSign = {
@@ -26,13 +24,13 @@ exports.generateAccessToken = async (req, res, next) => {
     logger.log({
       level: "info",
       message: "accessToken successfuly created",
-      label: `user: ${req.user.id}`,
+      label: `fileId: ${req.params.id}, User: ${req.user.id}`,
     });
     next();
   } catch (e) {
     logger.log({
       level: "error",
-      message: `status 500: ${e}`,
+      message: `Status 500: ${e}`,
     });
     return res.status(500).send(e);
   }

@@ -74,7 +74,6 @@ services:
             -  SHRAGA_URL=${SHRAGA_URL}
             -  AUTHORIZATION_TOKEN=${AUTHORIZATION_TOKEN}
             -  DRIVE_URL=${DRIVE_URL}
-            # - 'SECRET=thisIsASecret'
             -  DRIVE_SECRET=${DRIVE_SECRET}
             -  REDIS_PASSWORD=${REDIS_PASSWORD}
             -  MAX_SIZE_DOCX=${MAX_SIZE_DOCX}
@@ -89,7 +88,7 @@ services:
             -  CONVERT_SERVICE_URL=${CONVERT_SERVICE_URL}
             -  TEMPLATE_FOLDER=${TEMPLATE_FOLDER}
             -  PPT_CONVERTER_URL=${PPT_CONVERTER_URL}
-	    -  WEBDAV_URL=${WEBDAV_URL}
+	        -  WEBDAV_URL=${WEBDAV_URL}
             -  LOCAL_OFFICE_FOLDER=${LOCAL_OFFICE_FOLDER}
             -  WEBDAV_MANAGER_URL=${WEBDAV_MANAGER_URL}
         depends_on:
