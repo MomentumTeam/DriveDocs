@@ -10,7 +10,9 @@ delete localOfficeFileTypes['PDF'];
 const operations = config.operations;
 const typeToLocalOffice = config.typeToLocalOffice;
 const operationToLocalFlag = config.operationToLocalFlag;
-
+const fileTypes = config.fileTypes;
+delete fileTypes['pdf'];
+delete fileTypes['PDF'];
 
 
 exports.webdavDownloadAndPermissions = async (req, res, next) => {
@@ -27,7 +29,7 @@ exports.webdavDownloadAndPermissions = async (req, res, next) => {
     next();
   }
   catch (err) {
-    return res.error(err);
+    return res.status(500).send(err);
   }
 };
 
@@ -92,8 +94,9 @@ exports.redirectToLocalOffice = (req, res, next) => {
     }
 
     const webDavPath = `${process.env.WEBDAV_URL}/files/${res.locals.webDavFolder}/${res.locals.webDavFileName}`;
-
-    return res.redirect(`ms-${typeToLocalOffice[fileType]}:${operationToLocalFlag[operation]}|u|${webDavPath}`);
+    const redirectLink = `ms-${typeToLocalOffice[fileType]}:${operationToLocalFlag[operation]}|u|${webDavPath}`;
+    console.log(`redirectLink = ${redirectLink}`)
+    return res.redirect(redirectLink);
   } catch (e) {
     logger.log({
       level: "error",

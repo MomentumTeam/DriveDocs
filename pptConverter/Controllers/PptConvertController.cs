@@ -25,8 +25,6 @@ namespace pptConverter.Controllers
             try{
             string pptPath = Config.DownloadsFolder+"/"+id+".ppt";
             string pptxPath = Config.ConvertedFilesFolder+"/"+id+".pptx";
-            Console.WriteLine(pptPath);
-            Console.WriteLine(pptxPath);
             Presentation presentation = new Presentation();
             //load the PPT file from disk
             presentation.LoadFromFile(pptPath);

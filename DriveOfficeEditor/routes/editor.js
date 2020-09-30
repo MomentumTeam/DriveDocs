@@ -44,7 +44,7 @@ module.exports = (app) => {
     }
   );
 
-  app.post("/closeSession/:id", authenitcation.isAuthenticated, (req, res) => {
+  app.post("/closeSession/:id", authenitcation.isAuthenticated, async (req, res) => {
     try {
       const id = req.params.id;
       const user = req.user;
@@ -68,21 +68,6 @@ module.exports = (app) => {
     metadata.loadMetadata,
     metadata.checkPermissionsOnFile,
     files.updateFile,
-    drive.generateDownloadLink,
-    (req, res) => {
-      try {
-        res.render("downloadLink", {
-          link: res.locals.link
-        });
-      } catch (e) {
-        logger.log({
-          level: "error",
-          message: `Status 500, failed to updateAndDownload: ${e}`,
-          label: `session: ${id} user: ${user}`,
-        });
-        res.status(500).send(e);
-      }
-    }
+    drive.redirectToDriveDownload,
   );
-
 };

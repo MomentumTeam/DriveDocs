@@ -36,12 +36,12 @@ const operations = {
 };
 
 const typeToLocalOffice = {
-    [fileType.DOCX]: 'word',
-    [fileType.DOC]: 'word',
-    [fileType.PPTX]: 'powerpoint',
-    [fileType.PPT]: 'powerpoint',
-    [fileType.XLSX]: 'excel',
-    [fileType.XLS]: 'excel'
+    [fileTypes.DOCX]: 'word',
+    [fileTypes.DOC]: 'word',
+    [fileTypes.PPTX]: 'powerpoint',
+    [fileTypes.PPT]: 'powerpoint',
+    [fileTypes.XLSX]: 'excel',
+    [fileTypes.XLS]: 'excel'
 };
 
 const operationToLocalFlag = {

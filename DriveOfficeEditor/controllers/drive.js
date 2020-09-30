@@ -52,10 +52,9 @@ exports.uploadNewFileToDrive = async (req, res, next) => {
   }
 };
 
-exports.generateDownloadLink = (req, res, next) => {
+exports.redirectToDriveDownload = (req, res, next) => {
   try {
-    res.locals.link = `${process.env.DRIVE_URL}/api/files/${req.params.id}?alt=media`;
-    next();
+    return res.redirect(`${process.env.DRIVE_URL}/api/files/${req.params.id}?alt=media`);
   }
   catch{
     return res.status(500).send("error");

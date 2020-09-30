@@ -1,6 +1,19 @@
+const axios = require('axios');
 const logger = require("../services/logger.js");
 const convert = require("../controllers/convert");
 const { config } = require("../config/config.js");
+
+
+exports.updateFile = async (req, res, next) => {
+  try {
+    const url = `${process.env.WOPI_URL}/update/${req.params.id}`;
+    await axios.get(url);
+    next();
+  }
+  catch (err) {
+    res.status(500).send(err);
+  }
+}
 
 exports.generateUrl = async (req, res, next) => {
   try {
