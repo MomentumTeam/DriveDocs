@@ -28,8 +28,12 @@ newPage(app);
 // adding the main route of editing/viewing files
 editor(app);
 
-// adding the route of editing/viewing files in local office
-localOffice(app);
+const enableLocalOffice = process.env.ENABLE_LOCAL_OFFICE == 'true';
+
+if (enableLocalOffice) {
+  // adding the route of editing/viewing files in local office
+  localOffice(app);
+}
 
 app.listen(process.env.PORT, () =>
   logger.log({

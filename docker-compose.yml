@@ -91,6 +91,7 @@ services:
             -  LOCAL_OFFICE_FOLDER=${LOCAL_OFFICE_FOLDER}
             -  WEBDAV_MANAGER_URL=${WEBDAV_MANAGER_URL}
             -  WEBDAV_URL=${WEBDAV_URL}
+            -  ENABLE_LOCAL_OFFICE=${ENABLE_LOCAL_OFFICE}
         depends_on:
             - redis-server
             - wopi
