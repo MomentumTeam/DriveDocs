@@ -17,41 +17,42 @@ module.exports = (app) => {
     files.generateUrl,
     (req, res) => {
       try {
-        id = req.params.id;
-        url = res.locals.url;
-        accessToken = res.locals.accessToken;
-        faviconUrl = res.locals.faviconUrl;
+        const id = req.params.id;
+        const url = res.locals.url;
+        const accessToken = res.locals.accessToken;
+        const faviconUrl = res.locals.faviconUrl;
+        const fileName = res.locals.metadata.name;
         res.render("index", {
           url: url,
           accessToken: accessToken,
           faviconUrl: faviconUrl,
-          fileName: res.locals.metadata.name,
+          fileName: fileName,
         });
         logger.log({
           level: "info",
-          message: "index successfully render ",
-          label: `session: ${id}`,
+          message: "Index successfully rendered",
+          label: `FileId: ${id}`,
         });
       } catch (e) {
         logger.log({
           level: "error",
-          message: `status 500, failed to render index, error: ${e}`,
-          label: `session: ${req.params.id}`,
+          message: `Status 500, failed to render index, error: ${e}`,
+          label: `FileId: ${req.params.id}`,
         });
         res.status(500).send(e);
       }
     }
   );
 
-  app.post("/closeSession/:id", authenitcation.isAuthenticated, (req, res) => {
+  app.post("/closeSession/:id", authenitcation.isAuthenticated, async (req, res) => {
     try {
-      id = req.params.id;
-      user = req.user;
-      redis.removeUserFromSession(id, user);
+      const id = req.params.id;
+      const user = req.user;
+      await redis.removeUserFromSession(id, user);
     } catch (e) {
       logger.log({
         level: "error",
-        message: `status 500, failed to remove user from session, error: ${e}`,
+        message: `Status 500, failed to remove user from session, error: ${e}`,
         label: `session: ${id} user: ${user}`,
       });
       res.status(500).send(e);
@@ -67,17 +68,6 @@ module.exports = (app) => {
     metadata.loadMetadata,
     metadata.checkPermissionsOnFile,
     files.updateFile,
-    drive.redirectToDownload,
-    (req, res) => {
-      try {
-        res.render("downloadLink", {
-          link: res.locals.link
-        });
-        // return res.redirect(res.locals.link);
-      } catch (e) {
-        res.status(500).send(e);
-      }
-    }
+    drive.redirectToDriveDownload,
   );
-
 };

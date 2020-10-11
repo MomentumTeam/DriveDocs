@@ -1,72 +1,46 @@
+const axios = require('axios');
 const logger = require("../services/logger.js");
-const axios = require("axios");
-const drive = require("../controllers/drive.js");
 const convert = require("../controllers/convert");
+const { config } = require("../config/config.js");
 
-const convertTypes = {
-  DOC: "doc",
-  XLS: "xls",
-  PPT: "ppt",
-};
 
-const convertTo = {
-  doc: "docx",
-  xls: "xlsx",
-  ppt: "pptx",
-};
-
-const fileTypes = {
-  DOCX: "docx",
-  XLSX: "xlsx",
-  PPTX: "pptx",
-  PDF: "pdf",
-  ...convertTypes,
-};
-
-const operations = {
-  VIEW: "view",
-  EDIT: "edit",
-  EDIT_NEW: "editNew",
-};
-
-exports.setEditNewLocals = (req, res, next) => {
-  res.locals.fileType = req.query.fileType;
-  res.locals.editNew = true;
-  next();
-};
-
-function sleep(ms) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
+exports.updateFile = async (req, res, next) => {
+  try {
+    const url = `${process.env.WOPI_URL}/update/${req.params.id}`;
+    await axios.get(url);
+    next();
+  }
+  catch (err) {
+    res.status(500).send(err);
+  }
 }
 
 exports.generateUrl = async (req, res, next) => {
   try {
-    const id = req.params.id;
     let fileType = res.locals.metadata.type.toLowerCase();
     let operation = req.query.operation;
     let url, faviconUrl, proxyUrl;
+    const id = req.params.id;
 
-    if (!fileType || !Object.values(fileTypes).includes(fileType)) {
+    if (!fileType || !Object.values(config.fileTypes).includes(fileType)) {
       logger.log({
         level: "error",
-        message: `status 501: ${fileType} file type not supported!`,
-        label: `session: ${req.params.id}`,
+        message: `Status 501: ${fileType} file type is not supported!`,
+        label: `fileId: ${req.params.id}`,
       });
       return res.status(501).send("File type not supported!");
     }
 
-    if (operation == operations.EDIT_NEW && fileType == fileTypes.PDF) {
+    if (operation == config.operations.EDIT && fileType == config.fileTypes.PDF) {
       logger.log({
         level: "error",
-        message: "EditNew not supported with PDF type!", //check 405
-        label: `session: ${req.params.id}`,
+        message: "Edit is not supported with PDF type!", //check 405
+        label: `fileId: ${req.params.id}`,
       });
-      return res.status(501).send("EditNew not supported with PDF type!");
+      return res.status(501).send("Edit is not supported with PDF type!");
     }
 
-    if (operation && !Object.values(operations).includes(operation)) {
+    if (operation && !Object.values(config.operations).includes(operation)) {
       logger.log({
         level: "error",
         message: `status 501: ${operation} operation not supported!`,
@@ -74,115 +48,40 @@ exports.generateUrl = async (req, res, next) => {
       });
       return res.status(501).send("Operation not supported!");
     } else if (!operation) {
-      operation = operations.EDIT;
-      logger.log({
-        level: "info",
-        message: "operation is edit",
-        label: `session: ${req.params.id}`,
-      });
+      operation = config.operations.EDIT;
     }
 
-    if (Object.values(convertTypes).includes(fileType)) {
-      console.log("STARTING CONVERT PROCESS...");
-      let newFormat = convertTo[fileType];
-      await convert.convertAndUpdateInDrive(id, newFormat, fileType, res.locals.driveAccessToken, res.locals.accessToken);
+    if (Object.values(config.typesToConvert).includes(fileType)) {
+      let newFormat = config.toConvertedType[fileType];
+      await convert.convertAndUpdateInDrive(id, newFormat, fileType, res.locals.authorization, res.locals.accessToken);
       fileType = newFormat;
       return res.redirect("/api/files/" + req.params.id);
-
-
-
     }
-    if (operation == operations.EDIT) {
+    if (operation == config.operations.EDIT) {
       switch (fileType) {
-        case fileTypes.DOCX:
+        case config.fileTypes.DOCX:
           url = `${process.env.OFFICE_ONLINE_URL}/we/wordeditorframe.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
           proxyUrl = `${process.env.OFFICE_ONLINE_URL}/we/wordeditorframe.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
           faviconUrl = `${process.env.FAVICON_DOCX}`;
-          logger.log({
-            level: "info",
-            message: "the url for edit docx created",
-            label: `session: ${req.params.id}`,
-          });
           break;
-        case fileTypes.PPTX:
+        case config.fileTypes.PPTX:
           url = `${process.env.OFFICE_ONLINE_URL_PPTX}/p/PowerPointFrame.aspx?PowerPointView=EditView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
           proxyUrl = `${process.env.OFFICE_ONLINE_URL_PPTX}/p/PowerPointFrame.aspx?PowerPointView=EditView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
-          // /p/resources/1037/FavIcon_Ppt.ico
           faviconUrl = `${process.env.FAVICON_PPTX}`;
-          logger.log({
-            level: "info",
-            message: "the url for edit pptx created",
-            label: `session: ${req.params.id}`,
-          });
           break;
-        case fileTypes.XLSX:
+        case config.fileTypes.XLSX:
           url = `${process.env.OFFICE_ONLINE_URL}/x/_layouts/xlviewerinternal.aspx?edit=1&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
           proxyUrl = `${process.env.OFFICE_ONLINE_URL}/x/_layouts/xlviewerinternal.aspx?edit=1&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
           faviconUrl = `${process.env.FAVICON_XLSX}`;
-          logger.log({
-            level: "info",
-            message: "the url for edit xlsx created",
-            label: `session: ${req.params.id}`,
-          });
           break;
         default:
           //PDF
           url = `${process.env.OFFICE_ONLINE_URL}/wv/wordviewerframe.aspx?PdfMode=1&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
           proxyUrl = `${process.env.OFFICE_ONLINE_URL}/wv/wordviewerframe.aspx?PdfMode=1&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
           faviconUrl = `${process.env.FAVICON_PDF}`;
-          logger.log({
-            level: "info",
-            message: "the url for edit pdf created",
-            label: `session: ${req.params.id}`,
-          });
           break;
       }
-    } else if (operation == operations.VIEW) {
-      switch (fileType) {
-        case fileTypes.DOCX:
-          url = `${process.env.OFFICE_ONLINE_URL}/wv/wordviewerframe.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
-          proxyUrl = `${process.env.OFFICE_ONLINE_URL}/wv/wordviewerframe.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
-          faviconUrl = `${process.env.FAVICON_DOCX}`;
-          logger.log({
-            level: "info",
-            message: "the url for view docx created",
-            label: `session: ${req.params.id}`,
-          });
-          break;
-        case fileTypes.PPTX:
-          url = `${process.env.OFFICE_ONLINE_URL_PPTX}/p/PowerPointFrame.aspx?PowerPointView=ReadingView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
-          proxyUrl = `${process.env.OFFICE_ONLINE_URL_PPTX}/p/PowerPointFrame.aspx?PowerPointView=ReadingView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
-          faviconUrl = `${process.env.FAVICON_PPTX}`;
-          logger.log({
-            level: "info",
-            message: "the url for view pptx created",
-            label: `session: ${req.params.id}`,
-          });
-          break;
-        case fileTypes.XLSX:
-          url = `${process.env.OFFICE_ONLINE_URL}/x/_layouts/xlviewerinternal.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
-          proxyUrl = `${process.env.OFFICE_ONLINE_URL}/x/_layouts/xlviewerinternal.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
-          faviconUrl = `${process.env.FAVICON_XLSX}`;
-          logger.log({
-            level: "info",
-            message: "the url for view xlsx created",
-            label: `session: ${req.params.id}`,
-          });
-          break;
-        default:
-          //PDF
-          url = `${process.env.OFFICE_ONLINE_URL}/wv/wordviewerframe.aspx?PdfMode=1&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
-          proxyUrl = `${process.env.OFFICE_ONLINE_URL}/wv/wordviewerframe.aspx?PdfMode=1&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
-          faviconUrl = `${process.env.FAVICON_PDF}`;
-          logger.log({
-            level: "info",
-            message: "the url for view pdf created",
-            label: `session: ${req.params.id}`,
-          });
-          break;
-      }
-    } else {
-      //EDIT_NEW
+    } else { //view
       switch (fileType) {
         case fileTypes.DOCX:
           url = `${process.env.OFFICE_ONLINE_URL}/wv/wordviewerframe.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
@@ -207,23 +106,22 @@ exports.generateUrl = async (req, res, next) => {
           break;
       }
     }
+
+    logger.log({
+      level: "info",
+      message: `Url for operation:${operation} and type:${fileType} generated`,
+      label: `fileId: ${req.params.id}, `,
+    });
     res.locals.url = url;
     res.locals.proxyUrl = proxyUrl;
     res.locals.faviconUrl = faviconUrl;
-    logger.log({
-      level: "info",
-      message: "url save in res.locals",
-      label: `session: ${req.params.id}`,
-    });
     next();
   } catch (e) {
     logger.log({
       level: "error",
-      message: `status 500, failed to create url, error: ${e}`,
-      label: `session: ${req.params.id}`,
+      message: `Status 500, failed to create url, error: ${e}`,
+      label: `fileId: ${req.params.id}`,
     });
     return res.status(500).send(e);
   }
 };
-
-exports.checkIfNeedConvert 

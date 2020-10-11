@@ -44,7 +44,7 @@ services:
             - "8082:8080"
         volumes:
             - ./sample_files:/sample_files
-            - ./templates:/templates
+            - ./templates1:/templates1
             - ./logs:/logs
         restart: on-failure
     ppt-converter:
@@ -67,6 +67,7 @@ services:
             -  REDIS_PORT=${REDIS_PORT}
             -  DOWNLOADS_FOLDER=${DOWNLOADS_FOLDER}
             -  CONVERTED_FOLDER=${CONVERTED_FOLDER}
+            -  BLANK_PATH=${BLANK_PATH}
             -  OFFICE_EDITOR_URL=${OFFICE_EDITOR_URL}
             -  OFFICE_ONLINE_URL=${OFFICE_ONLINE_URL}
             -  PORT=${PORT_NODE}
@@ -74,7 +75,6 @@ services:
             -  SHRAGA_URL=${SHRAGA_URL}
             -  AUTHORIZATION_TOKEN=${AUTHORIZATION_TOKEN}
             -  DRIVE_URL=${DRIVE_URL}
-            # - 'SECRET=thisIsASecret'
             -  DRIVE_SECRET=${DRIVE_SECRET}
             -  REDIS_PASSWORD=${REDIS_PASSWORD}
             -  MAX_SIZE_DOCX=${MAX_SIZE_DOCX}
@@ -89,9 +89,10 @@ services:
             -  CONVERT_SERVICE_URL=${CONVERT_SERVICE_URL}
             -  TEMPLATE_FOLDER=${TEMPLATE_FOLDER}
             -  PPT_CONVERTER_URL=${PPT_CONVERTER_URL}
-	    -  WEBDAV_URL=${WEBDAV_URL}
             -  LOCAL_OFFICE_FOLDER=${LOCAL_OFFICE_FOLDER}
             -  WEBDAV_MANAGER_URL=${WEBDAV_MANAGER_URL}
+            -  WEBDAV_URL=${WEBDAV_URL}
+            -  ENABLE_LOCAL_OFFICE=${ENABLE_LOCAL_OFFICE}
         depends_on:
             - redis-server
             - wopi
@@ -102,7 +103,8 @@ services:
         restart: on-failure
         volumes: 
             - ./logs:/logs
-            - ./templates:/templates
+            - ./templates1:/templates1
             - ./downloads:/downloads
+            - ./blankFiles:/blankFiles
             - ./localOfficeFiles:/localOfficeFiles
             - ./convertedFiles2:/convertedFiles2

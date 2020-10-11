@@ -1,27 +1,19 @@
-const logger = require("../services/logger.js");
 const axios = require("axios");
-const metadataService = require("../services/metadataService.js");
-const fs = require("fs");
+const logger = require("../services/logger.js");
 const redis = require("./redis");
+const { config } = require("../config/config.js");
 
-const convertTypes = {
-  DOC: "doc",
-  XLS: "xls",
-  PPT: "ppt",
-};
+const localOfficeFileTypes = config.fileTypes;
+delete localOfficeFileTypes['pdf'];
+delete localOfficeFileTypes['PDF'];
 
-const fileTypes = {
-  DOCX: "docx",
-  XLSX: "xlsx",
-  PPTX: "pptx",
-  ...convertTypes,
-};
+const operations = config.operations;
+const typeToLocalOffice = config.typeToLocalOffice;
+const operationToLocalFlag = config.operationToLocalFlag;
+const fileTypes = config.fileTypes;
+delete fileTypes['pdf'];
+delete fileTypes['PDF'];
 
-const operations = {
-  VIEW: "view",
-  EDIT: "edit",
-  EDIT_NEW: "editNew",
-};
 
 exports.webdavDownloadAndPermissions = async (req, res, next) => {
   try {
@@ -37,7 +29,7 @@ exports.webdavDownloadAndPermissions = async (req, res, next) => {
     next();
   }
   catch (err) {
-    return res.error(err);
+    return res.status(500).send(err);
   }
 };
 
@@ -52,8 +44,6 @@ exports.initRedisSession = async (req, res, next) => {
     const redisKey = `local.${req.params.id}`;
     const existingSession = await redis.get(redisKey);
     const session = existingSession == null ? {} : JSON.parse(existingSession);
-    console.log("session = ");
-    console.log(session);
     const user = {
       id: req.user.id,
       name: req.user.name,
@@ -69,16 +59,11 @@ exports.initRedisSession = async (req, res, next) => {
       session.webDavFolder = res.locals.webDavFolder;
       session.webDavFileName = res.locals.webDavFileName;
     }
-
     res.locals.session = session;
-    console.log("session = ");
-    console.log(session);
     await redis.set(redisKey, JSON.stringify(session));
     next();
   }
   catch (err) {
-    console.log("error redis:");
-    console.log(err);
     return res.status(500).send("error in initializing session in Redis");
   }
 };
@@ -91,8 +76,8 @@ exports.redirectToLocalOffice = (req, res, next) => {
     if (!fileType || !Object.values(fileTypes).includes(fileType)) {
       logger.log({
         level: "error",
-        message: `status 501: ${fileType} file type not supported!`,
-        label: `session: ${req.params.id}`,
+        message: `Status 501: ${fileType} file type not supported!`,
+        label: `fileId: ${req.params.id}`,
       });
       return res.status(501).send("File type not supported!");
     }
@@ -100,50 +85,22 @@ exports.redirectToLocalOffice = (req, res, next) => {
     if (operation && !Object.values(operations).includes(operation)) {
       logger.log({
         level: "error",
-        message: `status 501: ${operation} operation not supported!`,
-        label: `session: ${req.params.id}`,
+        message: `Status 501: ${operation} operation not supported!`,
+        label: `fileId: ${req.params.id}`,
       });
       return res.status(501).send("Operation not supported!");
     } else if (!operation) {
       operation = operations.EDIT;
-      logger.log({
-        level: "info",
-        message: "operation is edit",
-        label: `session: ${req.params.id}`,
-      });
     }
 
     const webDavPath = `${process.env.WEBDAV_URL}/files/${res.locals.webDavFolder}/${res.locals.webDavFileName}`;
-
-    if (operation == operations.EDIT) {
-      switch (fileType) {
-        case fileTypes.DOCX:
-          return res.redirect(`ms-word:ofe|u|${webDavPath}`);
-        case fileTypes.PPTX:
-          return res.redirect(`ms-powerpoint:ofe|u|${webDavPath}`);
-
-        case fileTypes.XLSX:
-          return res.redirect(`ms-excel:ofe|u|${webDavPath}`);
-        default:
-          return res.status(500).send("file type not supported");
-      }
-    } else {
-      switch (fileType) {
-        case fileTypes.DOCX:
-          return res.redirect(`ms-word:ofv|u|${webDavPath}`);
-        case fileTypes.PPTX:
-          return res.redirect(`ms-powerpoint:ofv|u|${webDavPath}`);
-        case fileTypes.XLSX:
-          return res.redirect(`ms-excel:ofv|u|${webDavPath}`);
-        default:
-          return res.status(500).send("file type not supported");
-      }
-    }
-    // next();
+    const redirectLink = `ms-${typeToLocalOffice[fileType]}:${operationToLocalFlag[operation]}|u|${webDavPath}`;
+    console.log(`redirectLink = ${redirectLink}`)
+    return res.redirect(redirectLink);
   } catch (e) {
     logger.log({
       level: "error",
-      message: `status 500, failed to create url, error: ${e}`,
+      message: `Status 500, failed to create url, error: ${e}`,
       label: `session: ${req.params.id}`,
     });
     return res.status(500).send(e);

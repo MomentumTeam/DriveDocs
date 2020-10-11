@@ -1,14 +1,13 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const bodyParser = require("body-parser");
 const session = require("express-session");
 const editor = require("./routes/editor");
 const auth = require("./routes/authentication");
 const localOffice = require("./routes/localOffice");
 const newPage = require("./routes/newPage");
-const app = express();
-// require("dotenv").config();
 const logger = require("./services/logger.js");
+
+const app = express();
 app.use(cookieParser());
 app.set("view engine", "ejs");
 app.use(
@@ -20,15 +19,26 @@ app.use(
   })
 );
 
+// adding routes for authentication
 auth(app);
+
+// adding routes for creating blank pages
 newPage(app);
+
+// adding the main route of editing/viewing files
 editor(app);
-localOffice(app);
+
+const enableLocalOffice = process.env.ENABLE_LOCAL_OFFICE == 'true';
+
+if (enableLocalOffice) {
+  // adding the route of editing/viewing files in local office
+  localOffice(app);
+}
 
 app.listen(process.env.PORT, () =>
   logger.log({
     level: "info",
-    message: `Drive Office Editor is listening at http://localhost:${process.env.PORT}`,
+    message: `Drive Office Editor is listening on http://localhost:${process.env.PORT}`,
     label: "DriveOfficeEditor up",
   })
 );

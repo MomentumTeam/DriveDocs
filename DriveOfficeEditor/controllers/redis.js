@@ -1,6 +1,5 @@
 const { promisify } = require("util");
 const redis = require("redis");
-const jwt = require("jsonwebtoken");
 const logger = require("../services/logger.js");
 
 const client = redis.createClient({
@@ -15,15 +14,15 @@ client.on("connect", () => {
   global.console.log("connected");
   logger.log({
     level: "info",
-    message: "redis is connect",
-    label: "redis up",
+    message: "Connected to Redis",
+    label: "redis connection",
   });
 });
 client.on("error", function (error) {
   console.error(error);
   logger.log({
     level: "error",
-    message: `status 500, failed to connect to redis, error: ${error}`,
+    message: `Status 500, failed to connect to redis, error: ${error}`,
   });
 });
 
@@ -48,7 +47,6 @@ exports.get = async (key) => {
 };
 
 exports.removeUserFromSession = async (id, userToRemove) => {
-  console.log("remove user from session");
   try {
     let res = await getAsync(id);
     if (!res || res == null) {
@@ -63,22 +61,19 @@ exports.removeUserFromSession = async (id, userToRemove) => {
       return;
     }
     session.Users = session.Users.filter((u) => u.Id !== userToRemove.id);
-
-    console.log("User deleted and updated in redis:");
-    console.log(userToRemoveAsInSession);
     session.UserForUpload = userToRemoveAsInSession;
     session = JSON.stringify(JSON.stringify(session));
     await setAsync(id, session);
     logger.log({
       level: "info",
-      message: "user is successfully remove",
-      label: `session: ${id} user: ${userToRemove.id}`,
+      message: "User was successfully removed",
+      label: `Session: ${id}, User: ${userToRemove.id}`,
     });
   } catch (err) {
     logger.log({
       level: "error",
-      message: `status 500, failed to remove user from session, error: ${err}`,
-      label: `session: ${id} user: ${userToRemove}`,
+      message: `Status 500, failed to remove user from session, error: ${err}`,
+      label: `Session: ${id}, User: ${userToRemove}`,
     });
     res.status(500).send(e);
   }
