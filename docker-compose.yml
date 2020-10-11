@@ -44,7 +44,7 @@ services:
             - "8082:8080"
         volumes:
             - ./sample_files:/sample_files
-            - ./templates:/templates
+            - ./templates1:/templates1
             - ./logs:/logs
         restart: on-failure
     ppt-converter:
@@ -67,6 +67,7 @@ services:
             -  REDIS_PORT=${REDIS_PORT}
             -  DOWNLOADS_FOLDER=${DOWNLOADS_FOLDER}
             -  CONVERTED_FOLDER=${CONVERTED_FOLDER}
+            -  BLANK_PATH=${BLANK_PATH}
             -  OFFICE_EDITOR_URL=${OFFICE_EDITOR_URL}
             -  OFFICE_ONLINE_URL=${OFFICE_ONLINE_URL}
             -  PORT=${PORT_NODE}
@@ -102,7 +103,8 @@ services:
         restart: on-failure
         volumes: 
             - ./logs:/logs
-            - ./templates:/templates
+            - ./templates1:/templates1
             - ./downloads:/downloads
+            - ./blankFiles:/blankFiles
             - ./localOfficeFiles:/localOfficeFiles
             - ./convertedFiles2:/convertedFiles2

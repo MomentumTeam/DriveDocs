@@ -21,12 +21,14 @@ exports.uploadNewFileToDrive = async (req, res, next) => {
   if (!xTypes.includes(req.query.type)) {
     return res.status(400).send("status 400: type must be docx,pptx, or xlsx!");
   }
-  const path = `${process.env.TEMPLATE_FOLDER}/${req.query.name}.${req.query.type}`;
-  res.locals.path = path;
-  fs.openSync(path, "w");
+  const blankFilePath = `${process.env.BLANK_PATH}/blank.${req.query.type}`;
+  const newFilePath = `${process.env.TEMPLATE_FOLDER}/${req.query.name}.${req.query.type}`;
+  fs.copyFile(blankFilePath, newFilePath, (err) => {
+    if (err) throw err;
+  });
   const data = new FormData();
-  data.append("file", fs.createReadStream(path));
-  fs.unlinkSync(path)
+  data.append("file", fs.createReadStream(newFilePath));
+  fs.unlinkSync(newFilePath)
   const accessToken = metadataService.getAuthorizationHeader(req.user);
   let fileId;
   try {
@@ -44,17 +46,17 @@ exports.uploadNewFileToDrive = async (req, res, next) => {
     } else {
       logger.log({
         level: "error",
-        message: `status 500: ${error.message}`,
-        label: `user: ${req.user.id}`,
+        message: `status 500: ${error.message} `,
+        label: `user: ${req.user.id} `,
       });
-      return res.status(500).send(`status 500: ${error.message}`);
+      return res.status(500).send(`status 500: ${error.message} `);
     }
   }
 };
 
 exports.redirectToDriveDownload = (req, res, next) => {
   try {
-    return res.redirect(`${process.env.DRIVE_URL}/api/files/${req.params.id}?alt=media`);
+    return res.redirect(`${process.env.DRIVE_URL} /api/files / ${req.params.id}?alt = media`);
   }
   catch{
     return res.status(500).send("error");
@@ -65,7 +67,7 @@ async function upload(filedata, parentId, accessToken) {
   try {
     const uploadRequest = {
       method: "post",
-      url: `${process.env.DRIVE_URL}/api/upload?uploadType=multipart${parentId ? `&parent=${parentId}` : ""}`,
+      url: `${process.env.DRIVE_URL}/api/upload?uploadType=multipart${parentId ? `&parent=${parentId}` : ""} `,
       headers: {
         Authorization: accessToken,
         "Auth-Type": "Docs",
@@ -76,6 +78,7 @@ async function upload(filedata, parentId, accessToken) {
     const response = await axios(uploadRequest);
     return response.data;
   } catch (error) {
+    console.log(error)
     throw error;
   }
 }
@@ -90,7 +93,7 @@ exports.updateFile = async (fileId, filePath, accessToken) => {
     method: 'post',
     url: `${process.env.DRIVE_URL}/api/upload?uploadType=resumable&uploadId=${uploadId}`,
     headers: {
-      'Content-Range': `bytes 0-${size - 1}/${size}`,
+      'Content-Range': `bytes 0 - ${size - 1} /${size}`,
       'Authorization': accessToken,
       "Auth-Type": "Docs",
       ...data.getHeaders(),
