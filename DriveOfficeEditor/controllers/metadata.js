@@ -1,5 +1,6 @@
 const metadataService = require("../services/metadataService");
 const logger = require("../services/logger.js");
+const mime = require('mime-types')
 const { config } = require("../config/config");
 
 const PDF = config.fileTypes.PDF;
@@ -13,7 +14,9 @@ exports.loadMetadata = async (req, res, next) => {
     try {
       const fileId = req.params.id;
       let metadata = await metadataService.getMetadata(fileId, req.user);
-      metadata.type = metadata.name.substring(metadata.name.lastIndexOf(".") + 1, metadata.name.length).toLowerCase();
+      console.log("typeChange");
+      // metadata.type = metadata.name.substring(metadata.name.lastIndexOf(".") + 1, metadata.name.length).toLowerCase();
+      metadata.type = mime.extension(metadata.type);
       res.locals.metadata = metadata;
       if (res.locals.metadata.hasOwnProperty("permission")) {
         delete res.locals.metadata["permission"];
