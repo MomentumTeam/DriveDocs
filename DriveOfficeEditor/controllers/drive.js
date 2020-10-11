@@ -56,7 +56,7 @@ exports.uploadNewFileToDrive = async (req, res, next) => {
 
 exports.redirectToDriveDownload = (req, res, next) => {
   try {
-    return res.redirect(`${process.env.DRIVE_URL} /api/files / ${req.params.id}?alt = media`);
+    return res.redirect(`${process.env.DRIVE_URL}/api/files/${req.params.id}?alt=media`);
   }
   catch{
     return res.status(500).send("error");
@@ -93,7 +93,7 @@ exports.updateFile = async (fileId, filePath, accessToken) => {
     method: 'post',
     url: `${process.env.DRIVE_URL}/api/upload?uploadType=resumable&uploadId=${uploadId}`,
     headers: {
-      'Content-Range': `bytes 0 - ${size - 1} /${size}`,
+      'Content-Range': `bytes 0-${size - 1}/${size}`,
       'Authorization': accessToken,
       "Auth-Type": "Docs",
       ...data.getHeaders(),
