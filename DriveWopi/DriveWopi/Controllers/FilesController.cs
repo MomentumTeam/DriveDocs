@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using DriveWopi.Models;
 using DriveWopi.Services;
 using DriveWopi.Exceptions;
+using System.Threading;
 using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http;
@@ -40,10 +41,7 @@ namespace DriveWopi.Controllers
         {
             try
             {
-                // Presentation pre = new Presentation();
-                // pre.LoadFromFile(Config.Folder + "/sample.ppt");
-                // pre.SaveToFile(Config.Folder + "/" + "ToPPTX.pptx", FileFormat.Pptx2010);
-                Config.logger.LogDebug("enter CheckFileInfo");
+                Config.logger.LogDebug("CheckFileInfo: id="+id);
                 if (string.IsNullOrEmpty(access_token))
                 {
                     Config.logger.LogError("status:500 accessToken is null");
@@ -60,7 +58,7 @@ namespace DriveWopi.Controllers
                     return StatusCode(500); //access token is illegal
                 }
                 var sessionContext = Request.Headers["X-WOPI-SessionContext"];
-                string idToDownload = token.ContainsKey("template") ? token["template"].ToString() : id;
+                string idToDownload = id;
                 string fileName = Config.Folder + "/" + metadata["id"] + "." + metadata["type"];
                 Session editSession = Session.GetSessionFromRedis(id, client);
                 if (editSession == null)
@@ -69,16 +67,14 @@ namespace DriveWopi.Controllers
                     editSession = new Session(id, fileName);
                     editSession.SaveToRedis();
                     editSession.AddSessionToListInRedis();
-                    Config.logger.LogDebug("create new session" + id);
+                    Config.logger.LogDebug("New session added to Redis for id=" + id);
                 }
                 if (!editSession.UserIsInSession(user["id"]))
                 {
-                    Config.logger.LogDebug("add new user to session");
                     editSession.AddUser(user["id"], user["authorization"]);
                     editSession.SaveToRedis();
-                    Config.logger.LogDebug("add new user {0} to session {1}", user["id"], id);
+                    Config.logger.LogDebug("Added user {0} to session {1}", user["id"], id);
                 }
-                Console.WriteLine(metadata["name"]);
                 CheckFileInfo checkFileInfo = editSession.GetCheckFileInfo(user["id"], user["name"], metadata["name"]);
                 return Ok(checkFileInfo);
             }
@@ -102,7 +98,7 @@ namespace DriveWopi.Controllers
         [HttpGet("{id}/contents", Name = "GetFileContents")]
         public async Task<IActionResult> GetFileContents(string id, [FromQuery] string access_token)
         {
-            Config.logger.LogDebug("enter GetFileContents");
+            Config.logger.LogDebug("GetFileContents: id="+id);
             try
             {
                 if (string.IsNullOrEmpty(access_token))
@@ -151,7 +147,7 @@ namespace DriveWopi.Controllers
 
         public async Task<IActionResult> PutFile(string id, [FromQuery] string access_token)
         {
-            Config.logger.LogDebug("enter PutFile");
+            Config.logger.LogDebug("PutFile: id="+id);
             try
             {
                 if (string.IsNullOrEmpty(access_token))
@@ -173,7 +169,6 @@ namespace DriveWopi.Controllers
                 Session editSession = Session.GetSessionFromRedis(id, client);
                 if (editSession == null)
                 {
-                    // Console.WriteLine("The session is null");
                     Config.logger.LogError("status:500 the session is null");
                     return StatusCode(500);
                 }
@@ -181,7 +176,6 @@ namespace DriveWopi.Controllers
 
                 if (!FilesService.FileExists(fileName))
                 {
-                    Console.WriteLine("The file does not exist!");
                     Config.logger.LogError("status:404 the file is not exsist");
                     return StatusCode(404);
                 }
@@ -201,7 +195,6 @@ namespace DriveWopi.Controllers
                 Request.Headers.TryGetValue("X-WOPI-Override", out var xWopiOverrideHeader);
                 if (xWopiOverrideHeader.Count != 1 || string.IsNullOrWhiteSpace(xWopiOverrideHeader.FirstOrDefault()))
                 {
-                    Console.WriteLine("X-WOPI-Override header not found");
                     Config.logger.LogError("status:400, X-WOPI-Override header not found");
                     return StatusCode(400);
                 }
@@ -226,13 +219,21 @@ namespace DriveWopi.Controllers
                 {
                     case "PUT":
                         if (xWopiLock == null || lockValue.Equals(xWopiLock))
-                        //if (xWopiLock == null || true)
                         {
                             if (editSession.Save(content, user["id"]))
                             {
+                                Console.WriteLine("save");
+                                bool needWorker = !editSession.ChangesMade;
+                                Console.WriteLine("needWorker = "+needWorker);
                                 editSession.ChangesMade = true;
                                 editSession.UserForUpload = new User(user["id"], user["authorization"]);
                                 editSession.SaveToRedis();
+                                Console.WriteLine("Saved in Redis");
+                                if(needWorker){
+                                    UpdateWorker worker = new UpdateWorker(id);
+                                    Thread t = new Thread(new ThreadStart(worker.Work));
+                                    t.Start();
+                                }
                                 Config.logger.LogDebug("status 200, the session {0} saved in redis", editSession.SessionId);
                                 return StatusCode(200);
                             }
@@ -274,13 +275,12 @@ namespace DriveWopi.Controllers
         }
 
         // POST: api/Files
-
         [HttpPost("{id}", Name = "lockMethods")]
         public async Task<IActionResult> Lock(string id, [FromQuery] string access_token)
         {
             try
             {
-                Config.logger.LogDebug("enter Lock");
+                Config.logger.LogDebug("Lock: id="+id);
                 if (string.IsNullOrEmpty(access_token))
                 {
                     Config.logger.LogError("status:500 accessToken is null");
@@ -359,7 +359,6 @@ namespace DriveWopi.Controllers
                         {
                             editSession.RefreshLock(lockValue);
                             editSession.SaveToRedis();
-                            //explain
                             return StatusCode(200);
                         }
                     case "GET_LOCK":

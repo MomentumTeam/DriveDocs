@@ -6,6 +6,12 @@ const redis = require("../controllers/redis");
 const logger = require("../services/logger.js");
 const drive = require("../controllers/drive");
 
+const sleep = (ms) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 module.exports = (app) => {
   app.get(
     "/api/files/:id",
@@ -44,20 +50,26 @@ module.exports = (app) => {
     }
   );
 
-  app.post("/closeSession/:id", authenitcation.isAuthenticated, async (req, res) => {
-    try {
-      const id = req.params.id;
-      const user = req.user;
-      await redis.removeUserFromSession(id, user);
-    } catch (e) {
-      logger.log({
-        level: "error",
-        message: `Status 500, failed to remove user from session, error: ${e}`,
-        label: `session: ${id} user: ${user}`,
-      });
-      res.status(500).send(e);
-    }
-  });
+  app.post("/closeSession/:id", async (req, res, next) => {
+    await sleep(10000);
+    next();
+  },
+    authenitcation.isAuthenticated,
+    files.updateFile,
+    async (req, res) => {
+      try {
+        const id = req.params.id;
+        const user = req.user;
+        await redis.removeUserFromSession(id, user);
+      } catch (e) {
+        logger.log({
+          level: "error",
+          message: `Status 500, failed to remove user from session, error: ${e}`,
+          label: `session: ${id} user: ${user}`,
+        });
+        res.status(500).send(e);
+      }
+    });
 
   app.get("/isalive", (req, res) => {
     return res.send("alive");

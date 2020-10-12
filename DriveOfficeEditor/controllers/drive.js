@@ -82,24 +82,24 @@ async function upload(filedata, parentId, accessToken) {
 }
 
 exports.updateFile = async (fileId, filePath, accessToken) => {
-  const size = getFileSize(filePath); //
-  mimeType = mime.contentType(path.extname(filePath))
-  const data = new FormData();
-  data.append('file', fs.createReadStream(filePath));
-  const uploadId = await getUploadId(size, fileId, accessToken);
-  const updateRequest = {
-    method: 'post',
-    url: `${process.env.DRIVE_URL}/api/upload?uploadType=resumable&uploadId=${uploadId}`,
-    headers: {
-      'Content-Range': `bytes 0-${size - 1}/${size}`,
-      'Authorization': accessToken,
-      "Auth-Type": "Docs",
-      ...data.getHeaders(),
-      "X-Mime-Type": mimeType
-    },
-    data: data
-  };
   try {
+    const size = getFileSize(filePath); //
+    mimeType = mime.contentType(path.extname(filePath))
+    const data = new FormData();
+    data.append('file', fs.createReadStream(filePath));
+    const uploadId = await getUploadId(size, fileId, accessToken);
+    const updateRequest = {
+      method: 'post',
+      url: `${process.env.DRIVE_URL}/api/upload?uploadType=resumable&uploadId=${uploadId}`,
+      headers: {
+        'Content-Range': `bytes 0-${size - 1}/${size}`,
+        'Authorization': accessToken,
+        "Auth-Type": "Docs",
+        ...data.getHeaders(),
+        "X-Mime-Type": mimeType
+      },
+      data: data
+    };
     await axios(updateRequest);
   } catch (error) {
     throw error;
