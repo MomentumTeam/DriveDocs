@@ -23,9 +23,7 @@ exports.uploadNewFileToDrive = async (req, res, next) => {
   }
   const blankFilePath = `${process.env.BLANK_PATH}/blank.${req.query.type}`;
   const newFilePath = `${process.env.TEMPLATE_FOLDER}/${req.query.name}.${req.query.type}`;
-  fs.copyFile(blankFilePath, newFilePath, (err) => {
-    if (err) throw err;
-  });
+  fs.copyFileSync(blankFilePath, newFilePath);
   const data = new FormData();
   data.append("file", fs.createReadStream(newFilePath));
   fs.unlinkSync(newFilePath)
