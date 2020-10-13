@@ -78,3 +78,17 @@ exports.removeUserFromSession = async (id, userToRemove) => {
     res.status(500).send(e);
   }
 };
+
+exports.canCreateSession = async (id) => {
+  let onlineSession = await getAsync(id);
+  let localSession = await getAsync(`local.${id}`);
+  console.log("canCreateSession = ")
+  console.log(onlineSession)
+  console.log(onlineSession)
+  if(!onlineSession && !localSession){
+    return true
+  }else{
+
+    return false
+  }
+}

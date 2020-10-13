@@ -43,25 +43,35 @@ exports.initRedisSession = async (req, res, next) => {
   try {
     const redisKey = `local.${req.params.id}`;
     const existingSession = await redis.get(redisKey);
-    const session = existingSession == null ? {} : JSON.parse(existingSession);
-    const user = {
-      id: req.user.id,
-      name: req.user.name,
-      authorization: res.locals.authorization,
-      permission: res.locals.permission
-    };
-    if (existingSession != null) {
-      session.users.push(user);
+    if(!existingSession){
+      const user = {
+        id: req.user.id,
+        name: req.user.name,
+        authorization: res.locals.authorization,
+        permission: res.locals.permission
+      };
+      const session = {
+        id:req.params.id,
+        webDavFolder:res.locals.webDavFolder,
+        webDavFileName:res.locals.webDavFileName,
+        user:user
+      }
+
+      //TODO 
+      console.log(await redis.canCreateSession(req.params.id));
+
+      res.locals.session = session;
+      await redis.set(redisKey, JSON.stringify(session));
+      next();
+    }else{
+      console.log("srayza")
+      res.render("localOffice", {
+        id: req.params.id,
+
+      });
+      // return res.redirect("http://google.com");
     }
-    else {
-      session.users = [user];
-      session.id = req.params.id;
-      session.webDavFolder = res.locals.webDavFolder;
-      session.webDavFileName = res.locals.webDavFileName;
-    }
-    res.locals.session = session;
-    await redis.set(redisKey, JSON.stringify(session));
-    next();
+
   }
   catch (err) {
     return res.status(500).send("error in initializing session in Redis");
