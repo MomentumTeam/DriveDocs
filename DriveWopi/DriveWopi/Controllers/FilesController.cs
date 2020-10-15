@@ -74,7 +74,8 @@ namespace DriveWopi.Controllers
                 if (!editSession.UserIsInSession(user["id"]))
                 {
                     Config.logger.LogDebug("add new user to session");
-                    editSession.AddUser(user["id"], user["authorization"]);
+                    Console.WriteLine( user["name"]);
+                    editSession.AddUser(user["id"], user["authorization"], user["permission"], user["name"]);
                     editSession.SaveToRedis();
                     Config.logger.LogDebug("add new user {0} to session {1}", user["id"], id);
                 }

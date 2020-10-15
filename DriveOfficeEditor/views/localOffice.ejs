@@ -1,8 +1,29 @@
 <!DOCTYPE html>
 <html>
+    <style>
+        .centered {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: aliceblue;
+            padding: 5%;
+}
+    </style>
 <body>
-הקובץ פתוח במקום אחר
-<%= id%>
+
+<div  class="centered">
+   <p> <%= name%></p>  פתוח במקום אחר
+
+    <ul>
+        <% users.forEach(function(user) { %>
+            <li>
+                <strong><%= user.Id %></strong>
+            </li>
+        <% }); %>
+    </ul>
+</div>
+
 </body>
 
 </html>

@@ -79,16 +79,43 @@ exports.removeUserFromSession = async (id, userToRemove) => {
   }
 };
 
-exports.canCreateSession = async (id) => {
-  let onlineSession = await getAsync(id);
-  let localSession = await getAsync(`local.${id}`);
+exports.canCreateSession = async (req, res, next) =>{
+  let onlineSession = await getAsync(req.params.id);
+  let localSession = await getAsync(`local.${req.params.id}`);
+  let mode = "online";
   console.log("canCreateSession = ")
   console.log(onlineSession)
-  console.log(onlineSession)
-  if(!onlineSession && !localSession){
-    return true
-  }else{
-
-    return false
+  console.log(localSession)
+  console.log(JSON.parse(JSON.parse(onlineSession)))
+  if((!onlineSession && !localSession) || req.query.operation == "read"){
+    next();
+  }else if(req.query.operation == "edit"){
+    if(mode == "online" && localSession){
+      if(localSession.permission == "edit"){
+        // TODO open online in view mode
+      }else{
+        next();
+      }
+    }
+    if(mode == "local"){
+      if(onlineSession){
+        let usersInEdit = onlineSession.Users.filter(user => user.Permission == "write");
+        if(usersInEdit){
+          // A page where the user decides whether to open a local view or join an online edit 
+          res.render("localOffice", {
+            id:req.params.id,
+            name:res.locals.metadata.name,
+            type:res.locals.metadata.type,
+            users:onlineSession.Users
+          });
+        }
+      }else if(localSession){
+        if(localSession.permission == "write"){
+          // redirct local view mode
+        }else{
+          next();
+        }
+      }
+    }
   }
 }

@@ -42,8 +42,6 @@ exports.setFolderAndFileName = (req, res, next) => {
 exports.initRedisSession = async (req, res, next) => {
   try {
     const redisKey = `local.${req.params.id}`;
-    const existingSession = await redis.get(redisKey);
-    if(!existingSession){
       const user = {
         id: req.user.id,
         name: req.user.name,
@@ -57,21 +55,9 @@ exports.initRedisSession = async (req, res, next) => {
         user:user
       }
 
-      //TODO 
-      console.log(await redis.canCreateSession(req.params.id));
-
       res.locals.session = session;
       await redis.set(redisKey, JSON.stringify(session));
       next();
-    }else{
-      console.log("srayza")
-      res.render("localOffice", {
-        id: req.params.id,
-
-      });
-      // return res.redirect("http://google.com");
-    }
-
   }
   catch (err) {
     return res.status(500).send("error in initializing session in Redis");
