@@ -1,30 +1,40 @@
 <!DOCTYPE html>
-<html>
-    <style>
-        .centered {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: aliceblue;
-            padding: 5%;
-}
-    </style>
+<html dir="rtl">
+    <head>
+        <%- include('partials/head'); -%>
+       </head>
+
 <body>
 
-<div  class="centered">
+<!-- <div  class="centered">
    <p> <%= name%></p>  פתוח במקום אחר
 
     <ul>
         <% users.forEach(function(user) { %>
             <li>
-                <strong><%= user.Id %></strong>
+                <strong><%= user.Name %></strong>
             </li>
         <% }); %>
     </ul>
-</div>
-
+</div> -->
+<div class="card centered">
+    <div class="card-body">
+      <h5 class="card-title">הקובץ <%= name%> פתוח במקום אחר </h5>
+      <p class="card-text">הקובץ נמצא בעריכה אצל :</p>
+      <ul class="list-group list-group-flush">
+        <% users.forEach(function(user) { %>
+            <li class="list-group-item">
+                <strong><%= user.Name %></strong>
+            </li>
+        <% }); %>
+    </ul>
+      <p>בחר מאחת האפשרויות הבאות: </p>
+      <a href=<%=onlineUrl %> class="btn btn-primary">Go somewhere</a>
+      <a href="../files/5f8bea8575fcdf0011d13807" class="btn btn-primary">Go somewhere</a>
+    </div>
+  </div>
 </body>
 
+<%- include('partials/script'); -%>
 </html>
 

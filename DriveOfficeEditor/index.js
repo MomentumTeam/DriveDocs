@@ -6,10 +6,12 @@ const auth = require("./routes/authentication");
 const localOffice = require("./routes/localOffice");
 const newPage = require("./routes/newPage");
 const logger = require("./services/logger.js");
-
+const path = require('path');
 const app = express();
 app.use(cookieParser());
+
 app.set("view engine", "ejs");
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(
   session({
     secret: "passport",

@@ -215,10 +215,12 @@ namespace DriveWopi.Models
                     foreach (Dictionary<string, object> userDict in UsersListDict)
                     {
                         User user = new User((string)userDict["Id"], (DateTime)userDict["LastUpdated"], (string)userDict["Authorization"]);
-                        // user.Name = (string)userDict["Name"];
-                        // user.Permission = (string)userDict["Permission"];
-                         Console.WriteLine("booom");
+                        user.Name = (string)userDict["Name"];
+                        user.Permission = (string)userDict["Permission"];
+                        Console.WriteLine("booom");
                         Console.WriteLine((string)userDict["Id"]);
+                        Console.WriteLine("Permission GetSessionFromRedis");
+                        Console.WriteLine((string)userDict["Permission"]);
                         sessionObj.AddUser(user);
                     }
                     Config.logger.LogDebug("GetSession of {0} Success", sessionId);

@@ -82,7 +82,7 @@ exports.removeUserFromSession = async (id, userToRemove) => {
 exports.canCreateSession = async (req, res, next) =>{
   let onlineSession = await getAsync(req.params.id);
   let localSession = await getAsync(`local.${req.params.id}`);
-  let mode = "online";
+  let mode = "local";
   console.log("canCreateSession = ")
   console.log(onlineSession)
   console.log(localSession)
@@ -99,6 +99,7 @@ exports.canCreateSession = async (req, res, next) =>{
     }
     if(mode == "local"){
       if(onlineSession){
+        onlineSession = JSON.parse(JSON.parse(onlineSession))
         let usersInEdit = onlineSession.Users.filter(user => user.Permission == "write");
         if(usersInEdit){
           // A page where the user decides whether to open a local view or join an online edit 
@@ -106,7 +107,8 @@ exports.canCreateSession = async (req, res, next) =>{
             id:req.params.id,
             name:res.locals.metadata.name,
             type:res.locals.metadata.type,
-            users:onlineSession.Users
+            users:onlineSession.Users,
+            onlineUrl:`../files/${req.params.id}`
           });
         }
       }else if(localSession){
