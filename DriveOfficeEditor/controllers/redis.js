@@ -2,6 +2,10 @@ const { promisify } = require("util");
 const redis = require("redis");
 const logger = require("../services/logger.js");
 
+const { config } = require("../config/config.js");
+
+const typeToLocalOffice = config.typeToLocalOffice;
+const operationToLocalFlag = config.operationToLocalFlag;
 const client = redis.createClient({
   url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
   socket_keepalive: true,
@@ -102,13 +106,16 @@ exports.canCreateSession = async (req, res, next) =>{
         onlineSession = JSON.parse(JSON.parse(onlineSession))
         let usersInEdit = onlineSession.Users.filter(user => user.Permission == "write");
         if(usersInEdit){
+          const webDavPath = `${process.env.WEBDAV_URL}/files/${res.locals.webDavFolder}/${res.locals.webDavFileName}`;
           // A page where the user decides whether to open a local view or join an online edit 
           res.render("localOffice", {
             id:req.params.id,
             name:res.locals.metadata.name,
             type:res.locals.metadata.type,
             users:onlineSession.Users,
-            onlineUrl:`../files/${req.params.id}`
+            lastUpdated:onlineSession.lastUpdated,
+            onlineUrl:`../files/${req.params.id}`,
+            localUrl:`../localOffice/view/${req.params.id}`
           });
         }
       }else if(localSession){

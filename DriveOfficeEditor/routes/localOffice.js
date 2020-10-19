@@ -12,8 +12,19 @@ module.exports = (app) => {
     metadata.checkPermissionsOnFile,
     tokens.generateAccessToken,
     localOffice.setFolderAndFileName,
-    localOffice.webdavDownloadAndPermissions,
     redis.canCreateSession,
+    localOffice.webdavDownloadAndPermissions,
+    localOffice.initRedisSession,
+    localOffice.redirectToLocalOffice,
+  );
+  app.get(
+    "/api/localOffice/view/:id",
+    authenitcation.isAuthenticated,
+    metadata.loadMetadata,
+    metadata.setViewPermissionsOnFile,
+    tokens.generateAccessToken,
+    localOffice.setFolderAndFileName,
+    localOffice.webdavDownloadAndPermissions,
     localOffice.initRedisSession,
     localOffice.redirectToLocalOffice,
   );
