@@ -33,6 +33,7 @@ module.exports = (app) => {
           accessToken: accessToken,
           faviconUrl: faviconUrl,
           fileName: fileName,
+          id: id,
         });
         logger.log({
           level: "info",
@@ -51,7 +52,7 @@ module.exports = (app) => {
   );
 
   app.post("/closeSession/:id", async (req, res, next) => {
-    await sleep(10000);
+    // await sleep(10000);
     next();
   },
     authenitcation.isAuthenticated,
@@ -82,4 +83,22 @@ module.exports = (app) => {
     files.updateFile,
     drive.redirectToDriveDownload,
   );
+
+  app.get("/isIdle/:id",
+    authenitcation.isAuthenticated,
+    async (req, res) => {
+      const sessionId = req.params.id;
+      const existingSession = await redis.get(sessionId);
+      const session = existingSession == null ? {} : JSON.parse(JSON.parse(existingSession));
+      const user = session.Users.find(user => user.Id == req.user.id);
+      res.send((Date.now() - new Date(user.LastUpdated)) / 1000 > process.env.MAX_USER_IDLE);
+  });
+
+  app.get("/update/:id",
+    authenitcation.isAuthenticated,
+    async (req, res) => {
+      console.log("update")
+      await redis.updateUserLastUpdated(req.params.id, req.user.id);
+      res.send("ok");  
+  });
 };

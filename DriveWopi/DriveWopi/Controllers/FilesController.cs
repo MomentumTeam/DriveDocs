@@ -78,16 +78,16 @@ namespace DriveWopi.Controllers
                 CheckFileInfo checkFileInfo = editSession.GetCheckFileInfo(user["id"], user["name"], metadata["name"]);
                 return Ok(checkFileInfo);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                if (e is DriveFileNotFoundException)
+                if (ex is DriveFileNotFoundException)
                 {
-                    Config.logger.LogError("status:404 CheckFileInfo Drive Error" + e.Message);
+                    Config.logger.LogError("status:404 CheckFileInfo Drive Error" + ex.Message);
                     return StatusCode(404);
                 }
                 else
                 {
-                    Config.logger.LogError("status:500, CheckFileInfo Error:" + e.Message);
+                    Config.logger.LogError("status:500, CheckFileInfo Error:" + ex.Message);
                     return StatusCode(500);
                 }
             }

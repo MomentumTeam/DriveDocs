@@ -1,5 +1,6 @@
 const { promisify } = require("util");
 const redis = require("redis");
+const moment = require("moment");
 const logger = require("../services/logger.js");
 
 const client = redis.createClient({
@@ -78,3 +79,39 @@ exports.removeUserFromSession = async (id, userToRemove) => {
     res.status(500).send(e);
   }
 };
+
+
+exports.updateUserLastUpdated = async (id, userId) => {
+  try {
+    let res = await getAsync(id);
+    console.log(res)
+    if (!res || res == null) {
+      return;
+    }
+    let session = JSON.parse(JSON.parse(res));
+    if (!session || session == null || !session.Users || session.Users == null) {
+      return;
+    }
+    console.log("enter");
+    const userIndex = session.Users.findIndex(user => user.Id == userId);
+    console.log("old"+ session.Users[userIndex].LastUpdated);
+    session.Users[userIndex].LastUpdated = moment().format();
+    console.log("new"+ session.Users[userIndex].LastUpdated);
+    session = JSON.stringify(JSON.stringify(session));
+    await setAsync(id, session);
+    logger.log({
+      level: "info",
+      message: "LastUpdated of user successfully update",
+      label: `Session: ${id}, User: ${userId}`,
+    });
+  } catch (err) {
+    logger.log({
+      level: "error",
+      message: `Status 500, failed to update user LastUpdated, error: ${err}`,
+      label: `Session: ${id}, User: ${userId}`,
+    });
+    // res.status(500).send(e);
+  }
+};
+
+

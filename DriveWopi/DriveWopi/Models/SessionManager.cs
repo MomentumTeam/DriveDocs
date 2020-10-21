@@ -34,7 +34,7 @@ namespace DriveWopi.Models
         public SessionManager()
         {
             var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
-            _Timer = new Timer(Config.Timeout);
+            _Timer = new Timer(Config.Timeout*1000);
             _Timer.AutoReset = true;
             _Timer.Elapsed += CleanUp;
             _Timer.Enabled = Config.CleanUpEnabled;
@@ -48,47 +48,14 @@ namespace DriveWopi.Models
                 var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
                 logger.Debug("CleanUp : "+ DateTime.Now);
                 IRedisClient client = RedisService.GenerateRedisClient();
-                bool needToCloseSomeSessions = false, needToDeleteSession = false;
-                int usersCountBefore, usersCountAfter;
+                bool needToCloseSomeSessions = false;
                 List<Session> allSessions = Session.GetAllSessions(client);
                 allSessions = allSessions.Where(x => x != null).ToList();
                 for (int i = 0; i < allSessions.Count; i++)
                 {
-                    needToDeleteSession = false;
                     Session session = allSessions[i];
-                    usersCountBefore = session.Users == null ? 0 : session.Users.Count;
-
-                    // Delete session from Redis after maximum 24 hours
-                    if (session.LastUpdated.AddSeconds(Config.MaxRedisSessionTime) < DateTime.Now)
-                    {
-                        needToDeleteSession = true;
-                    }
-                    else if (usersCountBefore == 0 && (!session.ChangesMade))
-                    {
-                        needToDeleteSession = true;
-                    }
-                    else{
-                        session.Users.RemoveAll((User user) =>{
-                        if (user.LastUpdated.AddSeconds(Config.Removewaituser) < DateTime.Now){
-                            logger.Debug("user {0} LastUpdated time pased", user.Id);
-                            return true;
-                        }
-                        else{
-                            return false;
-                        }
-                        });
-                        usersCountAfter = session.Users.Count;
-                        if (usersCountAfter != usersCountBefore){
-                            logger.Debug("the number of users on the session {0} has changed", session.SessionId);
-                            if (usersCountAfter == 0 && (!session.ChangesMade)){
-                                needToDeleteSession = true;
-                            }
-                            else{
-                                session.SaveToRedis();
-                            }
-                        }
-                    }
-                    if(needToDeleteSession){
+                    Console.WriteLine(session.Users.Count);
+                    if (session.Users.Count == 0 && !session.ChangesMade) {
                         needToCloseSomeSessions = true;
                         allSessions[i] = null;
                         session.DeleteSessionFromRedis();
