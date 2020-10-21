@@ -3,6 +3,7 @@ const metadata = require("../controllers/metadata");
 const files = require("../controllers/files");
 const tokens = require("../controllers/tokens");
 const redis = require("../controllers/redis");
+const conflict = require("../controllers/conflict");
 const logger = require("../services/logger.js");
 const drive = require("../controllers/drive");
 
@@ -13,6 +14,7 @@ module.exports = (app) => {
     metadata.loadMetadata,
     metadata.checkPermissionsOnFile,
     metadata.checkSizeOfFile,
+    conflict.resolver,
     tokens.generateAccessToken,
     files.generateUrl,
     (req, res) => {

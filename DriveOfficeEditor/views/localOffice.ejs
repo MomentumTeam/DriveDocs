@@ -6,36 +6,36 @@
 
 <body>
 
-<!-- <div  class="centered">
-   <p> <%= name%></p>  פתוח במקום אחר
+    <% if(onlineUrl){ %>
+        <div class="card centered">
+            <div class="card-body">
+              <h5 class="card-title">הקובץ <%= name%> פתוח במקום אחר </h5>
+              <p class="card-text">הקובץ נמצא בעריכה אצל :</p>
+              <ul class="list-group list-group-flush">
+                <% users.forEach(function(user) { %>
+                    <li class="list-group-item">
+                        <strong><%= user.Name %></strong>
+                    </li>
+                <% }); %>
+            </ul>
+              <p>בחר מאחת האפשרויות הבאות: </p>
+              <a class="btn btn-primary" href=<%=onlineUrl %> >הצטרף לעריכה משותפת</a>
+              <a class="btn btn-primary" href=<%=localUrl %> >פתח את הקובץ לקריאה בלבד</a>
+            </div>
+            <!-- <div class="card-footer">
+                <small class="text-muted">Last updated <%=lastUpdated %></small>
+              </div> -->
+          </div>
+      <% } else{ %>  
+        <div class="card centered">
+            <div class="card-body">
+              <h5 class="card-title">הקובץ <%= name%> פתוח במקום אחר </h5>
+              <p class="card-text">הקובץ נמצא בעריכה אצל משתמש אחר :</p>
+              <a class="btn btn-primary" href=<%=localUrl %> >פתח את הקובץ לקריאה בלבד</a>
+            </div>
+          </div>
+     <% } %>
 
-    <ul>
-        <% users.forEach(function(user) { %>
-            <li>
-                <strong><%= user.Name %></strong>
-            </li>
-        <% }); %>
-    </ul>
-</div> -->
-<div class="card centered">
-    <div class="card-body">
-      <h5 class="card-title">הקובץ <%= name%> פתוח במקום אחר </h5>
-      <p class="card-text">הקובץ נמצא בעריכה אצל :</p>
-      <ul class="list-group list-group-flush">
-        <% users.forEach(function(user) { %>
-            <li class="list-group-item">
-                <strong><%= user.Name %></strong>
-            </li>
-        <% }); %>
-    </ul>
-      <p>בחר מאחת האפשרויות הבאות: </p>
-      <a class="btn btn-primary" href=<%=onlineUrl %> >הצטרף לעריכה משותפת</a>
-      <a class="btn btn-primary" href=<%=localUrl %> >פתח את הקובץ לקריאה בלבד</a>
-    </div>
-    <!-- <div class="card-footer">
-        <small class="text-muted">Last updated <%=lastUpdated %></small>
-      </div> -->
-  </div>
 </body>
 
 <%- include('partials/script'); -%>
