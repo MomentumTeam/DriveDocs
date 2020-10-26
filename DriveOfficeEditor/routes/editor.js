@@ -33,7 +33,8 @@ module.exports = (app) => {
           accessToken: accessToken,
           faviconUrl: faviconUrl,
           fileName: fileName,
-          id: id,
+          fileId: id,
+          userId: req.user.id
         });
         logger.log({
           level: "info",
@@ -52,7 +53,7 @@ module.exports = (app) => {
   );
 
   app.post("/closeSession/:id", async (req, res, next) => {
-    // await sleep(10000);
+    console.log("close");
     next();
   },
     authenitcation.isAuthenticated,

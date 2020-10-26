@@ -138,7 +138,7 @@ namespace DriveWopi.Models
                 cfi.SupportsUpdate = true;
                 cfi.UserCanWrite = true;
                 cfi.LicenseCheckForEditIsEnabled = true;
-                cfi.ClientUrl = Config.WebDAV_Server+"/"+_FileInfo.Name;
+                cfi.ClientUrl = Config.WebDAV_Server+"/files/docx/1.docx";
                 cfi.SupportsGetLock = true;
                 cfi.DownloadUrl = Config.OfficeEditorUrl + "/updateAndDownload/"+SessionId;
                 Config.logger.LogDebug("GetCheckFileInfo of file {0} Success", name);

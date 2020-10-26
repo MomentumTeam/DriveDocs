@@ -7,6 +7,7 @@ function htmlDecode(input) {
 }
 
 function closeSession(id) {
+    console.log("hi");
     var xhr = new XMLHttpRequest();
     xhr.open("POST", `/closeSession/${id}`, true);
     xhr.onreadystatechange = function () {
@@ -31,13 +32,23 @@ function updateLastUpdated(id) {
     return xmlHttp.responseText;
 }
 
+function createTimeOutPage () {
+    const frame = document.getElementById('office_frame');
+    const frameHolder = document.getElementById('frameholder');
+    frame.parentNode.removeChild(frame);
+
+    const div = document.getElementById('finishPage');
+    div.style.display = "block";
+    frameHolder.appendChild(div);
+}
+
 let stop = false;
 let waitMessage;
 const checkIdle = setInterval(() => {
     stop = false;
     idle = false;
     console.log("interval");
-    if (isIdle(id)) {
+    if (isIdle(fileId)) {
         idle = true;
         console.log("enter isIdle");
         console.log("stop " +stop +" idle "+idle);
@@ -53,18 +64,20 @@ const checkIdle = setInterval(() => {
             console.log("stop " +stop +" idle "+idle);
             if(!stop) {
                 console.log("not stop");
-                closeSession(id);
+                closeSession(fileId);
                 clearInterval(checkIdle);
                 $('#warningModel').modal('hide');
-                document.getElementById('office_frame').src = "data:text/html;charset=utf-8," + escape("timeout");
+                // document.getElementById('office_frame').src = "data:text/html;charset=utf-8," + escape("timeout");
+                createTimeOutPage();
+                // document.getElementById('office_frame').innerHTML = document.getElementById("finishPage").innerHTML;
             } else { 
                 console.log("stop");
                 stop = false;
-                console.log(updateLastUpdated(id));
+                console.log(updateLastUpdated(fileId));
             }
         }, 5000); 
     }
-}, 10000);
+}, 10001);
 
 window.onmousemove = () => {
     if (idle) {

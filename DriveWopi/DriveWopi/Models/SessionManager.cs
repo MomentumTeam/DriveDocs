@@ -61,6 +61,20 @@ namespace DriveWopi.Models
                         session.DeleteSessionFromRedis();
                         session.RemoveLocalFile();
                     }
+
+                    session.Users.RemoveAll((User user) =>
+                    {
+                        int maxTime = Config.intervalTime + Config.idleTime;
+                        if (user.LastUpdated.AddSeconds(maxTime) < DateTime.Now)
+                        {
+                            logger.Debug("user {0} LastUpdated time pased", user.Id);
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    });
                 }
                 allSessions = allSessions.Where(x => x != null).ToList();
                 if (needToCloseSomeSessions){

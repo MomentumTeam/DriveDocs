@@ -7,6 +7,7 @@ const localOffice = require("./routes/localOffice");
 const newPage = require("./routes/newPage");
 const logger = require("./services/logger.js");
 const path = require('path');
+const redis = require('./controllers/redis');
 
 
 const app = express();
@@ -39,10 +40,25 @@ if (enableLocalOffice) {
   localOffice(app);
 }
 
-app.listen(process.env.PORT, () =>
+const server = app.listen(process.env.PORT, () =>
   logger.log({
     level: "info",
     message: `Drive Office Editor is listening on http://localhost:${process.env.PORT}`,
     label: "DriveOfficeEditor up",
   })
 );
+
+const io = require("socket.io")(server);
+
+io.on('connection', (socket) => {
+  const userId = socket.handshake.query.userId;
+  const fileId = socket.handshake.query.fileId;
+	console.log(`User ${userId} connected session ${fileId}`);
+    socket.on('disconnect', async () => {
+      await redis.removeUserFromSession(fileId, userId);
+    });
+});
+
+
+
+

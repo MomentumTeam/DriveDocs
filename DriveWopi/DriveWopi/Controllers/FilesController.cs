@@ -63,6 +63,7 @@ namespace DriveWopi.Controllers
                 Session editSession = Session.GetSessionFromRedis(id, client);
                 if (editSession == null)
                 {
+                    Console.WriteLine("null");
                     FilesService.DownloadFileFromDrive(idToDownload, fileName, user["authorization"]);
                     editSession = new Session(id, fileName);
                     editSession.SaveToRedis();
@@ -147,6 +148,7 @@ namespace DriveWopi.Controllers
 
         public async Task<IActionResult> PutFile(string id, [FromQuery] string access_token)
         {
+            Console.WriteLine("putFile");
             Config.logger.LogDebug("PutFile: id="+id);
             try
             {

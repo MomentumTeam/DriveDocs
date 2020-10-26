@@ -20,6 +20,10 @@ namespace DriveWopi
         public static int AccessTokenExpiringTime;
         public static bool CleanUpEnabled;
 
+        public static int idleTime;
+
+        public static int intervalTime;
+
         public static int DriveUpdateTime;
 
         public static string WebDAV_Server;
@@ -57,7 +61,9 @@ namespace DriveWopi
             
             DriveSecret = Environment.GetEnvironmentVariable("DRIVE_SECRET");
 
-            
+            idleTime = int.Parse(Environment.GetEnvironmentVariable("MAX_USER_IDLE"));
+
+            intervalTime = int.Parse(Environment.GetEnvironmentVariable("INTERVAL_TIME"));
         }
     }
 }

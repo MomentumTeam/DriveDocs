@@ -6,7 +6,7 @@
     <!-- <script type="text/javascript" src="/scripts/jquery.min.js"></script> -->
     <!-- <script type="text/javascript" src="/scripts/jquery.idle.js"></script> -->
     <script type="text/javascript" src="/scripts/index.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
     <meta charset="utf-8">
 
     <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -39,22 +39,56 @@
             display: block;
         }
 
-        .image {
-            text-align: right;
-            width: 5px;
-            height: 5px;
+        .finishPage {
+            background-color: #dccac8;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: 0;
+            border: none;
+        }
+
+        .message {
+            margin-top: 300px;
+        }
+
+        .text-large {
+            font-size: 150%;
+        }
+
+        .text-meduim {
+            font-size: 125%;
         }
     </style>
 </head>
 
 <body>
+
+    <div id="finishPage" class="finishPage" style="display: none;">
+        <div class="card border-danger mx-auto message shadow-sm mb-5 bg-white rounded" style="max-width: 35rem;">
+            <div style="text-align: right;" class="card-header bg-danger text-white text-large">פג התוקף של הדף
+            </div>
+            <div class="card-body text-danger">
+                <p style="text-align:right" class="card-text text-meduim">רענן כדי להמשיך לצפות</p>
+                <img src="/images/timerRed.png" width="55" height="55" class="rounded float-left">
+            </div>
+            <div style="text-align:right" class="card-footer bg-transparent">
+                <button type="button" onclick="window.location.reload()" class="btn btn-outline-danger">רענן</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal" id="warningModel" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-body">
                     <img src="/images/warning1.png" class="rounded float-right" alt="...">
                     <p style="text-align:right" id="timer">העמוד הולך להסגר בעוד 5 שניות</p>
-                    <p style="text-align:right">הזז את העכבר כדי למנוע זאת</p>                     
+                    <p style="text-align:right">הזז את העכבר כדי למנוע זאת</p>
                 </div>
             </div>
         </div>
@@ -68,15 +102,20 @@
     <span id="frameholder"></span>
 
     <script type="text/javascript">
-        const id = JSON.parse(htmlDecode("<%= JSON.stringify(id) %>"));
+        const fileId = JSON.parse(htmlDecode("<%= JSON.stringify(fileId) %>"));
+        const userId = JSON.parse(htmlDecode("<%= JSON.stringify(userId) %>"));
         let idle = true;
         window.onbeforeunload = (event) => {
-            window.location.reload(true);
-            if (event.clientY < 0 || (!event.clientY)) {
-                closeSession(id);
-            }
+            // var message = 'Important: Please click on \'Save\' button to leave this page.';
+            // if (typeof event == 'undefined') {
+            //     event = window.event;
+            // }
+            // if (event) {
+            //     event.returnValue = message;
+            // }
+            // return message;
         }
-        
+
         var frameholder = document.getElementById('frameholder');
         var office_frame = document.createElement('iframe');
         office_frame.name = 'office_frame';
@@ -87,9 +126,14 @@
         frameholder.appendChild(office_frame);
         document.getElementById('office_form').submit();
 
- 
-    </script>
 
+    </script>
+    <script>
+        const socket = io.connect(`/?userId=${userId}&fileId=${fileId}`);
+        // socket.on('disconnect', () => {
+        //     alert('client socketio disconnect!')
+        // })
+    </script>
 </body>
 <%- include('partials/script'); -%>
 

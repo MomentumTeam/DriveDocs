@@ -57,18 +57,18 @@ exports.removeUserFromSession = async (id, userToRemove) => {
     if (!session || session == null || !session.Users || session.Users == null) {
       return;
     }
-    const userToRemoveAsInSession = session.Users.find((user) => user.Id == userToRemove.id);
+    const userToRemoveAsInSession = session.Users.find((user) => user.Id == userToRemove);
     if (!userToRemoveAsInSession) {
       return;
     }
-    session.Users = session.Users.filter((u) => u.Id !== userToRemove.id);
+    session.Users = session.Users.filter((user) => user.Id !== userToRemove);
     session.UserForUpload = userToRemoveAsInSession;
     session = JSON.stringify(JSON.stringify(session));
     await setAsync(id, session);
     logger.log({
       level: "info",
       message: "User was successfully removed",
-      label: `Session: ${id}, User: ${userToRemove.id}`,
+      label: `Session: ${id}, User: ${userToRemove}`,
     });
   } catch (err) {
     logger.log({
