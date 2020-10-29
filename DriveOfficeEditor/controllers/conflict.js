@@ -8,14 +8,11 @@ exports.resolver = async (req, res, next) =>{
       next();
     }else if(req.query.operation == "edit"){
       if(mode == "online" && localSession){
-        localSession = JSON.parse(localSession);
-        if(localSession.user.permission == "write"){
-          console.log("online")
-          console.log(localSession)
           // TODO open online in view mode
-          req.query.operation == "view"
-          next()
-        }else{
+          req.query.operation = "view";
+          next();
+      }
+          else{
           next();
         }
       }
@@ -26,7 +23,7 @@ exports.resolver = async (req, res, next) =>{
           console.log(onlineSession);
           let usersInEdit = onlineSession.Users.filter(user => user.Permission == "write");
           if(usersInEdit){
-            const webDavPath = `${process.env.WEBDAV_URL}/files/${res.locals.webDavFolder}/${res.locals.webDavFileName}`;
+           // const webDavPath = `${process.env.WEBDAV_URL}/files/${res.locals.webDavFolder}/${res.locals.webDavFileName}`;
             // A page where the user decides whether to open a local view or join an online edit 
             res.render("localOffice", {
               id:req.params.id,
@@ -42,7 +39,6 @@ exports.resolver = async (req, res, next) =>{
           localSession = JSON.parse(localSession);
           console.log("localSession");
           console.log(localSession)
-          if(localSession.user.permission == "write"){
             res.render("localOffice", {
               id:req.params.id,
               name:res.locals.metadata.name,
@@ -50,10 +46,7 @@ exports.resolver = async (req, res, next) =>{
               onlineUrl:null,
               localUrl:`../localOffice/view/${req.params.id}`
             });
-          }else{
-            next();
-          }
-        }
       }
     }
+    next();
 }

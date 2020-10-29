@@ -41,7 +41,8 @@ exports.setFolderAndFileName = (req, res, next) => {
 
 exports.initRedisSession = async (req, res, next) => {
   try {
-    const redisKey = `local.${req.params.id}`;
+    if(res.locals.permission == 'write'){
+      const redisKey = `local.${req.params.id}`;
       const user = {
         id: req.user.id,
         name: req.user.name,
@@ -54,9 +55,9 @@ exports.initRedisSession = async (req, res, next) => {
         webDavFileName:res.locals.webDavFileName,
         user:user
       }
-
       res.locals.session = session;
       await redis.set(redisKey, JSON.stringify(session));
+    }
       next();
   }
   catch (err) {

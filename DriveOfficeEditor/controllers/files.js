@@ -83,17 +83,17 @@ exports.generateUrl = async (req, res, next) => {
       }
     } else { //view
       switch (fileType) {
-        case fileTypes.DOCX:
+        case config.fileTypes.DOCX:
           url = `${process.env.OFFICE_ONLINE_URL}/wv/wordviewerframe.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
           proxyUrl = `${process.env.OFFICE_ONLINE_URL}/wv/wordviewerframe.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
           faviconUrl = `${process.env.FAVICON_DOCX}`;
           break;
-        case fileTypes.PPTX:
+        case config.fileTypes.PPTX:
           url = `${process.env.OFFICE_ONLINE_URL_PPTX}/p/PowerPointFrame.aspx?PowerPointView=ReadingView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
           proxyUrl = `${process.env.OFFICE_ONLINE_URL_PPTX}/p/PowerPointFrame.aspx?PowerPointView=ReadingView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
           faviconUrl = `${process.env.FAVICON_PPTX}`;
           break;
-        case fileTypes.XLSX:
+        case config.fileTypes.XLSX:
           url = `${process.env.OFFICE_ONLINE_URL}/x/_layouts/xlviewerinternal.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
           proxyUrl = `${process.env.OFFICE_ONLINE_URL}/x/_layouts/xlviewerinternal.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
           faviconUrl = `${process.env.FAVICON_XLSX}`;

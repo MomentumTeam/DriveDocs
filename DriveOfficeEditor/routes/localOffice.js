@@ -25,7 +25,6 @@ module.exports = (app) => {
     tokens.generateAccessToken,
     localOffice.setFolderAndFileName,
     localOffice.webdavDownloadAndPermissions,
-    localOffice.initRedisSession,
     localOffice.redirectToLocalOffice,
   );
 };
