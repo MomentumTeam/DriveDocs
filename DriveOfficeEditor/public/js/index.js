@@ -1,13 +1,6 @@
 console.log("indexjs")
 
-function htmlDecode(input) {
-    const e = document.createElement('div');
-    e.innerHTML = input;
-    return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
-}
-
 function closeSession(id) {
-    console.log("hi");
     var xhr = new XMLHttpRequest();
     xhr.open("POST", `/closeSession/${id}`, true);
     xhr.onreadystatechange = function () {
@@ -36,14 +29,18 @@ function createTimeOutPage () {
     const frame = document.getElementById('office_frame');
     const frameHolder = document.getElementById('frameholder');
     frame.parentNode.removeChild(frame);
-
     const div = document.getElementById('finishPage');
     div.style.display = "block";
     frameHolder.appendChild(div);
 }
 
-let stop = false;
-let waitMessage;
+let stop = false, idle = false;
+let waitMessage, messageTimer;
+console.log("timer " + timer + " "+ typeof timer);
+console.log("second " + second + " "+ typeof second);
+console.log("intervalTime " +intervalTime + " "+ typeof intervalTime);
+
+
 const checkIdle = setInterval(() => {
     stop = false;
     idle = false;
@@ -52,37 +49,41 @@ const checkIdle = setInterval(() => {
         idle = true;
         console.log("enter isIdle");
         console.log("stop " +stop +" idle "+idle);
-        let count =  5;
-        document.getElementById("timer").innerText = `העמוד הולך להסגר בעוד ${count} שניות`      
+        let countTimer = timer;
         $('#warningModel').modal();
+        document.getElementById("second").innerText = countTimer;
+        console.log(countTimer);
         const messageTimer = setInterval(() => {
-            count --;
-            document.getElementById("timer").innerText = `העמוד הולך להסגר בעוד ${count} שניות`      
-        }, 1000);
+            console.log(countTimer);
+            console.log("timer");
+            if (stop) {
+                clearInterval(messageTimer);
+            }
+            countTimer --;
+            document.getElementById("second").innerText = countTimer;     
+        }, second);
         waitMessgae = setTimeout(() => {
-            clearInterval(messageTimer);
             console.log("stop " +stop +" idle "+idle);
             if(!stop) {
                 console.log("not stop");
                 closeSession(fileId);
                 clearInterval(checkIdle);
                 $('#warningModel').modal('hide');
-                // document.getElementById('office_frame').src = "data:text/html;charset=utf-8," + escape("timeout");
+                idle = false;
+                stop = true;
                 createTimeOutPage();
-                // document.getElementById('office_frame').innerHTML = document.getElementById("finishPage").innerHTML;
             } else { 
-                console.log("stop");
+                console.log("stop")
                 stop = false;
-                console.log(updateLastUpdated(fileId));
+                updateLastUpdated(fileId);
             }
-        }, 5000); 
+        }, timer*second); 
     }
-}, 10001);
+}, intervalTime * second);
 
 window.onmousemove = () => {
     if (idle) {
         stop = true;
         $('#warningModel').modal('hide');
-        // clearTimeout(waitMessgae);
     }
 }

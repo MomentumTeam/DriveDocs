@@ -67,6 +67,7 @@ namespace DriveWopi.Models
                         int maxTime = Config.intervalTime + Config.idleTime;
                         if (user.LastUpdated.AddSeconds(maxTime) < DateTime.Now)
                         {
+                            Console.WriteLine("x problem");
                             logger.Debug("user {0} LastUpdated time pased", user.Id);
                             return true;
                         }

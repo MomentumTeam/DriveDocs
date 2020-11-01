@@ -5,7 +5,7 @@
     <%- include('partials/head'); -%>
     <!-- <script type="text/javascript" src="/scripts/jquery.min.js"></script> -->
     <!-- <script type="text/javascript" src="/scripts/jquery.idle.js"></script> -->
-    <script type="text/javascript" src="/scripts/index.js"></script>
+    <!-- <script type="text/javascript" src="/scripts/index.js"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
     <meta charset="utf-8">
 
@@ -39,7 +39,7 @@
             display: block;
         }
 
-        .finishPage {
+        #finishPage {
             background-color: #dccac8;
             width: 100%;
             height: 100%;
@@ -50,9 +50,10 @@
             bottom: 0;
             margin: 0;
             border: none;
+            display: none;
         }
 
-        .message {
+        .mt-300 {
             margin-top: 300px;
         }
 
@@ -66,17 +67,21 @@
     </style>
 </head>
 
+<script>
+    let timer = 8;
+    const second = 1000;
+</script>
 <body>
 
-    <div id="finishPage" class="finishPage" style="display: none;">
-        <div class="card border-danger mx-auto message shadow-sm mb-5 bg-white rounded" style="max-width: 35rem;">
-            <div style="text-align: right;" class="card-header bg-danger text-white text-large">פג התוקף של הדף
+    <div id="finishPage">
+        <div class="card border-danger mx-auto mt-300 bg-white" style="max-width: 35rem;">
+            <div class="card-header bg-danger text-white text-large text-right">פג התוקף של הדף
             </div>
             <div class="card-body text-danger">
-                <p style="text-align:right" class="card-text text-meduim">רענן כדי להמשיך לצפות</p>
-                <img src="/images/timerRed.png" width="55" height="55" class="rounded float-left">
+                <p class="card-text text-meduim text-right">רענן כדי להמשיך לצפות</p>
+                <img src="/images/timer1.png" width="55" height="55" class="float-left">
             </div>
-            <div style="text-align:right" class="card-footer bg-transparent">
+            <div class="card-footer bg-transparent text-right">
                 <button type="button" onclick="window.location.reload()" class="btn btn-outline-danger">רענן</button>
             </div>
         </div>
@@ -86,9 +91,9 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-body">
-                    <img src="/images/warning1.png" class="rounded float-right" alt="...">
-                    <p style="text-align:right" id="timer">העמוד הולך להסגר בעוד 5 שניות</p>
-                    <p style="text-align:right">הזז את העכבר כדי למנוע זאת</p>
+                    <img src="/images/warning1.png" class="float-right">
+                    <p class="text-right" id="timer">העמוד הולך להסגר בעוד <var id="second"></var> שניות</p>
+                    <p class="text-right">הזז את העכבר כדי למנוע זאת</p>
                 </div>
             </div>
         </div>
@@ -96,25 +101,14 @@
 
     <form id="office_form" name="office_form" target="office_frame" action=<%=url%> method="post">
         <input name="access_token" value=<%=accessToken %> type="hidden" />
-        <!-- <input name="access_token_ttl" value="99999" type="hidden" />  -->
     </form>
 
     <span id="frameholder"></span>
 
     <script type="text/javascript">
-        const fileId = JSON.parse(htmlDecode("<%= JSON.stringify(fileId) %>"));
-        const userId = JSON.parse(htmlDecode("<%= JSON.stringify(userId) %>"));
-        let idle = true;
-        window.onbeforeunload = (event) => {
-            // var message = 'Important: Please click on \'Save\' button to leave this page.';
-            // if (typeof event == 'undefined') {
-            //     event = window.event;
-            // }
-            // if (event) {
-            //     event.returnValue = message;
-            // }
-            // return message;
-        }
+        const fileId = '<%-fileId%>';
+        const userId = '<%-userId%>';
+        const intervalTime = parseInt('<%-intervalTime%>');
 
         var frameholder = document.getElementById('frameholder');
         var office_frame = document.createElement('iframe');
@@ -126,15 +120,10 @@
         frameholder.appendChild(office_frame);
         document.getElementById('office_form').submit();
 
-
-    </script>
-    <script>
         const socket = io.connect(`/?userId=${userId}&fileId=${fileId}`);
-        // socket.on('disconnect', () => {
-        //     alert('client socketio disconnect!')
-        // })
+
     </script>
 </body>
 <%- include('partials/script'); -%>
-
+<script src="/js/index.js"></script>
 </html>

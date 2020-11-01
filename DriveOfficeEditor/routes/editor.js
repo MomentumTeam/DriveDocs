@@ -28,13 +28,17 @@ module.exports = (app) => {
         const accessToken = res.locals.accessToken;
         const faviconUrl = res.locals.faviconUrl;
         const fileName = res.locals.metadata.name;
+        const userId = req.user.id;
+        const intervalTime = process.env.INTERVAL_TIME;
+        console.log(intervalTime);
         res.render("index", {
           url: url,
           accessToken: accessToken,
           faviconUrl: faviconUrl,
           fileName: fileName,
           fileId: id,
-          userId: req.user.id
+          userId: userId,
+          intervalTime: intervalTime
         });
         logger.log({
           level: "info",
@@ -63,6 +67,7 @@ module.exports = (app) => {
         const id = req.params.id;
         const user = req.user;
         await redis.removeUserFromSession(id, user);
+        res.status(200).send("ok");
       } catch (e) {
         logger.log({
           level: "error",

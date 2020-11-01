@@ -49,6 +49,7 @@ exports.get = async (key) => {
 
 exports.removeUserFromSession = async (id, userToRemove) => {
   try {
+    console.log("remove user")
     let res = await getAsync(id);
     if (!res || res == null) {
       return;
