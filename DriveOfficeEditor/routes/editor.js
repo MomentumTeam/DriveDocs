@@ -6,12 +6,6 @@ const redis = require("../controllers/redis");
 const logger = require("../services/logger.js");
 const drive = require("../controllers/drive");
 
-const sleep = (ms) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
-
 module.exports = (app) => {
   app.get(
     "/api/files/:id",
@@ -56,25 +50,33 @@ module.exports = (app) => {
   );
 
   app.post("/closeSession/:id", async (req, res, next) => {
+    console.log("close session")
     next();
   },
     authenitcation.isAuthenticated,
     files.updateFile,
     async (req, res) => {
       try {
+        console.log("enter");
         const id = req.params.id;
         const user = req.user;
         await redis.removeUserFromSession(id, user);
+        logger.log({
+          level: "info",
+          message: `User removed from session because it was idle`,
+          label: `session: ${id} user: ${user.id}`,
+        });
         res.status(200).send("ok");
       } catch (e) {
         logger.log({
           level: "error",
           message: `Status 500, failed to remove user from session, error: ${e}`,
-          label: `session: ${id} user: ${user}`,
+          label: `session: ${id} user: ${user.id}`,
         });
         res.status(500).send(e);
       }
-    });
+    }
+  );
 
   app.get("/isalive", (req, res) => {
     return res.send("alive");
@@ -91,11 +93,25 @@ module.exports = (app) => {
   app.get("/isIdle/:id",
     authenitcation.isAuthenticated,
     async (req, res) => {
-      const sessionId = req.params.id;
-      const existingSession = await redis.get(sessionId);
-      const session = existingSession == null ? {} : JSON.parse(JSON.parse(existingSession));
-      const user = session.Users.find(user => user.Id == req.user.id);
-      res.send((Date.now() - new Date(user.LastUpdated)) / 1000 > process.env.MAX_USER_IDLE);
+      try {
+        const sessionId = req.params.id;
+        const existingSession = await redis.get(sessionId);
+        const session = existingSession == null ? {} : JSON.parse(JSON.parse(existingSession));
+        const user = session.Users.find(user => user.Id == req.user.id);
+        const isIdle = (Date.now() - new Date(user.LastUpdated)) / 1000 > process.env.MAX_USER_IDLE;
+        logger.log({
+          level: "info",
+          message: `${isIdle ? "is Idle" : "is not Idle"}`,
+          label: `user: ${req.user.id}`,
+        });
+        res.send(isIdle);
+      } catch (e) {
+        logger.log({
+          level: "error",
+          message: `Status 500, failed to check if user idle, error: ${e}`,
+          label: `FileId: ${req.params.id}`,
+        });
+      }
   });
 
   app.get("/update/:id",

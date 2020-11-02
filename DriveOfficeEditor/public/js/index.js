@@ -63,7 +63,7 @@ const checkIdle = setInterval(() => {
                 stop = false;
                 updateLastUpdated(fileId);
             }
-        }, timer*second); 
+        }, timer * second); 
     }
 }, intervalTime * second);
 

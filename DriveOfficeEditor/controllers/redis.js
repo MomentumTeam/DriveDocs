@@ -49,27 +49,33 @@ exports.get = async (key) => {
 
 exports.removeUserFromSession = async (id, userToRemove) => {
   try {
+    console.log("before remove");
     let res = await getAsync(id);
     if (!res || res == null) {
+      console.log(1)
       return;
     }
     let session = JSON.parse(JSON.parse(res));
     if (!session || session == null || !session.Users || session.Users == null) {
+      console.log(2)
       return;
     }
     const userToRemoveAsInSession = session.Users.find((user) => user.Id == userToRemove);
     if (!userToRemoveAsInSession) {
+      console.log(3)
       return;
     }
     session.Users = session.Users.filter((user) => user.Id !== userToRemove);
     session.UserForUpload = userToRemoveAsInSession;
     session = JSON.stringify(JSON.stringify(session));
     await setAsync(id, session);
+    console.log("after remove");
     logger.log({
       level: "info",
       message: "User was successfully removed",
       label: `Session: ${id}, User: ${userToRemove}`,
     });
+    console.log("After logger");
   } catch (err) {
     logger.log({
       level: "error",
@@ -106,7 +112,6 @@ exports.updateUserLastUpdated = async (id, userId) => {
       message: `Status 500, failed to update user LastUpdated, error: ${err}`,
       label: `Session: ${id}, User: ${userId}`,
     });
-    // res.status(500).send(e);
   }
 };
 

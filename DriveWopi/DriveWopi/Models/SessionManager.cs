@@ -53,12 +53,15 @@ namespace DriveWopi.Models
                 allSessions = allSessions.Where(x => x != null).ToList();
                 for (int i = 0; i < allSessions.Count; i++)
                 {
+                    
                     Session session = allSessions[i];
+                    Console.WriteLine(session.ChangesMade);
                     if (session.Users.Count == 0 && !session.ChangesMade) {
                         needToCloseSomeSessions = true;
                         allSessions[i] = null;
                         session.DeleteSessionFromRedis();
                         session.RemoveLocalFile();
+                        logger.Debug("Delete session "+ allSessions[i] + "- All useres left and no changes made");
                     }
 
                     session.Users.RemoveAll((User user) =>
@@ -66,7 +69,7 @@ namespace DriveWopi.Models
                         int maxTime = Config.intervalTime + Config.idleTime;
                         if (user.LastUpdated.AddSeconds(maxTime) < DateTime.Now)
                         {
-                            logger.Debug("user {0} LastUpdated time pased", user.Id);
+                            logger.Debug("user {0} probably left and not detected", user.Id);
                             return true;
                         }
                         else
@@ -74,6 +77,8 @@ namespace DriveWopi.Models
                             return false;
                         }
                     });
+                    Console.WriteLine(session.Users.Count);
+                    Console.WriteLine(session.Users[0]);
                 }
                 allSessions = allSessions.Where(x => x != null).ToList();
                 if (needToCloseSomeSessions){

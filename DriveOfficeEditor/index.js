@@ -9,7 +9,6 @@ const logger = require("./services/logger.js");
 const path = require('path');
 const redis = require('./controllers/redis');
 
-
 const app = express();
 app.use('/scripts',express.static(path.join(__dirname, 'views','scripts')))
 app.use(express.static(path.join(__dirname, 'public')));
@@ -53,9 +52,22 @@ const io = require("socket.io")(server);
 io.on('connection', (socket) => {
   const userId = socket.handshake.query.userId;
   const fileId = socket.handshake.query.fileId;
+  try {
     socket.on('disconnect', async () => {
+      logger.log({
+        level: "info",
+        message: `press X - exit`,
+        label: `user: ${userId}`,
+      });
       await redis.removeUserFromSession(fileId, userId);
     });
+  } catch  (e) {
+    logger.log({
+      level: "error",
+      message: `Fail in detected exit and Remove user`,
+      label: `user: ${userId}`,
+    });
+  }
 });
 
 

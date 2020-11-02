@@ -25,6 +25,7 @@ namespace DriveWopi.Models
             Session session = null;
             IRedisClient client = null;
                 try{
+                    Config.logger.LogDebug("changes detected in file {0} wait 30 seconds to save", this.SessionId);
                     Thread.Sleep(Config.DriveUpdateTime*1000);
                     client = RedisService.GenerateRedisClient();
                     session = Session.GetSessionFromRedis(this.SessionId,client);
@@ -64,6 +65,7 @@ namespace DriveWopi.Models
 
         public void Work(){
             try{
+                Config.logger.LogDebug("Create a new worker for file {0}", this.SessionId);
                 this.UpdateInDrive();
             }
             catch(Exception e){
