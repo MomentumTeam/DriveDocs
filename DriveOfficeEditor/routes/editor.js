@@ -30,7 +30,6 @@ module.exports = (app) => {
         const fileName = res.locals.metadata.name;
         const userId = req.user.id;
         const intervalTime = process.env.INTERVAL_TIME;
-        console.log(intervalTime);
         res.render("index", {
           url: url,
           accessToken: accessToken,
@@ -57,7 +56,6 @@ module.exports = (app) => {
   );
 
   app.post("/closeSession/:id", async (req, res, next) => {
-    console.log("close");
     next();
   },
     authenitcation.isAuthenticated,
@@ -103,7 +101,6 @@ module.exports = (app) => {
   app.get("/update/:id",
     authenitcation.isAuthenticated,
     async (req, res) => {
-      console.log("update")
       await redis.updateUserLastUpdated(req.params.id, req.user.id);
       res.send("ok");  
   });

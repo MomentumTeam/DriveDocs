@@ -312,7 +312,6 @@ namespace DriveWopi.Services
 
         public static void RemoveFile(string path)
         {
-            Console.WriteLine(path);
             try
             {
                 File.Delete(path);

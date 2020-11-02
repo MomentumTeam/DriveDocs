@@ -14,7 +14,6 @@ exports.loadMetadata = async (req, res, next) => {
     try {
       const fileId = req.params.id;
       let metadata = await metadataService.getMetadata(fileId, req.user);
-      console.log("typeChange");
       // metadata.type = metadata.name.substring(metadata.name.lastIndexOf(".") + 1, metadata.name.length).toLowerCase();
       metadata.type = mime.extension(metadata.type);
       res.locals.metadata = metadata;

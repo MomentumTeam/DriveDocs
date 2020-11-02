@@ -1,4 +1,3 @@
-console.log("indexjs")
 
 function closeSession(id) {
     var xhr = new XMLHttpRequest();
@@ -36,26 +35,16 @@ function createTimeOutPage () {
 
 let stop = false, idle = false;
 let waitMessage, messageTimer;
-console.log("timer " + timer + " "+ typeof timer);
-console.log("second " + second + " "+ typeof second);
-console.log("intervalTime " +intervalTime + " "+ typeof intervalTime);
-
 
 const checkIdle = setInterval(() => {
     stop = false;
     idle = false;
-    console.log("interval");
     if (isIdle(fileId)) {
         idle = true;
-        console.log("enter isIdle");
-        console.log("stop " +stop +" idle "+idle);
         let countTimer = timer;
         $('#warningModel').modal();
         document.getElementById("second").innerText = countTimer;
-        console.log(countTimer);
         const messageTimer = setInterval(() => {
-            console.log(countTimer);
-            console.log("timer");
             if (stop) {
                 clearInterval(messageTimer);
             }
@@ -63,9 +52,7 @@ const checkIdle = setInterval(() => {
             document.getElementById("second").innerText = countTimer;     
         }, second);
         waitMessgae = setTimeout(() => {
-            console.log("stop " +stop +" idle "+idle);
             if(!stop) {
-                console.log("not stop");
                 closeSession(fileId);
                 clearInterval(checkIdle);
                 $('#warningModel').modal('hide');
@@ -73,7 +60,6 @@ const checkIdle = setInterval(() => {
                 stop = true;
                 createTimeOutPage();
             } else { 
-                console.log("stop")
                 stop = false;
                 updateLastUpdated(fileId);
             }

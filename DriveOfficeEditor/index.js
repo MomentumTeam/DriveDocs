@@ -53,7 +53,6 @@ const io = require("socket.io")(server);
 io.on('connection', (socket) => {
   const userId = socket.handshake.query.userId;
   const fileId = socket.handshake.query.fileId;
-	console.log(`User ${userId} connected session ${fileId}`);
     socket.on('disconnect', async () => {
       await redis.removeUserFromSession(fileId, userId);
     });

@@ -63,7 +63,6 @@ namespace DriveWopi.Controllers
                 Session editSession = Session.GetSessionFromRedis(id, client);
                 if (editSession == null)
                 {
-                    Console.WriteLine("null");
                     FilesService.DownloadFileFromDrive(idToDownload, fileName, user["authorization"]);
                     editSession = new Session(id, fileName);
                     editSession.SaveToRedis();
@@ -148,7 +147,6 @@ namespace DriveWopi.Controllers
 
         public async Task<IActionResult> PutFile(string id, [FromQuery] string access_token)
         {
-            Console.WriteLine("putFile");
             Config.logger.LogDebug("PutFile: id="+id);
             try
             {
@@ -163,7 +161,6 @@ namespace DriveWopi.Controllers
                 Dictionary<string, string> metadata = (Dictionary<string, string>)token["metadata"];
                 if (!AccessTokenVerifier.VerifyAccessToken(id, (string)metadata["id"], (string)token["created"]))
                 {
-                    Console.WriteLine("problem with access token!");
                     Config.logger.LogError("status:500 accessToken is illegal");
                     return StatusCode(500);
                 }
@@ -219,18 +216,15 @@ namespace DriveWopi.Controllers
 
                 switch (operation)
                 {
-                    case "PUT":
+                    case "PUT":s
                         if (xWopiLock == null || lockValue.Equals(xWopiLock))
                         {
                             if (editSession.Save(content, user["id"]))
                             {
-                                Console.WriteLine("save");
                                 bool needWorker = !editSession.ChangesMade;
-                                Console.WriteLine("needWorker = "+needWorker);
                                 editSession.ChangesMade = true;
                                 editSession.UserForUpload = new User(user["id"], user["authorization"]);
                                 editSession.SaveToRedis();
-                                Console.WriteLine("Saved in Redis");
                                 if(needWorker){
                                     UpdateWorker worker = new UpdateWorker(id);
                                     Thread t = new Thread(new ThreadStart(worker.Work));

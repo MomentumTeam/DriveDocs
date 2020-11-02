@@ -49,7 +49,6 @@ exports.get = async (key) => {
 
 exports.removeUserFromSession = async (id, userToRemove) => {
   try {
-    console.log("remove user")
     let res = await getAsync(id);
     if (!res || res == null) {
       return;
@@ -85,7 +84,6 @@ exports.removeUserFromSession = async (id, userToRemove) => {
 exports.updateUserLastUpdated = async (id, userId) => {
   try {
     let res = await getAsync(id);
-    console.log(res)
     if (!res || res == null) {
       return;
     }
@@ -93,11 +91,8 @@ exports.updateUserLastUpdated = async (id, userId) => {
     if (!session || session == null || !session.Users || session.Users == null) {
       return;
     }
-    console.log("enter");
     const userIndex = session.Users.findIndex(user => user.Id == userId);
-    console.log("old"+ session.Users[userIndex].LastUpdated);
     session.Users[userIndex].LastUpdated = moment().format();
-    console.log("new"+ session.Users[userIndex].LastUpdated);
     session = JSON.stringify(JSON.stringify(session));
     await setAsync(id, session);
     logger.log({

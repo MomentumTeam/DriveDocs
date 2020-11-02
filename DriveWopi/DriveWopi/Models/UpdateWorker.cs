@@ -25,9 +25,7 @@ namespace DriveWopi.Models
             Session session = null;
             IRedisClient client = null;
                 try{
-                    Console.WriteLine("Waiting 30 seconds");
                     Thread.Sleep(Config.DriveUpdateTime*1000);
-                    Console.WriteLine("Finished sleeping");
                     client = RedisService.GenerateRedisClient();
                     session = Session.GetSessionFromRedis(this.SessionId,client);
                     if(session == null){
@@ -66,7 +64,6 @@ namespace DriveWopi.Models
 
         public void Work(){
             try{
-                Console.WriteLine("WORK!");
                 this.UpdateInDrive();
             }
             catch(Exception e){
