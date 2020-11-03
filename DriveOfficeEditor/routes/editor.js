@@ -24,6 +24,7 @@ module.exports = (app) => {
         const fileName = res.locals.metadata.name;
         const userId = req.user.id;
         const intervalTime = process.env.INTERVAL_TIME;
+        const timerTime = process.env.TIMER_TIME;
         res.render("index", {
           url: url,
           accessToken: accessToken,
@@ -31,7 +32,8 @@ module.exports = (app) => {
           fileName: fileName,
           fileId: id,
           userId: userId,
-          intervalTime: intervalTime
+          intervalTime: intervalTime,
+          timerTime: timerTime
         });
         logger.log({
           level: "info",
@@ -60,7 +62,7 @@ module.exports = (app) => {
         console.log("enter");
         const id = req.params.id;
         const user = req.user;
-        await redis.removeUserFromSession(id, user);
+        await redis.removeUserFromSession(id, user.id);
         logger.log({
           level: "info",
           message: `User removed from session because it was idle`,

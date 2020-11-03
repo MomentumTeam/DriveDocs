@@ -22,6 +22,7 @@ exports.generateUrl = async (req, res, next) => {
     let url, faviconUrl, proxyUrl;
     const id = req.params.id;
 
+
     if (!fileType || !Object.values(config.fileTypes).includes(fileType)) {
       logger.log({
         level: "error",
@@ -52,10 +53,15 @@ exports.generateUrl = async (req, res, next) => {
     }
 
     if (Object.values(config.typesToConvert).includes(fileType)) {
-      let newFormat = config.toConvertedType[fileType];
-      await convert.convertAndUpdateInDrive(id, newFormat, fileType, res.locals.authorization, res.locals.accessToken);
-      fileType = newFormat;
-      return res.redirect("/api/files/" + req.params.id);
+      try {
+        let newFormat = config.toConvertedType[fileType];
+        await convert.convertAndUpdateInDrive(id, newFormat, fileType, res.locals.authorization, res.locals.accessToken);
+        fileType = newFormat;
+        return res.redirect("/api/files/" + req.params.id);
+      } catch (e) {
+        return res.status(500).send("Status:500, change file Name, is already exsist");
+      }
+
     }
     if (operation == config.operations.EDIT) {
       switch (fileType) {

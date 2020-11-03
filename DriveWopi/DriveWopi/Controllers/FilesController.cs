@@ -66,7 +66,7 @@ namespace DriveWopi.Controllers
                     FilesService.DownloadFileFromDrive(idToDownload, fileName, user["authorization"]);
                     editSession = new Session(id, fileName);
                     editSession.SaveToRedis();
-                    editSession.AddSessionToListInRedis();
+                    editSession.AddSessionToSetInRedis();
                     Config.logger.LogDebug("New session added to Redis for id=" + id);
                 }
                 if (!editSession.UserIsInSession(user["id"]))
@@ -393,6 +393,7 @@ namespace DriveWopi.Controllers
                                 return sessionUser.Id.Equals(user["id"]);
                             });
                             editSession.SaveToRedis();
+                            Console.WriteLine("unlock");
                             Config.logger.LogDebug("status:200, UnlockSession {0} success ", editSession.SessionId);
                             return StatusCode(200);
                         }

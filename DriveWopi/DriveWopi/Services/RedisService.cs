@@ -37,13 +37,13 @@ namespace DriveWopi.Services
             }
         }
 
-        public static List<string> GetList(string key, IRedisClient client)
+        public static HashSet<string> GetSet(string key, IRedisClient client)
         {
             try{
-                return client.GetAllItemsFromList(key);
+                return client.GetAllItemsFromSet(key);
             }
             catch(Exception ex){
-                Config.logger.LogDebug("problem with GetList from Redis, error:"+ex.Message);
+                Config.logger.LogDebug("problem with GetSet from Redis, error:"+ex.Message);
                 throw ex;
             }
 
@@ -70,13 +70,13 @@ namespace DriveWopi.Services
                 throw ex;
             }
         }
-        public static void AddItemToList(string key, string value, IRedisClient client)
+        public static void AddItemToSet(string key, string value, IRedisClient client)
         {
             try{
-                client.AddItemToList(key, value);
+                client.AddItemToSet(key, value);
             }
             catch(Exception ex){
-                Config.logger.LogDebug("problem with AddItemToList in Redis, error:"+ex.Message);
+                Config.logger.LogDebug("problem with AddItemToSet in Redis, error:"+ex.Message);
                 throw ex;
             }
  

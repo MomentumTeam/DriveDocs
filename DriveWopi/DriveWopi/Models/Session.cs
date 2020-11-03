@@ -228,18 +228,18 @@ namespace DriveWopi.Models
             }
         }
 
-        public static List<Session> GetAllSessions(IRedisClient client)
+        public static HashSet<Session> GetAllSessions(IRedisClient client)
         {
             try
             {
-                List<string> listIds = RedisService.GetList(Config.AllSessionsRedisKey, client);
-                List<Session> sessionLists = new List<Session>();
+                HashSet<string> listIds = RedisService.GetSet(Config.AllSessionsRedisKey, client);
+                HashSet<Session> sessionSet = new HashSet<Session>();
                 foreach (string sessionId in listIds)
                 {
                     Session s = GetSessionFromRedis(sessionId, client);
-                    sessionLists.Add(s);
+                    sessionSet.Add(s);
                 }
-                return sessionLists;
+                return sessionSet;
             }
             catch (Exception e)
             {
@@ -248,46 +248,47 @@ namespace DriveWopi.Models
             }
         }
 
-        public void AddSessionToListInRedis()
+
+        public void AddSessionToSetInRedis()
         {
             try
             {
-                RedisService.AddItemToList(Config.AllSessionsRedisKey, _SessionId, this.Client);
+                RedisService.AddItemToSet(Config.AllSessionsRedisKey, _SessionId, this.Client);
             }
             catch (Exception e)
             {
-                Config.logger.LogError("AddSessionToListInRedis fail error:" + e.Message);
+                Config.logger.LogError("AddSessionToSetInRedis fail error:" + e.Message);
                 throw e;
             }
         }
 
-        public static void UpdateSessionsListInRedis(List<Session> sessions, IRedisClient client)
+        public static void UpdateSessionsSetInRedis(HashSet<Session> sessions, IRedisClient client)
         {
             try
             {
                 RedisService.Remove(Config.AllSessionsRedisKey, client);
                 foreach (Session s in sessions)
                 {
-                    s.AddSessionToListInRedis();
+                    s.AddSessionToSetInRedis();
                 }
             }
             catch (Exception e)
             {
-                Config.logger.LogError("UpdateSessionsListInRedis fail error:" + e.Message);
+                Config.logger.LogError("UpdateSessionsSetInRedis fail error:" + e.Message);
                 throw e;
             }
         }
 
         public void DeleteSessionFromAllSessionsInRedis(string sessionId, IRedisClient client){
             try{
-                List<Session> allSessions = GetAllSessions(client);
-                List<Session> updatedSessions = new List<Session>();
+                HashSet<Session> allSessions = GetAllSessions(client);
+                HashSet<Session> updatedSessions = new HashSet<Session>();
                 foreach(Session s in allSessions){
                     if(s!=null && (!s.SessionId.Equals(sessionId))){
                         updatedSessions.Add(s);
                     }
                 }
-                UpdateSessionsListInRedis(updatedSessions,client);
+                UpdateSessionsSetInRedis(updatedSessions,client);
 
             }
             catch(Exception ex){

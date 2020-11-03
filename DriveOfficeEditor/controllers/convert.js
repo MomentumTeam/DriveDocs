@@ -67,7 +67,7 @@ const pptConvert = async (fileId) => {
           resolve();
         }).on('error', function (err) {
           reject();
-        });
+      });
     }
     catch (err) {
       logger.log({

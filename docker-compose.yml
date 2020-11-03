@@ -41,6 +41,7 @@ services:
             -  CLEANUP_TIME=${CLEANUP_TIME}
             -  MAX_USER_IDLE=${MAX_USER_IDLE}
             -  INTERVAL_TIME=${INTERVAL_TIME}
+            -  TIMER_TIME=${TIMER_TIME}
         ports: 
             - "8082:8080"
         volumes:
@@ -96,6 +97,7 @@ services:
             -  ENABLE_LOCAL_OFFICE=${ENABLE_LOCAL_OFFICE}
             -  MAX_USER_IDLE=${MAX_USER_IDLE}
             -  INTERVAL_TIME=${INTERVAL_TIME}
+            -  TIMER_TIME=${TIMER_TIME}
         depends_on:
             - redis-server
             - wopi

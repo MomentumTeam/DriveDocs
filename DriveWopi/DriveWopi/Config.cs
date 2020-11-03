@@ -22,6 +22,7 @@ namespace DriveWopi
 
         public static int idleTime;
 
+        public static int timerTime;
         public static int intervalTime;
 
         public static int DriveUpdateTime;
@@ -64,6 +65,8 @@ namespace DriveWopi
             idleTime = int.Parse(Environment.GetEnvironmentVariable("MAX_USER_IDLE"));
 
             intervalTime = int.Parse(Environment.GetEnvironmentVariable("INTERVAL_TIME"));
+
+            timerTime = int.Parse(Environment.GetEnvironmentVariable("TIMER_TIME"));
         }
     }
 }

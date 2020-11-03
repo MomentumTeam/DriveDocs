@@ -49,40 +49,38 @@ namespace DriveWopi.Models
                 logger.Debug("CleanUp : "+ DateTime.Now);
                 IRedisClient client = RedisService.GenerateRedisClient();
                 bool needToCloseSomeSessions = false;
-                List<Session> allSessions = Session.GetAllSessions(client);
-                allSessions = allSessions.Where(x => x != null).ToList();
-                for (int i = 0; i < allSessions.Count; i++)
+                HashSet<Session> allSessions = Session.GetAllSessions(client);
+                List<Session> allSessionsList = allSessions.Where(x => x != null).ToList();
+                for (int i = 0; i < allSessionsList.Count; i++)
                 {
                     
-                    Session session = allSessions[i];
-                    Console.WriteLine(session.ChangesMade);
+                    Session session = allSessionsList[i];
                     if (session.Users.Count == 0 && !session.ChangesMade) {
                         needToCloseSomeSessions = true;
-                        allSessions[i] = null;
+                        allSessionsList[i] = null;
                         session.DeleteSessionFromRedis();
                         session.RemoveLocalFile();
-                        logger.Debug("Delete session "+ allSessions[i] + "- All useres left and no changes made");
+                        logger.Debug("Delete session "+ allSessionsList[i] + "- All useres left and no changes made");
+                    } else {
+                        session.Users.RemoveAll((User user) => {
+                            int maxTime = Config.intervalTime + Config.idleTime + Config.timerTime;
+                            if (user.LastUpdated.AddSeconds(maxTime) < DateTime.Now)
+                            {
+                                logger.Debug("Remove user {0} from cleanUp", user.Id);
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        });
+                        session.SaveToRedis();
+                        Console.WriteLine("users after " + session.Users.Count);
                     }
-
-                    session.Users.RemoveAll((User user) =>
-                    {
-                        int maxTime = Config.intervalTime + Config.idleTime;
-                        if (user.LastUpdated.AddSeconds(maxTime) < DateTime.Now)
-                        {
-                            logger.Debug("user {0} probably left and not detected", user.Id);
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    });
-                    Console.WriteLine(session.Users.Count);
-                    Console.WriteLine(session.Users[0]);
                 }
-                allSessions = allSessions.Where(x => x != null).ToList();
+                allSessionsList = allSessionsList.Where(x => x != null).ToList();
                 if (needToCloseSomeSessions){
-                    Session.UpdateSessionsListInRedis(allSessions, client);
+                    Session.UpdateSessionsSetInRedis(new HashSet<Session>(allSessionsList), client);
                 }
             }
             catch (Exception ex){

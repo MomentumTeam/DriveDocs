@@ -76,7 +76,6 @@ async function upload(filedata, parentId, accessToken) {
     const response = await axios(uploadRequest);
     return response.data;
   } catch (error) {
-    console.log(error)
     throw error;
   }
 }
