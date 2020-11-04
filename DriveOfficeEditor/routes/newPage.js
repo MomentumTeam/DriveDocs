@@ -12,7 +12,7 @@ module.exports = (app) => {
       logger.log({
         level: "info",
         message: `New file successfully created`,
-        label: `FileId: ${res.locals.fileId}`,
+        label: `FileId: ${res.locals.fileId} user: ${req.user.id}`,
       })
       return res.redirect(`/api/files/${res.locals.fileId}`);
     }

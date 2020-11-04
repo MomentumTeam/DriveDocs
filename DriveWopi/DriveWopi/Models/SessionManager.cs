@@ -75,7 +75,6 @@ namespace DriveWopi.Models
                             }
                         });
                         session.SaveToRedis();
-                        Console.WriteLine("users after " + session.Users.Count);
                     }
                 }
                 allSessionsList = allSessionsList.Where(x => x != null).ToList();

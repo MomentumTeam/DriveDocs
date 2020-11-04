@@ -38,13 +38,13 @@ module.exports = (app) => {
         logger.log({
           level: "info",
           message: "Index successfully rendered",
-          label: `FileId: ${id}`,
+          label: `FileId: ${id} userId: ${userId}`,
         });
       } catch (e) {
         logger.log({
           level: "error",
           message: `Status 500, failed to render index, error: ${e}`,
-          label: `FileId: ${req.params.id}`,
+          label: `FileId: ${req.params.id} userId: ${userId}`,
         });
         res.status(500).send(e);
       }
@@ -104,14 +104,14 @@ module.exports = (app) => {
         logger.log({
           level: "info",
           message: `${isIdle ? "is Idle" : "is not Idle"}`,
-          label: `user: ${req.user.id}`,
+          label: `FileId: ${sessionId} user: ${req.user.id}`,
         });
         res.send(isIdle);
       } catch (e) {
         logger.log({
           level: "error",
           message: `Status 500, failed to check if user idle, error: ${e}`,
-          label: `FileId: ${req.params.id}`,
+          label: `FileId: ${req.params.id} user: ${req.user.id}`,
         });
       }
   });

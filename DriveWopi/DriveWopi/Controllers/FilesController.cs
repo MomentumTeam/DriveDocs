@@ -393,7 +393,6 @@ namespace DriveWopi.Controllers
                                 return sessionUser.Id.Equals(user["id"]);
                             });
                             editSession.SaveToRedis();
-                            Console.WriteLine("unlock");
                             Config.logger.LogDebug("status:200, UnlockSession {0} success ", editSession.SessionId);
                             return StatusCode(200);
                         }
