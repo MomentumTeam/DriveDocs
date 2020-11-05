@@ -20,6 +20,11 @@ namespace DriveWopi
         public static int AccessTokenExpiringTime;
         public static bool CleanUpEnabled;
 
+        public static int idleTime;
+
+        public static int timerTime;
+        public static int intervalTime;
+
         public static int DriveUpdateTime;
 
         public static string WebDAV_Server;
@@ -32,14 +37,10 @@ namespace DriveWopi
         {".docx","application/vnd.openxmlformats-officedocument.wordprocessingml.document"},
         };
         public static int Timeout; //Time period to perform cleanUp
-        public static int Closewait; // Time before the session is deleted after not being updated
-        public static int Removewaituser; // Time before the user is deleted from the session after begin inactive
 
         public static ILogger logger;
 
-        
-        public static int MaxRedisSessionTime;
-        static Config(){
+                static Config(){
             Folder = Environment.GetEnvironmentVariable("FOLDER");
             TemplatesFolder = Environment.GetEnvironmentVariable("TEMPLATE_FOLDER");
             Port =  int.Parse(Environment.GetEnvironmentVariable("PORT"));
@@ -52,25 +53,20 @@ namespace DriveWopi
             WebDAV_Server =  Environment.GetEnvironmentVariable("WEBDAV_URL");
 
             OfficeEditorUrl = Environment.GetEnvironmentVariable("OFFICE_EDITOR_URL");
-        
 
-            //Time period to perform cleanUp
-            Closewait =  int.Parse(Environment.GetEnvironmentVariable("CLOSE_WAIT"));       
+            //Time in seconds period to perform cleanUp
+            Timeout =  int.Parse(Environment.GetEnvironmentVariable("CLEANUP_TIME")); 
 
-            //Time period to perform cleanUp
-            Timeout =  int.Parse(Environment.GetEnvironmentVariable("TIME_OUT")); 
-
-            // Time before the user is deleted from the session after begin inactive
-            Removewaituser =  int.Parse(Environment.GetEnvironmentVariable("REMOVE_WAIT_USER"));
-            
-            // Time after which the session is surely deleted from redis in mil
-            MaxRedisSessionTime = int.Parse(Environment.GetEnvironmentVariable("MAX_REDIS_SESSION_TIME"));
-
-            // Time after which the file is updated in drive still without closing the sesson in mill
+            // Time in seconds after which the file is updated in drive still without closing the sesson in mill
             DriveUpdateTime = int.Parse(Environment.GetEnvironmentVariable("DRIVE_UPDATE_TIME"));
+            
             DriveSecret = Environment.GetEnvironmentVariable("DRIVE_SECRET");
 
-            
+            idleTime = int.Parse(Environment.GetEnvironmentVariable("MAX_USER_IDLE"));
+
+            intervalTime = int.Parse(Environment.GetEnvironmentVariable("INTERVAL_TIME"));
+
+            timerTime = int.Parse(Environment.GetEnvironmentVariable("TIMER_TIME"));
         }
     }
 }

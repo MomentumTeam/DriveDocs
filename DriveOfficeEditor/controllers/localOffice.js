@@ -95,7 +95,6 @@ exports.redirectToLocalOffice = (req, res, next) => {
 
     const webDavPath = `${process.env.WEBDAV_URL}/files/${res.locals.webDavFolder}/${res.locals.webDavFileName}`;
     const redirectLink = `ms-${typeToLocalOffice[fileType]}:${operationToLocalFlag[operation]}|u|${webDavPath}`;
-    console.log(`redirectLink = ${redirectLink}`)
     return res.redirect(redirectLink);
   } catch (e) {
     logger.log({

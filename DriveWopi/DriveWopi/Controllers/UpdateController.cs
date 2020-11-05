@@ -28,19 +28,7 @@ namespace DriveWopi.Controllers
         public async Task<IActionResult> Update(string id)
         {
             try{
-                IRedisClient client = RedisService.GenerateRedisClient();
-                Session session = Session.GetSessionFromRedis(id,client);
-                User userForUpload;
-                if(session.Users != null && session.Users.Count > 0){
-                    userForUpload = session.Users[0];
-                }
-                else if(session.UserForUpload != null){
-                    userForUpload = session.UserForUpload;
-                }
-                else{
-                    return StatusCode(500);
-                }
-                bool updateResult = session.SaveToDrive(userForUpload);
+                bool updateResult = FilesService.UpdateSessionInDrive(id);
                 if(!updateResult){
                     return StatusCode(500);
                 }
@@ -48,7 +36,7 @@ namespace DriveWopi.Controllers
                     return Ok("ok");
                 }
             }
-            catch(Exception error){
+            catch(Exception){
                 return StatusCode(500);
             }
 

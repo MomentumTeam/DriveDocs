@@ -1,5 +1,6 @@
 const { promisify } = require("util");
 const redis = require("redis");
+const moment = require("moment");
 const logger = require("../services/logger.js");
 
 const client = redis.createClient({
@@ -50,24 +51,39 @@ exports.removeUserFromSession = async (id, userToRemove) => {
   try {
     let res = await getAsync(id);
     if (!res || res == null) {
+      logger.log({
+        level: "info",
+        message: "Try to remove user but result is null - the session closed",
+        label: `Session: ${id}, User: ${userToRemove}`,
+      });
       return;
     }
     let session = JSON.parse(JSON.parse(res));
     if (!session || session == null || !session.Users || session.Users == null) {
+      logger.log({
+        level: "info",
+        message: "Try to remove user but session is null or no users in the session- the session closed ",
+        label: `Session: ${id}, User: ${userToRemove}`,
+      });
       return;
     }
-    const userToRemoveAsInSession = session.Users.find((user) => user.Id == userToRemove.id);
+    const userToRemoveAsInSession = session.Users.find((user) => user.Id == userToRemove);
     if (!userToRemoveAsInSession) {
+      logger.log({
+        level: "info",
+        message: "Try to remove user but user isnt exsist - remove from unlock",
+        label: `Session: ${id}, User: ${userToRemove}`,
+      });
       return;
     }
-    session.Users = session.Users.filter((u) => u.Id !== userToRemove.id);
+    session.Users = session.Users.filter((user) => user.Id !== userToRemove);
     session.UserForUpload = userToRemoveAsInSession;
     session = JSON.stringify(JSON.stringify(session));
     await setAsync(id, session);
-    logger.log({
+logger.log({
       level: "info",
       message: "User was successfully removed",
-      label: `Session: ${id}, User: ${userToRemove.id}`,
+      label: `Session: ${id}, User: ${userToRemove}`,
     });
   } catch (err) {
     logger.log({
@@ -78,3 +94,34 @@ exports.removeUserFromSession = async (id, userToRemove) => {
     res.status(500).send(e);
   }
 };
+
+
+exports.updateUserLastUpdated = async (id, userId) => {
+  try {
+    let res = await getAsync(id);
+    if (!res || res == null) {
+      return;
+    }
+    let session = JSON.parse(JSON.parse(res));
+    if (!session || session == null || !session.Users || session.Users == null) {
+      return;
+    }
+    const userIndex = session.Users.findIndex(user => user.Id == userId);
+    session.Users[userIndex].LastUpdated = moment().format();
+    session = JSON.stringify(JSON.stringify(session));
+    await setAsync(id, session);
+    logger.log({
+      level: "info",
+      message: "LastUpdated of user successfully update",
+      label: `Session: ${id}, User: ${userId}`,
+    });
+  } catch (err) {
+    logger.log({
+      level: "error",
+      message: `Status 500, failed to update user LastUpdated, error: ${err}`,
+      label: `Session: ${id}, User: ${userId}`,
+    });
+  }
+};
+
+

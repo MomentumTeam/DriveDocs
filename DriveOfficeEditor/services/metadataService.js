@@ -1,6 +1,6 @@
 const axios = require("axios");
 const jwt = require("jsonwebtoken");
-const logger = require("../services/logger.js");
+const logger = require("./logger.js");
 
 const handleUserName = (user) => {
   if (!user.name) {

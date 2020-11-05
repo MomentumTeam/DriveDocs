@@ -2,9 +2,13 @@
 <html>
 
 <head>
+    <%- include('partials/head'); -%>
+    <!-- <script type="text/javascript" src="/scripts/jquery.min.js"></script> -->
+    <!-- <script type="text/javascript" src="/scripts/jquery.idle.js"></script> -->
+    <!-- <script type="text/javascript" src="/scripts/index.js"></script> -->
+    <script src="/js/socket.io.js"></script>
     <meta charset="utf-8">
 
-    <!-- Enable IE Standards mode -->
     <meta http-equiv="x-ua-compatible" content="ie=edge">
 
     <title></title>
@@ -34,165 +38,92 @@
             border: none;
             display: block;
         }
+
+        #finishPage {
+            background-color: #dccac8;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: 0;
+            border: none;
+            display: none;
+        }
+
+        .mt-300 {
+            margin-top: 300px;
+        }
+
+        .text-large {
+            font-size: 150%;
+        }
+
+        .text-meduim {
+            font-size: 125%;
+        }
     </style>
 </head>
 
+<script>
+    let timer = "<%-timerTime%>";
+    const second = 1000;
+</script>
 <body>
+
+    <div id="finishPage">
+        <div class="card border-danger mx-auto mt-300 bg-white" style="max-width: 35rem;">
+            <div class="card-header bg-danger text-white text-large text-right">פג התוקף של הדף
+            </div>
+            <div class="card-body text-danger">
+                <p class="card-text text-meduim text-right">רענן כדי להמשיך לצפות</p>
+                <img src="/images/timer1.png" width="55" height="55" class="float-left">
+            </div>
+            <div class="card-footer bg-transparent text-right">
+                <button type="button" onclick="window.location.reload()" class="btn btn-outline-danger">רענן</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="warningModel" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img src="/images/warning1.png" class="float-right">
+                    <p class="text-right" id="timer">העמוד הולך להסגר בעוד <var id="second"></var> שניות</p>
+                    <p class="text-right">הזז את העכבר כדי למנוע זאת</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <form id="office_form" name="office_form" target="office_frame" action=<%=url%> method="post">
         <input name="access_token" value=<%=accessToken %> type="hidden" />
-        <!-- <input name="access_token_ttl" value="99999" type="hidden" /> -->
     </form>
 
     <span id="frameholder"></span>
 
     <script type="text/javascript">
-
-        window.onbeforeunload = (event) => {
-            //location.reload();
-            window.location.reload(true); 
-            if (event.clientY < 0 || (!event.clientY)) {
-                var xhr = new XMLHttpRequest();
-                let id;
-                if(location.pathname.includes('?')){
-                    id = location.pathname.split('?')[0].split('/')[3];
-                } else {
-                    id = location.pathname.split('/')[3]
-                }
-                xhr.open("POST", `/closeSession/${id}`, true);
-                xhr.onreadystatechange = function () {
-                    if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                        //console.log()
-                    }
-                }
-                xhr.send();
-            }
-        }
+        const fileId = '<%-fileId%>';
+        const userId = '<%-userId%>';
+        const intervalTime = parseInt('<%-intervalTime%>');
 
         var frameholder = document.getElementById('frameholder');
         var office_frame = document.createElement('iframe');
         office_frame.name = 'office_frame';
         office_frame.id = 'office_frame';
-        // var fileName = <%= fileName%>;
-
-        // The title should be set for accessibility
         office_frame.title = "DriveDocs";
-
-        // This attribute allows true fullscreen mode in slideshow view
-        // when using PowerPoint's 'view' action.
         office_frame.setAttribute('allowfullscreen', 'true');
-
-        // The sandbox attribute is needed to allow automatic redirection to the O365 sign-in page in the business user flow
         office_frame.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation allow-popups-to-escape-sandbox');
         frameholder.appendChild(office_frame);
-
         document.getElementById('office_form').submit();
 
+        const socket = io.connect(`/?userId=${userId}&fileId=${fileId}`);
 
     </script>
-
 </body>
-
+<%- include('partials/script'); -%>
+<script src="/js/index.js"></script>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!--
-<!doctype html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title></title>
-    <meta name="description" content="">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
-    <link rel="shortcut icon" href=<%= faviconUrl %> />
-    <style type="text/css">
-        body {
-            margin: 0;
-            padding: 0;
-        }
-        #office_frame {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            margin: 0;
-            border: none;
-            display: block;
-        }
-        iframe{
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border: none;
-            display: block;
-        }
-    </style>
-</head>
-<body>
-    <iframe src=<%= url %> sandbox='allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation allow-popups-to-escape-sandbox'  width="100%" height="100%" allowfullscreen='true'></iframe>
-</body>
-</html>
-    
--->

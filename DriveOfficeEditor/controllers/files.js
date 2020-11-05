@@ -22,6 +22,7 @@ exports.generateUrl = async (req, res, next) => {
     let url, faviconUrl, proxyUrl;
     const id = req.params.id;
 
+
     if (!fileType || !Object.values(config.fileTypes).includes(fileType)) {
       logger.log({
         level: "error",
@@ -52,10 +53,15 @@ exports.generateUrl = async (req, res, next) => {
     }
 
     if (Object.values(config.typesToConvert).includes(fileType)) {
-      let newFormat = config.toConvertedType[fileType];
-      await convert.convertAndUpdateInDrive(id, newFormat, fileType, res.locals.authorization, res.locals.accessToken);
-      fileType = newFormat;
-      return res.redirect("/api/files/" + req.params.id);
+      try {
+        let newFormat = config.toConvertedType[fileType];
+        await convert.convertAndUpdateInDrive(id, newFormat, fileType, res.locals.authorization, res.locals.accessToken);
+        fileType = newFormat;
+        return res.redirect("/api/files/" + req.params.id);
+      } catch (e) {
+        return res.status(500).send("Status:500, change file Name, is already exsist");
+      }
+
     }
     if (operation == config.operations.EDIT) {
       switch (fileType) {
@@ -83,17 +89,17 @@ exports.generateUrl = async (req, res, next) => {
       }
     } else { //view
       switch (fileType) {
-        case fileTypes.DOCX:
+        case config.fileTypes.DOCX:
           url = `${process.env.OFFICE_ONLINE_URL}/wv/wordviewerframe.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
           proxyUrl = `${process.env.OFFICE_ONLINE_URL}/wv/wordviewerframe.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
           faviconUrl = `${process.env.FAVICON_DOCX}`;
           break;
-        case fileTypes.PPTX:
+        case config.fileTypes.PPTX:
           url = `${process.env.OFFICE_ONLINE_URL_PPTX}/p/PowerPointFrame.aspx?PowerPointView=ReadingView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
           proxyUrl = `${process.env.OFFICE_ONLINE_URL_PPTX}/p/PowerPointFrame.aspx?PowerPointView=ReadingView&WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
           faviconUrl = `${process.env.FAVICON_PPTX}`;
           break;
-        case fileTypes.XLSX:
+        case config.fileTypes.XLSX:
           url = `${process.env.OFFICE_ONLINE_URL}/x/_layouts/xlviewerinternal.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}`;
           proxyUrl = `${process.env.OFFICE_ONLINE_URL}/x/_layouts/xlviewerinternal.aspx?WOPISrc=${process.env.WOPI_URL}/wopi/files/${id}&access_token=${res.locals.accessToken}`;
           faviconUrl = `${process.env.FAVICON_XLSX}`;
