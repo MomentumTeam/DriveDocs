@@ -10,7 +10,7 @@ const path = require('path');
 const redis = require('./controllers/redis');
 
 const app = express();
-app.use('/scripts',express.static(path.join(__dirname, 'views','scripts')))
+app.use('/scripts', express.static(path.join(__dirname, 'views', 'scripts')))
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
 app.set("view engine", "ejs");
@@ -61,7 +61,7 @@ io.on('connection', (socket) => {
       });
       await redis.removeUserFromSession(fileId, userId);
     });
-  } catch  (e) {
+  } catch (e) {
     logger.log({
       level: "error",
       message: `Fail in detected exit and Remove user`,

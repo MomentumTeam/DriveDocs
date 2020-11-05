@@ -11,7 +11,6 @@ using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using ServiceStack.Redis;
 
 namespace DriveWopi.Services
 {
@@ -78,10 +77,9 @@ namespace DriveWopi.Services
         public static void HandleNotFoundCase(string fileId) 
         {
             try{
-                IRedisClient client = RedisService.GenerateRedisClient();
-                Session s = Session.GetSessionFromRedis(fileId, client);
+                Session s = Session.GetSessionFromRedis(fileId);
                 s.DeleteSessionFromRedis();
-                s.DeleteSessionFromAllSessionsInRedis(fileId,client);
+                s.DeleteSessionFromAllSessionsInRedis(fileId);
                 s.RemoveLocalFile();
             }
             catch(Exception ex){
@@ -294,8 +292,7 @@ namespace DriveWopi.Services
 
         public static bool UpdateSessionInDrive(string id)
         {
-            IRedisClient client = RedisService.GenerateRedisClient();
-            Session session = Session.GetSessionFromRedis(id,client);
+            Session session = Session.GetSessionFromRedis(id);
             User userForUpload;
             if(session.Users != null && session.Users.Count > 0){
                 userForUpload = session.Users[0];

@@ -3,7 +3,6 @@ using System.IO;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using DriveWopi.Services;
-using ServiceStack.Redis;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -23,12 +22,10 @@ namespace DriveWopi.Models
                 return false;
             }
             Session session = null;
-            IRedisClient client = null;
                 try{
                     Config.logger.LogDebug("changes detected in file {0} wait 30 seconds to save", this.SessionId);
                     Thread.Sleep(Config.DriveUpdateTime*1000);
-                    client = RedisService.GenerateRedisClient();
-                    session = Session.GetSessionFromRedis(this.SessionId,client);
+                    session = Session.GetSessionFromRedis(this.SessionId);
                     if(session == null){
                         return true;
                     }
@@ -46,7 +43,7 @@ namespace DriveWopi.Models
                 catch(Exception error){
                     if(error is DriveNotFoundException){
                         try{
-                            session.DeleteSessionFromAllSessionsInRedis(this.SessionId,client);
+                            session.DeleteSessionFromAllSessionsInRedis(this.SessionId);
                             session.DeleteSessionFromRedis();
                             session.RemoveLocalFile();
                             return true;

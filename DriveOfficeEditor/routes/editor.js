@@ -98,7 +98,7 @@ module.exports = (app) => {
       try {
         const sessionId = req.params.id;
         const existingSession = await redis.get(sessionId);
-        const session = existingSession == null ? {} : JSON.parse(JSON.parse(existingSession));
+        const session = existingSession == null ? {} : JSON.parse(existingSession);
         const user = session.Users.find(user => user.Id == req.user.id);
         const isIdle = (Date.now() - new Date(user.LastUpdated)) / 1000 > process.env.MAX_USER_IDLE;
         logger.log({
@@ -114,12 +114,12 @@ module.exports = (app) => {
           label: `FileId: ${req.params.id} user: ${req.user.id}`,
         });
       }
-  });
+    });
 
   app.get("/update/:id",
     authenitcation.isAuthenticated,
     async (req, res) => {
       await redis.updateUserLastUpdated(req.params.id, req.user.id);
-      res.send("ok");  
-  });
+      res.send("ok");
+    });
 };
