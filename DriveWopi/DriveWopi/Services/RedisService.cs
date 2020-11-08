@@ -22,7 +22,7 @@ namespace DriveWopi.Services
         {
             try{
                 var value = DB.StringGet(key);
-                if(value == null || value.IsNull){
+                if(value.IsNull){
                     return null;
                 }
                 return (string)value;
