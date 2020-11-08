@@ -4,34 +4,32 @@
         <%- include('partials/head'); -%>
        </head>
 
-<body>
-
-    <% if(onlineUrl){ %>
-        <div class="card centered">
+    <% if(local == false){ %>
+        <div class="card centered style="width: 25rem;">
             <div class="card-body">
               <h5 class="card-title">הקובץ <%= name%> פתוח במקום אחר </h5>
+            </div>
+            <div class="card-header">
               <p class="card-text">הקובץ נמצא בעריכה אצל :</p>
+            </div>
               <ul class="list-group list-group-flush">
                 <% users.forEach(function(user) { %>
                     <li class="list-group-item">
+                        <!-- <img src="" alt="..." class="rounded-circle"> -->
                         <strong><%= user.Name %></strong>
                     </li>
                 <% }); %>
             </ul>
-              <p>בחר מאחת האפשרויות הבאות: </p>
-              <a class="btn btn-primary" href=<%=onlineUrl %> >הצטרף לעריכה משותפת</a>
-              <a class="btn btn-primary" href=<%=localUrl %> >פתח את הקובץ לקריאה בלבד</a>
+          <div class="card-body">
+              <a class="card-link" href=<%=onlineUrl %> >הצטרף לעריכה משותפת</a>
             </div>
-            <!-- <div class="card-footer">
-                <small class="text-muted">Last updated <%=lastUpdated %></small>
-              </div> -->
           </div>
       <% } else{ %>  
         <div class="card centered">
             <div class="card-body">
               <h5 class="card-title">הקובץ <%= name%> פתוח במקום אחר </h5>
               <p class="card-text">הקובץ נמצא בעריכה אצל משתמש אחר :</p>
-              <a class="btn btn-primary" href=<%=localUrl %> >פתח את הקובץ לקריאה בלבד</a>
+              <a class="btn btn-primary" href=<%=onlineUrl %> >פתח את הקובץ לקריאה בלבד</a>
             </div>
           </div>
      <% } %>

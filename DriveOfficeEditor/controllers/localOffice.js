@@ -25,7 +25,7 @@ exports.webdavDownloadAndPermissions = async (req, res, next) => {
       webDavFileName: res.locals.webDavFileName,
       permission: res.locals.permission
     }
-    await axios.post(`${process.env.WEBDAV_MANAGER_URL}/downloadToWebdav`, body);
+    let res1 = await axios.post(`${process.env.WEBDAV_MANAGER_URL}/downloadToWebdav`, body);
     next();
   }
   catch (err) {
@@ -57,8 +57,9 @@ exports.initRedisSession = async (req, res, next) => {
       }
       res.locals.session = session;
       await redis.set(redisKey, JSON.stringify(session));
-    }
       next();
+    }
+
   }
   catch (err) {
     return res.status(500).send("error in initializing session in Redis");
@@ -69,7 +70,6 @@ exports.redirectToLocalOffice = (req, res, next) => {
   try {
     const fileType = res.locals.metadata.type;
     let operation = req.query.operation;
-
     if (!fileType || !Object.values(fileTypes).includes(fileType)) {
       logger.log({
         level: "error",
@@ -93,6 +93,7 @@ exports.redirectToLocalOffice = (req, res, next) => {
     const webDavPath = `${process.env.WEBDAV_URL}/files/${res.locals.webDavFolder}/${res.locals.webDavFileName}`;
     const redirectLink = `ms-${typeToLocalOffice[fileType]}:${operationToLocalFlag[operation]}|u|${webDavPath}`;
     console.log(`redirectLink = ${redirectLink}`)
+    
     return res.redirect(redirectLink);
   } catch (e) {
     logger.log({
