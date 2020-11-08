@@ -84,13 +84,13 @@ namespace DriveWopi.Services
         {
             try{
                 HashSet<string> setMembers = GetSet(key);
-                string newSetString = value;
-                if(setMembers.Count != 0 && !setMembers.Contains(value)){
+                if(!setMembers.Contains(value)){
+                    string newSetString = value;
                     foreach(string id in setMembers){
                         newSetString = newSetString + "," + id;
                     }
-                }
-                Set(key , newSetString);
+                    Set(key , newSetString);
+                } 
             }
             catch(Exception ex){
                 Config.logger.LogDebug("problem with AddItemToSet in Redis, error:"+ex.Message);
