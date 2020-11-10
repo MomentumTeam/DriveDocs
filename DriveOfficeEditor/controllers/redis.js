@@ -59,7 +59,7 @@ exports.removeUserFromSession = async (id, userToRemove) => {
       return;
     }
     let session = JSON.parse(res);
-    if (!session || session == null || !session.Users || session.Users == null) {
+    if (!session || session == null || session.Users.length == 0 || session.Users == null) {
       logger.log({
         level: "info",
         message: "Try to remove user but session is null or no users in the session- the session closed ",
@@ -103,10 +103,18 @@ exports.updateUserLastUpdated = async (id, userId) => {
       return;
     }
     let session = JSON.parse(res);
-    if (!session || session == null || !session.Users || session.Users == null) {
+    if (!session || session == null || !session.Users || session.Users.length == 0 || session.Users == null) {
       return;
     }
     const userIndex = session.Users.findIndex(user => user.Id == userId);
+    if (!userIndex) {
+      logger.log({
+        level: "info",
+        message: "Try to update user lastUpdated, but user isnt exsist",
+        label: `Session: ${id}, User: ${userIndex}`,
+      });
+      return;
+    }
     session.Users[userIndex].LastUpdated = moment().format();
     session = JSON.stringify(session);
     await setAsync(id, session);

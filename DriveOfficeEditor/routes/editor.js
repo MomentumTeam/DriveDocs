@@ -51,10 +51,7 @@ module.exports = (app) => {
     }
   );
 
-  app.post("/closeSession/:id", async (req, res, next) => {
-    console.log("close session")
-    next();
-  },
+  app.post("/closeSession/:id",
     authenitcation.isAuthenticated,
     files.updateFile,
     async (req, res) => {
@@ -77,8 +74,7 @@ module.exports = (app) => {
         });
         res.status(500).send(e);
       }
-    }
-  );
+    });
 
   app.get("/isalive", (req, res) => {
     return res.send("alive");

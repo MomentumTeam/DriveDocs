@@ -72,7 +72,7 @@ exports.getMetadata = async (fileId, user) => {
     logger.log({
       level: "error",
       message: `GetMetadata failed, error: ${error}`,
-      label: `Session: ${fileId}, User: ${userObj.id}`
+      label: `Session: ${fileId}, User: ${user.id}`
     });
     throw error;
   }
