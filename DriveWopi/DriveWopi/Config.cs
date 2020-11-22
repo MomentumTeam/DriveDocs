@@ -16,6 +16,8 @@ namespace DriveWopi
         public static string DriveSecret;
 
         public static string RedisHost;
+
+        public static string RedisPassword;
         public static string DriveUrl;
         public static int AccessTokenExpiringTime;
         public static bool CleanUpEnabled;
@@ -45,7 +47,8 @@ namespace DriveWopi
             TemplatesFolder = Environment.GetEnvironmentVariable("TEMPLATE_FOLDER");
             Port =  int.Parse(Environment.GetEnvironmentVariable("PORT"));
             JwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET");
-            RedisHost = Environment.GetEnvironmentVariable("REDIS_PASSWORD")+ "@" + Environment.GetEnvironmentVariable("REDIS_HOST")+":"+Environment.GetEnvironmentVariable("REDIS_PORT");
+            RedisHost = Environment.GetEnvironmentVariable("REDIS_HOST")+":"+Environment.GetEnvironmentVariable("REDIS_PORT");
+            RedisPassword = Environment.GetEnvironmentVariable("REDIS_PASSWORD");
             DriveUrl =  Environment.GetEnvironmentVariable("DRIVE_URL");
             AccessTokenExpiringTime =  int.Parse(Environment.GetEnvironmentVariable("TOKEN_EXPIRE"));
             AuthorizationToken=Environment.GetEnvironmentVariable("AUTHORIZATION_TOKEN");

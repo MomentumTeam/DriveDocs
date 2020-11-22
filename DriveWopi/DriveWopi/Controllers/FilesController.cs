@@ -16,7 +16,6 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.Json;
 using Newtonsoft.Json.Linq;
-using ServiceStack.Redis;
 using Microsoft.Extensions.Logging;
 
 namespace DriveWopi.Controllers
@@ -47,7 +46,6 @@ namespace DriveWopi.Controllers
                     Config.logger.LogError("status:500 accessToken is null");
                     return StatusCode(500);
                 }
-                IRedisClient client = RedisService.GenerateRedisClient();
                 Dictionary<string, Object> token = AccessTokenVerifier.DecodeJWT(access_token);
                 Dictionary<string, string> user = (Dictionary<string, string>)token["user"];
                 Dictionary<string, string> metadata = (Dictionary<string, string>)token["metadata"];
@@ -60,7 +58,7 @@ namespace DriveWopi.Controllers
                 var sessionContext = Request.Headers["X-WOPI-SessionContext"];
                 string idToDownload = id;
                 string fileName = Config.Folder + "/" + metadata["id"] + "." + metadata["type"];
-                Session editSession = Session.GetSessionFromRedis(id, client);
+                Session editSession = Session.GetSessionFromRedis(id);
                 if (editSession == null)
                 {
                     FilesService.DownloadFileFromDrive(idToDownload, fileName, user["authorization"]);
@@ -115,8 +113,7 @@ namespace DriveWopi.Controllers
                     Config.logger.LogError("status:500 accessToken is illegal");
                     return StatusCode(500); //access token is illegal
                 }
-                IRedisClient client = RedisService.GenerateRedisClient();
-                Session editSession = Session.GetSessionFromRedis(id, client);
+                Session editSession = Session.GetSessionFromRedis(id);
                 if (editSession == null)
                 {
                     Config.logger.LogError("status:500 the session is null");
@@ -155,7 +152,6 @@ namespace DriveWopi.Controllers
                     Config.logger.LogError("status:500 accessToken is null");
                     return StatusCode(500);
                 }
-                IRedisClient client = RedisService.GenerateRedisClient();
                 Dictionary<string, Object> token = AccessTokenVerifier.DecodeJWT(access_token);
                 Dictionary<string, string> user = (Dictionary<string, string>)token["user"];
                 Dictionary<string, string> metadata = (Dictionary<string, string>)token["metadata"];
@@ -165,7 +161,7 @@ namespace DriveWopi.Controllers
                     return StatusCode(500);
                 }
 
-                Session editSession = Session.GetSessionFromRedis(id, client);
+                Session editSession = Session.GetSessionFromRedis(id);
                 if (editSession == null)
                 {
                     Config.logger.LogError("status:500 the session is null");
@@ -282,7 +278,6 @@ namespace DriveWopi.Controllers
                     Config.logger.LogError("status:500 accessToken is null");
                     return StatusCode(500);
                 }
-                IRedisClient client = RedisService.GenerateRedisClient();
                 Dictionary<string, Object> token = AccessTokenVerifier.DecodeJWT(access_token);
                 Dictionary<string, string> metadata = (Dictionary<string, string>)token["metadata"];
                 Dictionary<string, string> user = (Dictionary<string, string>)token["user"];
@@ -291,7 +286,7 @@ namespace DriveWopi.Controllers
                     Config.logger.LogError("status:500 accessToken is illegal");
                     return StatusCode(500); //access token is illegal
                 }
-                Session editSession = Session.GetSessionFromRedis(id, client);
+                Session editSession = Session.GetSessionFromRedis(id);
                 string fileName = editSession.LocalFilePath;
                 if (!FilesService.FileExists(fileName))
                 {
@@ -299,7 +294,7 @@ namespace DriveWopi.Controllers
                     return StatusCode(404);
                 }
                 string lockValue, operation, xWopiLock, xWopiOldLock = "";
-                editSession = Session.GetSessionFromRedis(id, client);
+                editSession = Session.GetSessionFromRedis(id);
                 if (editSession == null)
                 {
                     Config.logger.LogError("status:500 the session is null");

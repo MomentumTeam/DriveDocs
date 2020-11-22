@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Timers;
 using Newtonsoft.Json;
 using DriveWopi.Services;
-using ServiceStack.Redis;
 
 namespace DriveWopi.Models
 {
@@ -47,9 +46,8 @@ namespace DriveWopi.Models
             {
                 var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
                 logger.Debug("CleanUp : "+ DateTime.Now);
-                IRedisClient client = RedisService.GenerateRedisClient();
                 bool needToCloseSomeSessions = false;
-                HashSet<Session> allSessions = Session.GetAllSessions(client);
+                HashSet<Session> allSessions = Session.GetAllSessions();
                 List<Session> allSessionsList = allSessions.Where(x => x != null).ToList();
                 for (int i = 0; i < allSessionsList.Count; i++)
                 {
@@ -79,7 +77,7 @@ namespace DriveWopi.Models
                 }
                 allSessionsList = allSessionsList.Where(x => x != null).ToList();
                 if (needToCloseSomeSessions){
-                    Session.UpdateSessionsSetInRedis(new HashSet<Session>(allSessionsList), client);
+                    Session.UpdateSessionsSetInRedis(new HashSet<Session>(allSessionsList));
                 }
             }
             catch (Exception ex){

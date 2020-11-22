@@ -58,8 +58,8 @@ exports.removeUserFromSession = async (id, userToRemove) => {
       });
       return;
     }
-    let session = JSON.parse(JSON.parse(res));
-    if (!session || session == null || !session.Users || session.Users == null) {
+    let session = JSON.parse(res);
+    if (!session || session == null || session.Users.length == 0 || session.Users == null) {
       logger.log({
         level: "info",
         message: "Try to remove user but session is null or no users in the session- the session closed ",
@@ -78,9 +78,9 @@ exports.removeUserFromSession = async (id, userToRemove) => {
     }
     session.Users = session.Users.filter((user) => user.Id !== userToRemove);
     session.UserForUpload = userToRemoveAsInSession;
-    session = JSON.stringify(JSON.stringify(session));
-    await setAsync(id, session);
-logger.log({
+    sessionStr = JSON.stringify(session);
+    await setAsync(id, sessionStr);
+    logger.log({
       level: "info",
       message: "User was successfully removed",
       label: `Session: ${id}, User: ${userToRemove}`,
@@ -91,7 +91,7 @@ logger.log({
       message: `Status 500, failed to remove user from session, error: ${err}`,
       label: `Session: ${id}, User: ${userToRemove}`,
     });
-    res.status(500).send(e);
+    throw err;
   }
 };
 
@@ -102,13 +102,21 @@ exports.updateUserLastUpdated = async (id, userId) => {
     if (!res || res == null) {
       return;
     }
-    let session = JSON.parse(JSON.parse(res));
-    if (!session || session == null || !session.Users || session.Users == null) {
+    let session = JSON.parse(res);
+    if (!session || session == null || !session.Users || session.Users.length == 0 || session.Users == null) {
       return;
     }
     const userIndex = session.Users.findIndex(user => user.Id == userId);
+    if (!userIndex) {
+      logger.log({
+        level: "info",
+        message: "Try to update user lastUpdated, but user isnt exsist",
+        label: `Session: ${id}, User: ${userIndex}`,
+      });
+      return;
+    }
     session.Users[userIndex].LastUpdated = moment().format();
-    session = JSON.stringify(JSON.stringify(session));
+    session = JSON.stringify(session);
     await setAsync(id, session);
     logger.log({
       level: "info",

@@ -3,7 +3,6 @@ using System.IO;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using DriveWopi.Services;
-using ServiceStack.Redis;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 
@@ -26,7 +25,6 @@ namespace DriveWopi.Models
         protected User _UserForUpload = null;
 
         protected FileInfo _FileInfo;
-        protected IRedisClient Client;
 
         public Session(string SessionId, string LocalFilePath)
         {
@@ -37,7 +35,6 @@ namespace DriveWopi.Models
             _Users = new List<User>();
             _LockStatus = LockStatus.UNLOCK;
             _LockString = "";
-            Client = RedisService.GenerateRedisClient();
             _ChangesMade = false;
         }
 
@@ -188,11 +185,11 @@ namespace DriveWopi.Models
             }
         }
 
-        public static Session GetSessionFromRedis(string sessionId, IRedisClient client)
+        public static Session GetSessionFromRedis(string sessionId)
         {
             try
             {
-                string session = RedisService.Get(sessionId, client);
+                string session = RedisService.Get(sessionId);
                 if (session == null)
                 {
                     return null;
@@ -228,15 +225,15 @@ namespace DriveWopi.Models
             }
         }
 
-        public static HashSet<Session> GetAllSessions(IRedisClient client)
+        public static HashSet<Session> GetAllSessions()
         {
             try
             {
-                HashSet<string> listIds = RedisService.GetSet(Config.AllSessionsRedisKey, client);
+                HashSet<string> listIds = RedisService.GetSet(Config.AllSessionsRedisKey);
                 HashSet<Session> sessionSet = new HashSet<Session>();
                 foreach (string sessionId in listIds)
                 {
-                    Session s = GetSessionFromRedis(sessionId, client);
+                    Session s = GetSessionFromRedis(sessionId);
                     sessionSet.Add(s);
                 }
                 return sessionSet;
@@ -253,7 +250,7 @@ namespace DriveWopi.Models
         {
             try
             {
-                RedisService.AddItemToSet(Config.AllSessionsRedisKey, _SessionId, this.Client);
+                RedisService.AddItemToSet(Config.AllSessionsRedisKey, _SessionId);
             }
             catch (Exception e)
             {
@@ -262,11 +259,11 @@ namespace DriveWopi.Models
             }
         }
 
-        public static void UpdateSessionsSetInRedis(HashSet<Session> sessions, IRedisClient client)
+        public static void UpdateSessionsSetInRedis(HashSet<Session> sessions)
         {
             try
             {
-                RedisService.Remove(Config.AllSessionsRedisKey, client);
+                RedisService.Remove(Config.AllSessionsRedisKey);
                 foreach (Session s in sessions)
                 {
                     s.AddSessionToSetInRedis();
@@ -279,16 +276,16 @@ namespace DriveWopi.Models
             }
         }
 
-        public void DeleteSessionFromAllSessionsInRedis(string sessionId, IRedisClient client){
+        public void DeleteSessionFromAllSessionsInRedis(string sessionId){
             try{
-                HashSet<Session> allSessions = GetAllSessions(client);
+                HashSet<Session> allSessions = GetAllSessions();
                 HashSet<Session> updatedSessions = new HashSet<Session>();
                 foreach(Session s in allSessions){
                     if(s!=null && (!s.SessionId.Equals(sessionId))){
                         updatedSessions.Add(s);
                     }
                 }
-                UpdateSessionsSetInRedis(updatedSessions,client);
+                UpdateSessionsSetInRedis(updatedSessions);
 
             }
             catch(Exception ex){
@@ -302,7 +299,7 @@ namespace DriveWopi.Models
             {
                 string convertedSession = JsonConvert.SerializeObject(this, new JsonSerializerSettings()
                 { ContractResolver = new IgnorePropertiesResolver(new[] { "Client" }) });
-                RedisService.Set($"{this._SessionId}", convertedSession, this.Client);
+                RedisService.Set($"{this._SessionId}", convertedSession);
             }
             catch (Exception ex)
             {
@@ -347,7 +344,7 @@ namespace DriveWopi.Models
         {
             try
             {
-                RedisService.Remove(this._SessionId, this.Client);
+                RedisService.Remove(this._SessionId);
             }
             catch (Exception ex)
             {

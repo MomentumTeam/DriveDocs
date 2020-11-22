@@ -15,7 +15,6 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.Json;
 using Newtonsoft.Json.Linq;
-using ServiceStack.Redis;
 
 namespace DriveWopi.Controllers
 {
@@ -27,8 +26,7 @@ namespace DriveWopi.Controllers
         public async Task<IActionResult> DeleteUser(string sessionId, string userId)
         {
             try{
-                IRedisClient client = RedisService.GenerateRedisClient();
-                Session editSession = Session.GetSessionFromRedis(sessionId,client);
+                Session editSession = Session.GetSessionFromRedis(sessionId);
                 if(editSession == null || editSession.Users == null || editSession.Users.Count == 0){
                     return StatusCode(500); 
                 }

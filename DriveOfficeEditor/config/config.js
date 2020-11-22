@@ -7,6 +7,10 @@ const typesToConvert = {
     ppt: "ppt"
 };
 
+const pdfTypes = {
+    "PDF": "pdf",
+};
+
 const toConvertedType = {
     DOC: "docx",
     XLS: "xlsx",
@@ -22,11 +26,10 @@ const xTypes = {
     PPTX: "pptx",
 }
 
+
 const fileTypes = {
     ...xTypes,
     ...typesToConvert,
-    PDF: "pdf",
-    pdf: "pdf"
 };
 
 const operations = {
@@ -74,9 +77,9 @@ exports.config = {
     typeToLocalOffice,
     operationToLocalFlag,
     toConvertedType,
-    fileTypes,
     operations,
     typesToConvert,
     roles,
-    maxSizes
+    maxSizes,
+    pdfTypes
 }

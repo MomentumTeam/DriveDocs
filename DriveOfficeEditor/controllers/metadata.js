@@ -56,14 +56,14 @@ exports.checkPermissionsOnFile = (req, res, next) => {
       logger.log({
         level: "error",
         message: "Status 403: Permission denied",
-        label: `user: ${req.user.id}`,
+        label: `user: ${req.user.id} fileId: ${req.params.id}`,
       });
       return res.status(403).send("You do not have the right permission!");
     }
     logger.log({
       level: "info",
       message: "Permission granted",
-      label: `user: ${req.user.id}`,
+      label: `user: ${req.user.id} fileId: ${req.params.id}`,
     });
     next();
   } catch (e) {

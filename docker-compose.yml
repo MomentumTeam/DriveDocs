@@ -30,8 +30,6 @@ services:
             -  AUTHORIZATION_TOKEN=${AUTHORIZATION_TOKEN}
             -  DRIVE_SECRET=${DRIVE_SECRET}
             -  TOKEN_EXPIRE=${TOKEN_EXPIRE}
-            -  TIME_OUT=${TIME_OUT} #Time period to perform cleanUp in milliseconds
-            -  CLOSE_WAIT=${CLOSE_WAIT} #Time before the session is deleted after not being updated in seconds
             -  DRIVE_UPDATE_TIME=${DRIVE_UPDATE_TIME}
             -  REDIS_PASSWORD=${REDIS_PASSWORD}
             -  CLEANUP_ENABLED=true
