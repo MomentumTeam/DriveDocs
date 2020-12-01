@@ -1,5 +1,6 @@
 const { promisify } = require("util");
 const redis = require("redis");
+const moment = require("moment");
 const logger = require("../services/logger.js");
 
 const { config } = require("../config/config.js");
@@ -54,24 +55,39 @@ exports.removeUserFromSession = async (id, userToRemove) => {
   try {
     let res = await getAsync(id);
     if (!res || res == null) {
+      logger.log({
+        level: "info",
+        message: "Try to remove user but result is null - the session closed",
+        label: `Session: ${id}, User: ${userToRemove}`,
+      });
       return;
     }
-    let session = JSON.parse(JSON.parse(res));
-    if (!session || session == null || !session.Users || session.Users == null) {
+    let session = JSON.parse(res);
+    if (!session || session == null || session.Users.length == 0 || session.Users == null) {
+      logger.log({
+        level: "info",
+        message: "Try to remove user but session is null or no users in the session- the session closed ",
+        label: `Session: ${id}, User: ${userToRemove}`,
+      });
       return;
     }
-    const userToRemoveAsInSession = session.Users.find((user) => user.Id == userToRemove.id);
+    const userToRemoveAsInSession = session.Users.find((user) => user.Id == userToRemove);
     if (!userToRemoveAsInSession) {
+      logger.log({
+        level: "info",
+        message: "Try to remove user but user isnt exsist - remove from unlock",
+        label: `Session: ${id}, User: ${userToRemove}`,
+      });
       return;
     }
-    session.Users = session.Users.filter((u) => u.Id !== userToRemove.id);
+    session.Users = session.Users.filter((user) => user.Id !== userToRemove);
     session.UserForUpload = userToRemoveAsInSession;
-    session = JSON.stringify(JSON.stringify(session));
-    await setAsync(id, session);
+    sessionStr = JSON.stringify(session);
+    await setAsync(id, sessionStr);
     logger.log({
       level: "info",
       message: "User was successfully removed",
-      label: `Session: ${id}, User: ${userToRemove.id}`,
+      label: `Session: ${id}, User: ${userToRemove}`,
     });
   } catch (err) {
     logger.log({
@@ -79,64 +95,42 @@ exports.removeUserFromSession = async (id, userToRemove) => {
       message: `Status 500, failed to remove user from session, error: ${err}`,
       label: `Session: ${id}, User: ${userToRemove}`,
     });
-    res.status(500).send(e);
+    throw err;
   }
 };
 
-// exports.canCreateSession = async (req, res, next) =>{
-//   let onlineSession = await getAsync(req.params.id);
-//   let localSession = await getAsync(`local.${req.params.id}`);
-//   let mode = req.url.split("/")[2] == "files" ? "online" : "local";
-//   if((!onlineSession && !localSession) || req.query.operation == "read"){
-//     next();
-//   }else if(req.query.operation == "edit"){
-//     if(mode == "online" && localSession){
-//       localSession = JSON.parse(localSession);
-//       if(localSession.user.permission == "write"){
-//         console.log("online")
-//         console.log(localSession)
-//         // TODO open online in view mode
-//         req.query.operation == "view"
-//         next()
-//       }else{
-//         next();
-//       }
-//     }
-//     if(mode == "local"){
-//       if(onlineSession){
-//         console.log("onlineSession");
-//         onlineSession = JSON.parse(JSON.parse(onlineSession));
-//         console.log(onlineSession);
-//         let usersInEdit = onlineSession.Users.filter(user => user.Permission == "write");
-//         if(usersInEdit){
-//           const webDavPath = `${process.env.WEBDAV_URL}/files/${res.locals.webDavFolder}/${res.locals.webDavFileName}`;
-//           // A page where the user decides whether to open a local view or join an online edit 
-//           res.render("localOffice", {
-//             id:req.params.id,
-//             name:res.locals.metadata.name,
-//             type:res.locals.metadata.type,
-//             users:onlineSession.Users,
-//             lastUpdated:onlineSession.lastUpdated,
-//             onlineUrl:`../files/${req.params.id}`,
-//             localUrl:`../localOffice/view/${req.params.id}`
-//           });
-//         }
-//       }else if(localSession){
-//         localSession = JSON.parse(localSession);
-//         console.log("localSession");
-//         console.log(localSession)
-//         if(localSession.user.permission == "write"){
-//           res.render("localOffice", {
-//             id:req.params.id,
-//             name:res.locals.metadata.name,
-//             type:res.locals.metadata.type,
-//             onlineUrl:null,
-//             localUrl:`../localOffice/view/${req.params.id}`
-//           });
-//         }else{
-//           next();
-//         }
-//       }
-//     }
-//   }
-// }
+exports.updateUserLastUpdated = async (id, userId) => {
+  try {
+    let res = await getAsync(id);
+    if (!res || res == null) {
+      return;
+    }
+    let session = JSON.parse(res);
+    if (!session || session == null || !session.Users || session.Users.length == 0 || session.Users == null) {
+      return;
+    }
+    const userIndex = session.Users.findIndex((user) => user.Id == userId);
+    if (!userIndex) {
+      logger.log({
+        level: "info",
+        message: "Try to update user lastUpdated, but user isnt exsist",
+        label: `Session: ${id}, User: ${userIndex}`,
+      });
+      return;
+    }
+    session.Users[userIndex].LastUpdated = moment().format();
+    session = JSON.stringify(session);
+    await setAsync(id, session);
+    logger.log({
+      level: "info",
+      message: "LastUpdated of user successfully update",
+      label: `Session: ${id}, User: ${userId}`,
+    });
+  } catch (err) {
+    logger.log({
+      level: "error",
+      message: `Status 500, failed to update user LastUpdated, error: ${err}`,
+      label: `Session: ${id}, User: ${userId}`,
+    });
+  }
+};

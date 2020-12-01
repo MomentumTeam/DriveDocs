@@ -1,6 +1,6 @@
 const axios = require("axios");
 const jwt = require("jsonwebtoken");
-const logger = require("../services/logger.js");
+const logger = require("./logger.js");
 
 const handleUserName = (user) => {
   if (!user.name) {
@@ -72,7 +72,7 @@ exports.getMetadata = async (fileId, user) => {
     logger.log({
       level: "error",
       message: `GetMetadata failed, error: ${error}`,
-      label: `Session: ${fileId}, User: ${userObj.id}`
+      label: `Session: ${fileId}, User: ${user.id}`
     });
     throw error;
   }

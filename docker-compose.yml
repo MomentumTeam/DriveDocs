@@ -30,16 +30,16 @@ services:
             -  AUTHORIZATION_TOKEN=${AUTHORIZATION_TOKEN}
             -  DRIVE_SECRET=${DRIVE_SECRET}
             -  TOKEN_EXPIRE=${TOKEN_EXPIRE}
-            -  TIME_OUT=${TIME_OUT} #Time period to perform cleanUp in milliseconds
-            -  CLOSE_WAIT=${CLOSE_WAIT} #Time before the session is deleted after not being updated in seconds
-            -  REMOVE_WAIT_USER=${REMOVE_WAIT_USER} #Time before the user is deleted from the session after begin inactive in seconds
-            -  MAX_REDIS_SESSION_TIME=${MAX_REDIS_SESSION_TIME} #maximum time for session on redis
             -  DRIVE_UPDATE_TIME=${DRIVE_UPDATE_TIME}
             -  REDIS_PASSWORD=${REDIS_PASSWORD}
             -  CLEANUP_ENABLED=true
             -  LOCAL_OFFICE_FOLDER=${LOCAL_OFFICE_FOLDER}
             -  OFFICE_EDITOR_URL=${OFFICE_EDITOR_URL}
             -  WEBDAV_URL=${WEBDAV_URL}
+            -  CLEANUP_TIME=${CLEANUP_TIME}
+            -  MAX_USER_IDLE=${MAX_USER_IDLE}
+            -  INTERVAL_TIME=${INTERVAL_TIME}
+            -  TIMER_TIME=${TIMER_TIME}
         ports: 
             - "8082:8080"
         volumes:
@@ -93,6 +93,9 @@ services:
             -  WEBDAV_MANAGER_URL=${WEBDAV_MANAGER_URL}
             -  WEBDAV_URL=${WEBDAV_URL}
             -  ENABLE_LOCAL_OFFICE=${ENABLE_LOCAL_OFFICE}
+            -  MAX_USER_IDLE=${MAX_USER_IDLE}
+            -  INTERVAL_TIME=${INTERVAL_TIME}
+            -  TIMER_TIME=${TIMER_TIME}
         depends_on:
             - redis-server
             - wopi

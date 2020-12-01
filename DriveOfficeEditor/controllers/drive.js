@@ -23,9 +23,7 @@ exports.uploadNewFileToDrive = async (req, res, next) => {
   }
   const blankFilePath = `${process.env.BLANK_PATH}/blank.${req.query.type}`;
   const newFilePath = `${process.env.TEMPLATE_FOLDER}/${req.query.name}.${req.query.type}`;
-  fs.copyFile(blankFilePath, newFilePath, (err) => {
-    if (err) throw err;
-  });
+  fs.copyFileSync(blankFilePath, newFilePath);
   const data = new FormData();
   data.append("file", fs.createReadStream(newFilePath));
   fs.unlinkSync(newFilePath)
@@ -56,7 +54,7 @@ exports.uploadNewFileToDrive = async (req, res, next) => {
 
 exports.redirectToDriveDownload = (req, res, next) => {
   try {
-    return res.redirect(`${process.env.DRIVE_URL} /api/files / ${req.params.id}?alt = media`);
+    return res.redirect(`${process.env.DRIVE_URL}/api/files/${req.params.id}?alt=media`);
   }
   catch{
     return res.status(500).send("error");
@@ -78,30 +76,29 @@ async function upload(filedata, parentId, accessToken) {
     const response = await axios(uploadRequest);
     return response.data;
   } catch (error) {
-    console.log(error)
     throw error;
   }
 }
 
 exports.updateFile = async (fileId, filePath, accessToken) => {
-  const size = getFileSize(filePath); //
-  mimeType = mime.contentType(path.extname(filePath))
-  const data = new FormData();
-  data.append('file', fs.createReadStream(filePath));
-  const uploadId = await getUploadId(size, fileId, accessToken);
-  const updateRequest = {
-    method: 'post',
-    url: `${process.env.DRIVE_URL}/api/upload?uploadType=resumable&uploadId=${uploadId}`,
-    headers: {
-      'Content-Range': `bytes 0 - ${size - 1} /${size}`,
-      'Authorization': accessToken,
-      "Auth-Type": "Docs",
-      ...data.getHeaders(),
-      "X-Mime-Type": mimeType
-    },
-    data: data
-  };
   try {
+    const size = getFileSize(filePath); //
+    mimeType = mime.contentType(path.extname(filePath))
+    const data = new FormData();
+    data.append('file', fs.createReadStream(filePath));
+    const uploadId = await getUploadId(size, fileId, accessToken);
+    const updateRequest = {
+      method: 'post',
+      url: `${process.env.DRIVE_URL}/api/upload?uploadType=resumable&uploadId=${uploadId}`,
+      headers: {
+        'Content-Range': `bytes 0-${size - 1}/${size}`,
+        'Authorization': accessToken,
+        "Auth-Type": "Docs",
+        ...data.getHeaders(),
+        "X-Mime-Type": mimeType
+      },
+      data: data
+    };
     await axios(updateRequest);
   } catch (error) {
     throw error;

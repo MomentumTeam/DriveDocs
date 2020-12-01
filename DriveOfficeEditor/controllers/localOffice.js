@@ -4,16 +4,15 @@ const redis = require("./redis");
 const { config } = require("../config/config.js");
 
 const localOfficeFileTypes = config.fileTypes;
-delete localOfficeFileTypes['pdf'];
-delete localOfficeFileTypes['PDF'];
+delete localOfficeFileTypes["pdf"];
+delete localOfficeFileTypes["PDF"];
 
 const operations = config.operations;
 const typeToLocalOffice = config.typeToLocalOffice;
 const operationToLocalFlag = config.operationToLocalFlag;
 const fileTypes = config.fileTypes;
-delete fileTypes['pdf'];
-delete fileTypes['PDF'];
-
+delete fileTypes["pdf"];
+delete fileTypes["PDF"];
 
 exports.webdavDownloadAndPermissions = async (req, res, next) => {
   try {
@@ -23,12 +22,11 @@ exports.webdavDownloadAndPermissions = async (req, res, next) => {
       userId: req.user.id,
       webDavFolder: res.locals.webDavFolder,
       webDavFileName: res.locals.webDavFileName,
-      permission: res.locals.permission
-    }
+      permission: res.locals.permission,
+    };
     let res1 = await axios.post(`${process.env.WEBDAV_MANAGER_URL}/downloadToWebdav`, body);
     next();
-  }
-  catch (err) {
+  } catch (err) {
     return res.status(500).send(err);
   }
 };
@@ -41,27 +39,25 @@ exports.setFolderAndFileName = (req, res, next) => {
 
 exports.initRedisSession = async (req, res, next) => {
   try {
-    if(res.locals.permission == 'write'){
+    if (res.locals.permission == "write") {
       const redisKey = `local.${req.params.id}`;
       const user = {
         id: req.user.id,
         name: req.user.name,
         authorization: res.locals.authorization,
-        permission: res.locals.permission
+        permission: res.locals.permission,
       };
       const session = {
-        id:req.params.id,
-        webDavFolder:res.locals.webDavFolder,
-        webDavFileName:res.locals.webDavFileName,
-        user:user
-      }
+        id: req.params.id,
+        webDavFolder: res.locals.webDavFolder,
+        webDavFileName: res.locals.webDavFileName,
+        user: user,
+      };
       res.locals.session = session;
       await redis.set(redisKey, JSON.stringify(session));
       next();
     }
-
-  }
-  catch (err) {
+  } catch (err) {
     return res.status(500).send("error in initializing session in Redis");
   }
 };
@@ -92,8 +88,6 @@ exports.redirectToLocalOffice = (req, res, next) => {
 
     const webDavPath = `${process.env.WEBDAV_URL}/files/${res.locals.webDavFolder}/${res.locals.webDavFileName}`;
     const redirectLink = `ms-${typeToLocalOffice[fileType]}:${operationToLocalFlag[operation]}|u|${webDavPath}`;
-    console.log(`redirectLink = ${redirectLink}`)
-    
     return res.redirect(redirectLink);
   } catch (e) {
     logger.log({

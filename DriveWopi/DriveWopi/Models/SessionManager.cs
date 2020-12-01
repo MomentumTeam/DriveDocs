@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Timers;
 using Newtonsoft.Json;
 using DriveWopi.Services;
-using ServiceStack.Redis;
 
 namespace DriveWopi.Models
 {
@@ -34,7 +33,7 @@ namespace DriveWopi.Models
         public SessionManager()
         {
             var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
-            _Timer = new Timer(Config.Timeout);
+            _Timer = new Timer(Config.Timeout*1000);
             _Timer.AutoReset = true;
             _Timer.Elapsed += CleanUp;
             _Timer.Enabled = Config.CleanUpEnabled;
@@ -46,126 +45,42 @@ namespace DriveWopi.Models
             try
             {
                 var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
-                logger.Debug("enter CleanUp");
-                IRedisClient client = RedisService.GenerateRedisClient();
-                User userForUpload = null;
-                bool needToCloseSomeSessions = false, updateSuccess = true;
-                int usersCountBefore, usersCountAfter;
-                List<Session> allSessions = Session.GetAllSessions(client);
-                allSessions = allSessions.Where(x => x != null).ToList();
-                for (int i = 0; i < allSessions.Count; i++)
+                logger.Debug("CleanUp : "+ DateTime.Now);
+                bool needToCloseSomeSessions = false;
+                HashSet<Session> allSessions = Session.GetAllSessions();
+                List<Session> allSessionsList = allSessions.Where(x => x != null).ToList();
+                for (int i = 0; i < allSessionsList.Count; i++)
                 {
-                    Session session = allSessions[i];
-                    if (session.LastUpdated.AddSeconds(Config.MaxRedisSessionTime) < DateTime.Now)
-                    {
+                    
+                    Session session = allSessionsList[i];
+                    if (session.Users.Count == 0 && !session.ChangesMade) {
                         needToCloseSomeSessions = true;
+                        allSessionsList[i] = null;
                         session.DeleteSessionFromRedis();
-                        allSessions[i] = null;
                         session.RemoveLocalFile();
-                        logger.Debug("session {0} RedisSessionTime time pased, the session delete", session.SessionId);
-                        continue;
-                    }
-
-                    usersCountBefore = session.Users == null ? 0 : session.Users.Count;
-                    if (usersCountBefore == 0)
-                    {
-                        logger.Debug("Zero users in the session {0} before", session.SessionId);
-                        updateSuccess = true;
-                        if (session.ChangesMade && session.UserForUpload != null)
-                        {
-                            updateSuccess = session.SaveToDrive(session.UserForUpload);
-                        }
-                        // UserForUpload is null or upload was successful
-                        if (updateSuccess)
-                        {
-                            session.DeleteSessionFromRedis();
-                            session.RemoveLocalFile();
-                            allSessions[i] = null;
-                            needToCloseSomeSessions = true;
-                            logger.Debug("the file {0} saved in Drive successfully", session.SessionId);
-                        }
-                        continue;
-                    }
-
-                    userForUpload = session.Users[0];
-                    session.Users.RemoveAll((User user) =>
-                    {
-                        if (user.LastUpdated.AddSeconds(Config.Removewaituser) < DateTime.Now)
-                        {
-                            logger.Debug("user {0} LastUpdated time pased", user.Id);
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    });
-
-                    usersCountAfter = session.Users.Count;
-                    if (usersCountAfter != usersCountBefore)
-                    {
-                        logger.Debug("the number of users on the session {0} has changed", session.SessionId);
-                        if (usersCountAfter == 0)
-                        {
-                            logger.Debug("Zero users in the session {0} after", session.SessionId);
-                            updateSuccess = session.ChangesMade ? session.SaveToDrive(userForUpload) : true;
-                            if (updateSuccess)
+                        logger.Debug("Delete session "+ allSessionsList[i] + "- All useres left and no changes made");
+                    } else {
+                        session.Users.RemoveAll((User user) => {
+                            int maxTime = Config.intervalTime + Config.idleTime + Config.timerTime;
+                            if (user.LastUpdated.AddSeconds(maxTime) < DateTime.Now)
                             {
-                                session.DeleteSessionFromRedis();
-                                session.RemoveLocalFile();
-                                allSessions[i] = null;
-                                needToCloseSomeSessions = true;
-                                logger.Debug("the file {0} saved in Drive successfully", session.SessionId);
+                                logger.Debug("Remove user {0} from cleanUp", user.Id);
+                                return true;
                             }
                             else
                             {
-                                session.SaveToRedis();
-                                logger.Debug("the session {0} saved in Redis successfully, But update fail", session.SessionId);
+                                return false;
                             }
-                            continue;
-                        }
-                        else
-                        {
-                            session.SaveToRedis();
-                        }
-                    }
-
-                    if (session.LastUpdated.AddSeconds(Config.Closewait) < DateTime.Now)
-                    {
-                        // save the changes to the file and close session
-                        updateSuccess = session.ChangesMade ? session.SaveToDrive(userForUpload) : true;
-                        if (updateSuccess)
-                        {
-                            needToCloseSomeSessions = true;
-                            session.RemoveLocalFile();
-                            session.DeleteSessionFromRedis();
-                            allSessions[i] = null;
-                        }
-                        continue;
-                    }
-
-                    if (session.ChangesMade && session.LastUpdated.AddSeconds(Config.DriveUpdateTime) < DateTime.Now)
-                    {
-                        // save the changes to the file
-                        updateSuccess = session.SaveToDrive(userForUpload);
-                        if (updateSuccess)
-                        {
-                            session.ChangesMade = false;
-                            session.SaveToRedis();
-                            logger.Debug("session {0} DriveUpdateTime time pased, the session update in Drive", session.SessionId);
-                        }
-
+                        });
+                        session.SaveToRedis();
                     }
                 }
-                allSessions = allSessions.Where(x => x != null).ToList();
-                if (needToCloseSomeSessions)
-                {
-                    logger.Debug("needToCloseSomeSessions");
-                    Session.UpdateSessionsListInRedis(allSessions, client);
+                allSessionsList = allSessionsList.Where(x => x != null).ToList();
+                if (needToCloseSomeSessions){
+                    Session.UpdateSessionsSetInRedis(new HashSet<Session>(allSessionsList));
                 }
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex){
                 var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
                 logger.Error("status:500, cleanUp fail, error: " + ex.Message);
                 throw ex;

@@ -1,5 +1,5 @@
 using System;
-using ServiceStack.Redis;
+using StackExchange.Redis;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
@@ -9,26 +9,23 @@ namespace DriveWopi.Services
 {
     public class RedisService
     {
-        public static IRedisClient GenerateRedisClient()
-        {
-            try
-            {
-                RedisManagerPool manager = new RedisManagerPool(Config.RedisHost);
-                IRedisClient client = client = manager.GetClient();
-                return client;
-            }
-            catch (Exception e)
-            {
-                Config.logger.LogDebug("problem with Redisclient creation, error:"+e.Message);
-                throw e;
-            }
+        public static ConnectionMultiplexer Redis;
+        public static IDatabase DB;
+        static RedisService(){
+            var options = ConfigurationOptions.Parse(Config.RedisHost);
+            options.Password = Config.RedisPassword;
+            Redis = ConnectionMultiplexer.Connect(options);
+            DB = Redis.GetDatabase();
         }
 
-        public static string Get(string key, IRedisClient client)
+        public static string Get(string key)
         {
             try{
-                string value = client.Get<string>(key);
-                return value;
+                var value = DB.StringGet(key);
+                if(value.IsNull){
+                    return null;
+                }
+                return (string)value;
             }
             catch(Exception ex){
                 Config.logger.LogDebug("problem with getting from Redis, error:"+ex.Message);
@@ -37,22 +34,11 @@ namespace DriveWopi.Services
             }
         }
 
-        public static List<string> GetList(string key, IRedisClient client)
+
+        public static void Set(string key, string value)
         {
             try{
-                return client.GetAllItemsFromList(key);
-            }
-            catch(Exception ex){
-                Config.logger.LogDebug("problem with GetList from Redis, error:"+ex.Message);
-                throw ex;
-            }
-
-        }
-
-        public static void Set(string key, string value, IRedisClient client)
-        {
-            try{
-                client.Set(key, value);
+                DB.StringSet(key, value);
             }
             catch(Exception ex){
                 Config.logger.LogDebug("problem with set to Redis, error:"+ex.Message);
@@ -60,23 +46,54 @@ namespace DriveWopi.Services
             }
         }
 
-        public static void Remove(string key, IRedisClient client)
+        public static void Remove(string key)
         {
             try{
-                client.Remove(key);
+                DB.KeyDelete(key);
             }
             catch(Exception ex){
                 Config.logger.LogDebug("problem with remove from Redis, error:"+ex.Message);
                 throw ex;
             }
         }
-        public static void AddItemToList(string key, string value, IRedisClient client)
+
+        public static HashSet<string> GetSet(string key)
         {
             try{
-                client.AddItemToList(key, value);
+                HashSet<string> setMembers = new HashSet<string>();
+                string value = Get(key);
+                if(value == null){
+                    return setMembers;
+                }
+                else{
+                    string[] ids = value.Split(',');
+                    foreach(string id in ids) {
+                        setMembers.Add(id);
+                    }
+                    return setMembers;
+                }
             }
             catch(Exception ex){
-                Config.logger.LogDebug("problem with AddItemToList in Redis, error:"+ex.Message);
+                Config.logger.LogDebug("problem with GetSet from Redis, error:"+ex.Message);
+                throw ex;
+            }
+
+        }
+
+        public static void AddItemToSet(string key, string value)
+        {
+            try{
+                HashSet<string> setMembers = GetSet(key);
+                if(!setMembers.Contains(value)){
+                    string newSetString = value;
+                    foreach(string id in setMembers){
+                        newSetString = newSetString + "," + id;
+                    }
+                    Set(key , newSetString);
+                } 
+            }
+            catch(Exception ex){
+                Config.logger.LogDebug("problem with AddItemToSet in Redis, error:"+ex.Message);
                 throw ex;
             }
  

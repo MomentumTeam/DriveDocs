@@ -1,5 +1,6 @@
 const metadataService = require("../services/metadataService");
 const logger = require("../services/logger.js");
+const mime = require('mime-types')
 const { config } = require("../config/config");
 
 const PDF = config.fileTypes.PDF;
@@ -13,7 +14,7 @@ exports.loadMetadata = async (req, res, next) => {
     try {
       const fileId = req.params.id;
       let metadata = await metadataService.getMetadata(fileId, req.user);
-      metadata.type = metadata.name.substring(metadata.name.lastIndexOf(".") + 1, metadata.name.length).toLowerCase();
+      metadata.type = mime.extension(metadata.type);
       res.locals.metadata = metadata;
       if (res.locals.metadata.hasOwnProperty("permission")) {
         delete res.locals.metadata["permission"];
@@ -55,14 +56,14 @@ exports.checkPermissionsOnFile = (req, res, next) => {
       logger.log({
         level: "error",
         message: "Status 403: Permission denied",
-        label: `user: ${req.user.id}`,
+        label: `user: ${req.user.id} fileId: ${req.params.id}`,
       });
       return res.status(403).send("You do not have the right permission!");
     }
     logger.log({
       level: "info",
       message: "Permission granted",
-      label: `user: ${req.user.id}`,
+      label: `user: ${req.user.id} fileId: ${req.params.id}`,
     });
     next();
   } catch (e) {

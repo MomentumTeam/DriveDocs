@@ -22,7 +22,7 @@ exports.generateUrl = async (req, res, next) => {
     let url, faviconUrl, proxyUrl;
     const id = req.params.id;
 
-    if (!fileType || !Object.values(config.fileTypes).includes(fileType)) {
+    if ((!fileType) || ((!Object.values(config.fileTypes).includes(fileType)) && (!Object.values(config.pdfTypes).includes(fileType)))) {
       logger.log({
         level: "error",
         message: `Status 501: ${fileType} file type is not supported!`,
@@ -31,7 +31,7 @@ exports.generateUrl = async (req, res, next) => {
       return res.status(501).send("File type not supported!");
     }
 
-    if (operation == config.operations.EDIT && fileType == config.fileTypes.PDF) {
+    if (operation == config.operations.EDIT && fileType == config.pdfTypes.PDF) {
       logger.log({
         level: "error",
         message: "Edit is not supported with PDF type!", //check 405
@@ -52,10 +52,15 @@ exports.generateUrl = async (req, res, next) => {
     }
 
     if (Object.values(config.typesToConvert).includes(fileType)) {
-      let newFormat = config.toConvertedType[fileType];
-      await convert.convertAndUpdateInDrive(id, newFormat, fileType, res.locals.authorization, res.locals.accessToken);
-      fileType = newFormat;
-      return res.redirect("/api/files/" + req.params.id);
+      try {
+        let newFormat = config.toConvertedType[fileType];
+        await convert.convertAndUpdateInDrive(id, newFormat, fileType, res.locals.authorization, res.locals.accessToken);
+        fileType = newFormat;
+        return res.redirect("/api/files/" + req.params.id);
+      } catch (e) {
+        return res.status(500).send("Status:500, change file Name, is already exsist");
+      }
+
     }
     if (operation == config.operations.EDIT) {
       switch (fileType) {
