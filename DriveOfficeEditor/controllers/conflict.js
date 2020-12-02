@@ -18,9 +18,10 @@ exports.resolver = async (req, res, next) => {
     } else if (mode == "local") {
       if (onlineSession)  {
         // console.log("onlineSession");
-        onlineSession = JSON.parse(JSON.parse(onlineSession));
+        onlineSession = JSON.parse(onlineSession);
         // console.log(onlineSession);
         let usersInEdit = onlineSession.Users.filter(user => user.Permission == "write");
+        
         if (usersInEdit) {
           // const webDavPath = `${process.env.WEBDAV_URL}/files/${res.locals.webDavFolder}/${res.locals.webDavFileName}`;
           // A page where the user decides whether to open a local view or join an online edit 
@@ -35,7 +36,9 @@ exports.resolver = async (req, res, next) => {
           });
         }
       } else if (localSession) {
+        // console.log(localSession)
         localSession = JSON.parse(localSession);
+        // console.log(localSession)
         return res.render("localOffice", {
           id: req.params.id,
           name: res.locals.metadata.name,

@@ -19,7 +19,7 @@ exports.webdavDownloadAndPermissions = async (req, res, next) => {
     let body = {
       fileId: req.params.id,
       authorization: res.locals.authorization,
-      userId: req.user.id,
+      user: req.user,
       webDavFolder: res.locals.webDavFolder,
       webDavFileName: res.locals.webDavFileName,
       permission: res.locals.permission,

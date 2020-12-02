@@ -6,7 +6,8 @@ const redis = require("../controllers/redis");
 const conflict = require("../controllers/conflict");
 const logger = require("../services/logger.js");
 const drive = require("../controllers/drive");
-
+const intervalTime = process.env.INTERVAL_TIME;
+const timerTime = process.env.TIMER_TIME;
 module.exports = (app) => {
   app.get(
     "/api/files/:id",
@@ -25,8 +26,6 @@ module.exports = (app) => {
         const faviconUrl = res.locals.faviconUrl;
         const fileName = res.locals.metadata.name;
         const userId = req.user.id;
-        const intervalTime = process.env.INTERVAL_TIME;
-        const timerTime = process.env.TIMER_TIME;
         res.render("index", {
           url: url,
           accessToken: accessToken,
@@ -68,11 +67,16 @@ module.exports = (app) => {
         const accessToken = res.locals.accessToken;
         const faviconUrl = res.locals.faviconUrl;
         const fileName = res.locals.metadata.name;
+        const userId = req.user.id;
         res.render("index", {
           url: url,
           accessToken: accessToken,
           faviconUrl: faviconUrl,
+          fileId: id,
+          userId: userId,
           fileName: fileName,
+          intervalTime: intervalTime,
+          timerTime: timerTime,
         });
         logger.log({
           level: "info",
