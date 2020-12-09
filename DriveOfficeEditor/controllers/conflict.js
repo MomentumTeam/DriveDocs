@@ -1,4 +1,5 @@
 const redis = require("./redis");
+const axios = require("axios");
 
 exports.resolver = async (req, res, next) => {
   let onlineSession = await redis.get(req.params.id);
@@ -8,13 +9,26 @@ exports.resolver = async (req, res, next) => {
     next();
   } else if (req.query.operation == "edit") {
     if (mode == "online" && localSession) {
-      return res.render("localOffice", {
-        id: req.params.id,
-        name: res.locals.metadata.name,
-        type: res.locals.metadata.type,
-        onlineUrl: `../files/view/${req.params.id}`,
-        local: true
-      });
+      if(req.query.force){
+        console.log('remove user...')
+        try{
+          await closeLocalSession(req.params.id);
+        }catch(err){
+          return res.status(500).send(err.message);
+        }
+        console.log('done')
+        next()
+      }else{
+        return res.render("localOffice", {
+          id: req.params.id,
+          name: res.locals.metadata.name,
+          type: res.locals.metadata.type,
+          onlineUrl: `../files/view/${req.params.id}`,
+          onlineUrlForce: `../files/${req.params.id}?force=true`,
+          local: true
+        });
+      }
+
     } else if (mode == "local") {
       if (onlineSession)  {
         // console.log("onlineSession");
@@ -32,6 +46,7 @@ exports.resolver = async (req, res, next) => {
             users: onlineSession.Users,
             lastUpdated: onlineSession.lastUpdated,
             onlineUrl: `../files/${req.params.id}`,
+            onlineUrlForce: `../files/${req.params.id}?force=true`,
             local: false
           });
         }
@@ -44,6 +59,7 @@ exports.resolver = async (req, res, next) => {
           name: res.locals.metadata.name,
           type: res.locals.metadata.type,
           onlineUrl: `../files/view/${req.params.id}`,
+          onlineUrlForce: `../files/${req.params.id}?force=true`,
           local: true
         });
       } 
@@ -51,5 +67,13 @@ exports.resolver = async (req, res, next) => {
       next()
     }
   }
-  //next();
 }
+
+const closeLocalSession = async (fileId) => {
+  try{
+    return await axios.post(`${process.env.WEBDAV_MANAGER_URL}/closeSession`, {fileId: fileId});
+  }catch(err){
+    console.log(err.message)
+    return Promise.reject(err);
+  }
+  }
