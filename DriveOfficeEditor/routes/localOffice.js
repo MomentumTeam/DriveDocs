@@ -17,14 +17,4 @@ module.exports = (app) => {
     localOffice.initRedisSession,
     localOffice.redirectToLocalOffice,
   );
-  // app.get(
-  //   "/api/localOffice/view/:id",
-  //   authenitcation.isAuthenticated,
-  //   metadata.loadMetadata,
-  //   metadata.setViewPermissionsOnFile,
-  //   tokens.generateAccessToken,
-  //   localOffice.setFolderAndFileName,
-  //   localOffice.webdavDownloadAndPermissions,
-  //   localOffice.redirectToLocalOffice,
-  // );
 };

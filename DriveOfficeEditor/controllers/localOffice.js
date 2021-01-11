@@ -24,7 +24,7 @@ exports.webdavDownloadAndPermissions = async (req, res, next) => {
       webDavFileName: res.locals.webDavFileName,
       permission: res.locals.permission,
     };
-    let res1 = await axios.post(`${process.env.WEBDAV_MANAGER_URL}/downloadToWebdav`, body);
+    await axios.post(`${process.env.WEBDAV_MANAGER_URL}/downloadToWebdav`, body);
     next();
   } catch (err) {
     return res.status(500).send(err);
