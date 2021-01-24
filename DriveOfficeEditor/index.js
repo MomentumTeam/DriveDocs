@@ -13,7 +13,9 @@ const app = express();
 app.use('/scripts', express.static(path.join(__dirname, 'views', 'scripts')))
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
+
 app.set("view engine", "ejs");
+app.use(express.static(path.join(__dirname, "public")));
 app.use(
   session({
     secret: "passport",
@@ -32,7 +34,7 @@ newPage(app);
 // adding the main route of editing/viewing files
 editor(app);
 
-const enableLocalOffice = process.env.ENABLE_LOCAL_OFFICE == 'true';
+const enableLocalOffice = process.env.ENABLE_LOCAL_OFFICE == "true";
 
 if (enableLocalOffice) {
   // adding the route of editing/viewing files in local office
@@ -69,7 +71,3 @@ io.on('connection', (socket) => {
     });
   }
 });
-
-
-
-

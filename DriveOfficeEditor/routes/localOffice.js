@@ -2,6 +2,7 @@ const authenitcation = require("../controllers/authentication");
 const metadata = require("../controllers/metadata");
 const localOffice = require("../controllers/localOffice");
 const tokens = require("../controllers/tokens");
+const conflict = require("../controllers/conflict");
 
 module.exports = (app) => {
   app.get(
@@ -11,6 +12,7 @@ module.exports = (app) => {
     metadata.checkPermissionsOnFile,
     tokens.generateAccessToken,
     localOffice.setFolderAndFileName,
+    conflict.resolver,
     localOffice.webdavDownloadAndPermissions,
     localOffice.initRedisSession,
     localOffice.redirectToLocalOffice,

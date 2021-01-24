@@ -3,9 +3,11 @@ const metadata = require("../controllers/metadata");
 const files = require("../controllers/files");
 const tokens = require("../controllers/tokens");
 const redis = require("../controllers/redis");
+const conflict = require("../controllers/conflict");
 const logger = require("../services/logger.js");
 const drive = require("../controllers/drive");
-
+const intervalTime = process.env.INTERVAL_TIME;
+const timerTime = process.env.TIMER_TIME;
 module.exports = (app) => {
   app.get(
     "/api/files/:id",
@@ -13,6 +15,7 @@ module.exports = (app) => {
     metadata.loadMetadata,
     metadata.checkPermissionsOnFile,
     metadata.checkSizeOfFile,
+    conflict.resolver,
     tokens.generateAccessToken,
     files.generateUrl,
     (req, res) => {
@@ -80,12 +83,13 @@ module.exports = (app) => {
     return res.send("alive");
   });
 
-  app.get("/updateAndDownload/:id",
+  app.get(
+    "/updateAndDownload/:id",
     authenitcation.isAuthenticated,
     metadata.loadMetadata,
     metadata.checkPermissionsOnFile,
     files.updateFile,
-    drive.redirectToDriveDownload,
+    drive.redirectToDriveDownload
   );
 
   app.get("/isIdle/:id",

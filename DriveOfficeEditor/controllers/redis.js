@@ -3,6 +3,10 @@ const redis = require("redis");
 const moment = require("moment");
 const logger = require("../services/logger.js");
 
+const { config } = require("../config/config.js");
+
+const typeToLocalOffice = config.typeToLocalOffice;
+const operationToLocalFlag = config.operationToLocalFlag;
 const client = redis.createClient({
   url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
   socket_keepalive: true,

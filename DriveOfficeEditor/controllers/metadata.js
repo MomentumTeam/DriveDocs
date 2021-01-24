@@ -71,6 +71,12 @@ exports.checkPermissionsOnFile = (req, res, next) => {
   }
 };
 
+exports.setViewPermissionsOnFile = (req, res, next) => {
+      res.locals.permission = permissions.READ;
+      req.query.operation = operations.VIEW;
+    next();
+};
+
 exports.checkSizeOfFile = (req, res, next) => {
   try {
     const metadata = res.locals.metadata;

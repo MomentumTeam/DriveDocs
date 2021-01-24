@@ -24,7 +24,7 @@ function updateLastUpdated(id) {
     return xmlHttp.responseText;
 }
 
-function createTimeOutPage () {
+function createTimeOutPage() {
     const frame = document.getElementById('office_frame');
     const frameHolder = document.getElementById('frameholder');
     frame.parentNode.removeChild(frame);
@@ -49,22 +49,22 @@ const checkIdle = setInterval(() => {
             if (stop) {
                 clearInterval(messageTimer);
             }
-            countTimer --;
-            document.getElementById("second").innerText = countTimer;     
+            countTimer--;
+            document.getElementById("second").innerText = countTimer;
         }, second);
         waitMessgae = setTimeout(() => {
-            if(!stop) {
+            if (!stop) {
                 closeSession(fileId);
                 clearInterval(checkIdle);
                 $('#warningModel').modal('hide');
                 idle = false;
                 stop = true;
                 createTimeOutPage();
-            } else { 
+            } else {
                 stop = false;
                 updateLastUpdated(fileId);
             }
-        }, timer * second); 
+        }, timer * second);
     }
 }, intervalTime * second);
 
