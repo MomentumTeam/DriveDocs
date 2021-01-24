@@ -31,6 +31,7 @@ function createTimeOutPage () {
     const div = document.getElementById('finishPage');
     div.style.display = "block";
     frameHolder.appendChild(div);
+    document.body.style.backgroundColor = "#4fbe9f";
 }
 
 let stop = false, idle = false;
