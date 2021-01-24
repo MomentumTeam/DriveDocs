@@ -6,12 +6,12 @@ const auth = require("./routes/authentication");
 const localOffice = require("./routes/localOffice");
 const newPage = require("./routes/newPage");
 const logger = require("./services/logger.js");
-const path = require("path");
-const redis = require("./controllers/redis");
+const path = require('path');
+const redis = require('./controllers/redis');
 
 const app = express();
-app.use("/scripts", express.static(path.join(__dirname, "views", "scripts")));
-app.use(express.static(path.join(__dirname, "public")));
+app.use('/scripts', express.static(path.join(__dirname, 'views', 'scripts')))
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
 
 app.set("view engine", "ejs");
@@ -51,11 +51,11 @@ const server = app.listen(process.env.PORT, () =>
 
 const io = require("socket.io")(server);
 
-io.on("connection", (socket) => {
+io.on('connection', (socket) => {
   const userId = socket.handshake.query.userId;
   const fileId = socket.handshake.query.fileId;
   try {
-    socket.on("disconnect", async () => {
+    socket.on('disconnect', async () => {
       logger.log({
         level: "info",
         message: `press X - exit`,

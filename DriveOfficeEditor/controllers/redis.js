@@ -99,6 +99,7 @@ exports.removeUserFromSession = async (id, userToRemove) => {
   }
 };
 
+
 exports.updateUserLastUpdated = async (id, userId) => {
   try {
     let res = await getAsync(id);
@@ -109,7 +110,7 @@ exports.updateUserLastUpdated = async (id, userId) => {
     if (!session || session == null || !session.Users || session.Users.length == 0 || session.Users == null) {
       return;
     }
-    const userIndex = session.Users.findIndex((user) => user.Id == userId);
+    const userIndex = session.Users.findIndex(user => user.Id == userId);
     if (!userIndex) {
       logger.log({
         level: "info",
@@ -134,3 +135,5 @@ exports.updateUserLastUpdated = async (id, userId) => {
     });
   }
 };
+
+

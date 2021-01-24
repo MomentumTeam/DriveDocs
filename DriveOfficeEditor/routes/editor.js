@@ -26,6 +26,8 @@ module.exports = (app) => {
         const faviconUrl = res.locals.faviconUrl;
         const fileName = res.locals.metadata.name;
         const userId = req.user.id;
+        const intervalTime = process.env.INTERVAL_TIME;
+        const timerTime = process.env.TIMER_TIME;
         res.render("index", {
           url: url,
           accessToken: accessToken,
@@ -34,7 +36,7 @@ module.exports = (app) => {
           fileId: id,
           userId: userId,
           intervalTime: intervalTime,
-          timerTime: timerTime,
+          timerTime: timerTime
         });
         logger.log({
           level: "info",
@@ -52,68 +54,30 @@ module.exports = (app) => {
     }
   );
 
-  app.get(
-    "/api/files/view/:id",
+  app.post("/closeSession/:id",
     authenitcation.isAuthenticated,
-    metadata.loadMetadata,
-    metadata.setViewPermissionsOnFile,
-    metadata.checkSizeOfFile,
-    tokens.generateAccessToken,
-    files.generateUrl,
-    (req, res) => {
+    files.updateFile,
+    async (req, res) => {
       try {
+        console.log("enter");
         const id = req.params.id;
-        const url = res.locals.url;
-        const accessToken = res.locals.accessToken;
-        const faviconUrl = res.locals.faviconUrl;
-        const fileName = res.locals.metadata.name;
-        const userId = req.user.id;
-        res.render("index", {
-          url: url,
-          accessToken: accessToken,
-          faviconUrl: faviconUrl,
-          fileId: id,
-          userId: userId,
-          fileName: fileName,
-          intervalTime: intervalTime,
-          timerTime: timerTime,
-        });
+        const user = req.user;
+        await redis.removeUserFromSession(id, user.id);
         logger.log({
           level: "info",
-          message: "Index successfully rendered",
-          label: `FileId: ${id}`,
+          message: `User removed from session because it was idle`,
+          label: `session: ${id} user: ${user.id}`,
         });
+        res.status(200).send("ok");
       } catch (e) {
         logger.log({
           level: "error",
-          message: `Status 500, failed to render index, error: ${e}`,
-          label: `FileId: ${req.params.id}`,
+          message: `Status 500, failed to remove user from session, error: ${e}`,
+          label: `session: ${id} user: ${user.id}`,
         });
         res.status(500).send(e);
       }
-    }
-  );
-
-  app.post("/closeSession/:id", authenitcation.isAuthenticated, files.updateFile, async (req, res) => {
-    try {
-      const id = req.params.id;
-      const user = req.user;
-      await redis.removeUserFromSession(id, user.id);
-      logger.log({
-        level: "info",
-        message: `User removed from session because it was idle`,
-        label: `session: ${id} user: ${user.id}`,
-      });
-      res.status(200).send("ok");
-    } catch (e) {
-      logger.log({
-        level: "error",
-        message: `Status 500, failed to remove user from session, error: ${e}`,
-        label: `session: ${id} user: ${user.id}`,
-      });
-      res.status(500).send(e);
-    }
-  });
+    });
 
   app.get("/isalive", (req, res) => {
     return res.send("alive");
@@ -128,30 +92,34 @@ module.exports = (app) => {
     drive.redirectToDriveDownload
   );
 
-  app.get("/isIdle/:id", authenitcation.isAuthenticated, async (req, res) => {
-    try {
-      const sessionId = req.params.id;
-      const existingSession = await redis.get(sessionId);
-      const session = existingSession == null ? {} : JSON.parse(existingSession);
-      const user = session.Users.find((user) => user.Id == req.user.id);
-      const isIdle = (Date.now() - new Date(user.LastUpdated)) / 1000 > process.env.MAX_USER_IDLE;
-      logger.log({
-        level: "info",
-        message: `${isIdle ? "is Idle" : "is not Idle"}`,
-        label: `FileId: ${sessionId} user: ${req.user.id}`,
-      });
-      res.send(isIdle);
-    } catch (e) {
-      logger.log({
-        level: "error",
-        message: `Status 500, failed to check if user idle, error: ${e}`,
-        label: `FileId: ${req.params.id} user: ${req.user.id}`,
-      });
-    }
-  });
+  app.get("/isIdle/:id",
+    authenitcation.isAuthenticated,
+    async (req, res) => {
+      try {
+        const sessionId = req.params.id;
+        const existingSession = await redis.get(sessionId);
+        const session = existingSession == null ? {} : JSON.parse(existingSession);
+        const user = session.Users.find(user => user.Id == req.user.id);
+        const isIdle = (Date.now() - new Date(user.LastUpdated)) / 1000 > process.env.MAX_USER_IDLE;
+        logger.log({
+          level: "info",
+          message: `${isIdle ? "is Idle" : "is not Idle"}`,
+          label: `FileId: ${sessionId} user: ${req.user.id}`,
+        });
+        res.send(isIdle);
+      } catch (e) {
+        logger.log({
+          level: "error",
+          message: `Status 500, failed to check if user idle, error: ${e}`,
+          label: `FileId: ${req.params.id} user: ${req.user.id}`,
+        });
+      }
+    });
 
-  app.get("/update/:id", authenitcation.isAuthenticated, async (req, res) => {
-    await redis.updateUserLastUpdated(req.params.id, req.user.id);
-    res.send("ok");
-  });
+  app.get("/update/:id",
+    authenitcation.isAuthenticated,
+    async (req, res) => {
+      await redis.updateUserLastUpdated(req.params.id, req.user.id);
+      res.send("ok");
+    });
 };
