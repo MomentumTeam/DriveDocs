@@ -33,6 +33,13 @@ namespace DriveWopi
         public static string  AllSessionsRedisKey = "AllSessions";
         public static string AuthorizationToken;
         public static string OfficeEditorUrl;
+
+        public static bool EnableIndexing;
+
+        public static int IndexingTime;
+
+
+
         public static Dictionary<string, string> Mimetypes = new Dictionary<string, string>(){
         {".pptx","application/vnd.openxmlformats-officedocument.presentationml.presentation"},
         {".xlsx","application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"},
@@ -70,6 +77,10 @@ namespace DriveWopi
             intervalTime = int.Parse(Environment.GetEnvironmentVariable("INTERVAL_TIME"));
 
             timerTime = int.Parse(Environment.GetEnvironmentVariable("TIMER_TIME"));
+
+            EnableIndexing = bool.Parse(Environment.GetEnvironmentVariable("INDEXING_ENABLED"));
+        
+            IndexingTime = int.Parse(Environment.GetEnvironmentVariable("INDEXING_TIME"));
         }
     }
 }
