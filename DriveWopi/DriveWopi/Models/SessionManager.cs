@@ -66,7 +66,8 @@ namespace DriveWopi.Models
                     } else {
                         if(Config.EnableIndexing){
                             if (!session.ChangesMade && 
-                            session.LastIndexed.AddSeconds(Config.IndexingTime) < session.LastUpdated)
+                            session.LastIndexed < session.LastUpdated && 
+                            session.LastUpdated.AddSeconds(Config.IndexingTime) < DateTime.Now)
                             {
                                 session.Index();
                                 session.SaveToRedis();

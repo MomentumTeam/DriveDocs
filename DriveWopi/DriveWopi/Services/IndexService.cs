@@ -17,9 +17,6 @@ namespace DriveWopi.Services
     public class IndexService
     {
         private static  HttpClient client;
-        static IndexService(){
-            client = new HttpClient();
-        }
         public static bool Index(String fileId, String authorization)
         {
             try
@@ -28,13 +25,19 @@ namespace DriveWopi.Services
                 {
                     try
                     {
+                        HttpClient client = new HttpClient();
                         client.DefaultRequestHeaders.Add("Authorization", authorization);
-
+                        client.DefaultRequestHeaders.Add("Auth-Type", "Docs");
                         var response = await client.PostAsync(Config.DriveUrl+"/api/producer/file/"+ fileId+"/contentchange",null);
+                        client.DefaultRequestHeaders.Clear();
+                        client.Dispose();
+                        Console.WriteLine("Success!:"+ Config.DriveUrl+"/api/producer/file/"+ fileId+"/contentchange");
                         return true;
                     }
                     catch (Exception e)
                     {
+                        Console.WriteLine("Error:" + Config.DriveUrl+"/api/producer/file/"+ fileId+"/contentchange");
+                        Console.WriteLine(e.Message);
                         return false;
                     }
                 });

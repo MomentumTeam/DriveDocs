@@ -33,7 +33,7 @@ namespace DriveWopi.Models
             _FileInfo = new FileInfo(LocalFilePath);
             _SessionId = SessionId;
             _LastUpdated = DateTime.Now;
-            _LastIndexed = DateTime.MaxValue;
+            _LastIndexed = _LastUpdated;
             _LocalFilePath = LocalFilePath;
             _Users = new List<User>();
             _LockStatus = LockStatus.UNLOCK;
