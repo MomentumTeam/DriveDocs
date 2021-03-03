@@ -11,7 +11,6 @@ exports.resolver = async (req, res, next) => {
   } else if (req.query.operation == "edit") {
     if (mode == "online" && localSession) {
       if(req.query.force){
-        console.log('remove user...');
         try{
           await closeLocalSession(req.params.id);
         }catch(err){
@@ -21,10 +20,13 @@ exports.resolver = async (req, res, next) => {
         next();
       }
       else{
+        localSession = JSON.parse(localSession);
+        const userName = (localSession.user && localSession.user.name)?localSession.user.name : "";
         return res.render("localOffice", {
           id: req.params.id,
           name: res.locals.metadata.name,
           type: res.locals.metadata.type,
+          user: userName,
           onlineUrl: `../files/view/${req.params.id}`,
           onlineUrlForce: `../files/${req.params.id}?force=1`,
           local: true
@@ -47,12 +49,16 @@ exports.resolver = async (req, res, next) => {
             local: false
           });
         }
+        else{
+          return res.send("Please wait for online session to close!");
+        }
       } else if (localSession) {
         localSession = JSON.parse(localSession);
         const userId = req.user.id;
         let userIdInSession = localSession.user.id;
-        console.log(`userId=${userId}, userIdInSession=${userIdInSession}`);
         if(userId == userIdInSession){
+          res.locals.webDavFolder = localSession.webDavFolder;
+          res.locals.webDavFileName = localSession.webDavFileName;
           next();
         }
         else{

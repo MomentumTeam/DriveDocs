@@ -7,6 +7,11 @@
       direction: rtl;
       text-align: right;
     }
+    .userName{
+      direction: rtl;
+      text-align: center;
+      font-weight: bold;
+    }
   </style>
   <%- include('partials/head'); -%>
 </head>
@@ -36,10 +41,10 @@
   <% } else{ %>
     <div class="card centered hebrew">
       <div class="card-body">
-        <h5 class="card-title hebrew">הקובץ <%= name%> פתוח במקום אחר </h5>
-        <p class="card-text hebrew">הקובץ נמצא בעריכה אצל משתמש אחר :</p>
+        <h5 class="card-title hebrew">הקובץ <%= name%> פתוח בעריכה לוקאלית אצל המשתמש: </h5>
+        <p class="card-text userName"><%= user%></p>
         <a class="btn btn-primary hebrew" href=<%=onlineUrl %> >פתח את הקובץ לקריאה בלבד</a>
-        <a class="btn btn-primary hebrew" onclick="myFunction('<%=onlineUrlForce %>')"> ערוך את הקובץ את הקובץ בכל
+        <a class="btn btn-primary hebrew" onclick="myFunction('<%=onlineUrlForce %>')"> ערוך את הקובץ בכל
           זאת</a>
       </div>
     </div>

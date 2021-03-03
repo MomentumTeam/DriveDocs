@@ -32,8 +32,10 @@ exports.webdavDownloadAndPermissions = async (req, res, next) => {
 };
 
 exports.setFolderAndFileName = (req, res, next) => {
+  const d = new Date();
+  const mil = d.getTime();
   res.locals.webDavFolder = res.locals.metadata.type;
-  res.locals.webDavFileName = `${req.params.id}.${res.locals.metadata.type}`;
+  res.locals.webDavFileName = `${req.params.id}-${mil}.${res.locals.metadata.type}`;
   next();
 };
 

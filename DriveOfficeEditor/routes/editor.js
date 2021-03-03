@@ -54,6 +54,49 @@ module.exports = (app) => {
     }
   );
 
+  app.get(
+    "/api/files/view/:id",
+    authenitcation.isAuthenticated,
+    metadata.loadMetadata,
+    metadata.setViewPermissionsOnFile,
+    metadata.checkSizeOfFile,
+    tokens.generateAccessToken,
+    files.generateUrl,
+    (req, res) => {
+      try {
+        const id = req.params.id;
+        const url = res.locals.url;
+        const accessToken = res.locals.accessToken;
+        const faviconUrl = res.locals.faviconUrl;
+        const fileName = res.locals.metadata.name;
+        const userId = req.user.id;
+        res.render("index", {
+          url: url,
+          accessToken: accessToken,
+          faviconUrl: faviconUrl,
+          fileId: id,
+          userId: userId,
+          fileName: fileName,
+          intervalTime: intervalTime,
+          timerTime: timerTime,
+        });
+        logger.log({
+          level: "info",
+          message: "Index successfully rendered",
+          label: `FileId: ${id}`,
+        });
+      } catch (e) {
+        logger.log({
+          level: "error",
+          message: `Status 500, failed to render index, error: ${e}`,
+          label: `FileId: ${req.params.id}`,
+        });
+        res.status(500).send(e);
+      }
+    }
+  );
+
+
   app.post("/closeSession/:id",
     authenitcation.isAuthenticated,
     files.updateFile,
