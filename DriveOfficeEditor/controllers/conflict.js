@@ -16,7 +16,6 @@ exports.resolver = async (req, res, next) => {
         }catch(err){
           return res.status(500).send(err.message);
         }
-        console.log('done');
         next();
       }
       else{
@@ -50,7 +49,7 @@ exports.resolver = async (req, res, next) => {
           });
         }
         else{
-          return res.send("Please wait for online session to close!");
+          return res.render("pleaseWait");
         }
       } else if (localSession) {
         localSession = JSON.parse(localSession);

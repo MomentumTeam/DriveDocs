@@ -31,7 +31,7 @@ exports.loadMetadata = async (req, res, next) => {
         message: "Status 500: Error in receiving the metadata: " + error,
         label: `session: ${req.params.id}`,
       });
-      return res.status(500).send("Error in receiving the metadata, or file may not exist");
+      return res.render("notEnoughPermissions");
     }
   } catch (e) {
     logger.log({
@@ -50,6 +50,9 @@ exports.checkPermissionsOnFile = (req, res, next) => {
     if (metadata.role == roles.OWNER || metadata.role == roles.WRITE) {
       req.query.operation = req.query.operation ? req.query.operation : operations.EDIT;
     } else if (metadata.role == roles.READ) {
+      if(req.originalUrl.indexOf("localoffice")!= -1){
+        return res.render("readLocalNotSupported");
+      }
       res.locals.permission = permissions.READ;
       req.query.operation = operations.VIEW;
     } else {
@@ -58,7 +61,8 @@ exports.checkPermissionsOnFile = (req, res, next) => {
         message: "Status 403: Permission denied",
         label: `user: ${req.user.id} fileId: ${req.params.id}`,
       });
-      return res.status(403).send("You do not have the right permission!");
+      // return res.status(403).send("You do not have the right permission!");
+      return res.render("notEnoughPermissions");
     }
     logger.log({
       level: "info",
