@@ -293,6 +293,9 @@ namespace DriveWopi.Services
         public static bool UpdateSessionInDrive(string id)
         {
             Session session = Session.GetSessionFromRedis(id);
+            if(session == null){
+                return true;
+            }
             User userForUpload;
             if(session.Users != null && session.Users.Count > 0){
                 userForUpload = session.Users[0];

@@ -1,6 +1,21 @@
 const redis = require("./redis");
 const axios = require("axios");
 
+
+const cleanUpId = (id) => {
+  return new Promise( async (resolve, reject) =>{
+    try {
+      const url = `${process.env.WOPI_URL}/cleanUp/${id}`;
+      await axios.get(url);
+      resolve("ok");
+    }
+    catch (err) {
+      reject(err);
+    }
+  });
+
+}
+
 exports.resolver = async (req, res, next) => {
   let onlineSession = await redis.get(req.params.id);
   let localSession = await redis.get(`local.${req.params.id}`);
@@ -49,6 +64,12 @@ exports.resolver = async (req, res, next) => {
           });
         }
         else{
+          try{
+            await cleanUpId(req.params.id);
+          }
+          catch(error){
+          }
+          
           return res.render("pleaseWait");
         }
       } else if (localSession) {

@@ -4,7 +4,6 @@ function closeSession(id) {
     xhr.open("POST", `/closeSession/${id}`, true);
     xhr.onreadystatechange = function () {
         if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-            console.log("close session success");
         }
     }
     xhr.send();

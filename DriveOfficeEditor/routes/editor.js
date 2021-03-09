@@ -102,7 +102,6 @@ module.exports = (app) => {
     files.updateFile,
     async (req, res) => {
       try {
-        console.log("enter");
         const id = req.params.id;
         const user = req.user;
         await redis.removeUserFromSession(id, user.id);
