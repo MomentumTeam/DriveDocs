@@ -7,6 +7,7 @@ const PDF = config.fileTypes.PDF;
 const operations = config.operations;
 const roles = config.roles;
 const maxSizes = config.maxSizes;
+const localMaxSizes = config.localMaxSizes;
 const permissions = config.permissions;
 
 exports.loadMetadata = async (req, res, next) => {
@@ -84,14 +85,22 @@ exports.setViewPermissionsOnFile = (req, res, next) => {
 exports.checkSizeOfFile = (req, res, next) => {
   try {
     const metadata = res.locals.metadata;
-    const maxSize = maxSizes[metadata.type] != undefined ? maxSizes[metadata.type] : maxSizes[PDF];
+    let maxSize = 5000000;
+    if(req.originalUrl.indexOf("localoffice") != -1){
+      maxSize = localMaxSizes[metadata.type] != undefined ? localMaxSizes[metadata.type] : localMaxSizes[PDF];
+    }
+    else{
+      maxSize = maxSizes[metadata.type] != undefined ? maxSizes[metadata.type] : maxSizes[PDF];
+    }
+    
     if (metadata.size > maxSize) {
       logger.log({
         level: "error",
         message: `Status 413: The file is too big since its size is ${metadata.size}`,
         label: `file: ${req.params.id}`,
       });
-      return res.status(413).send(`The file is too big since its size is ${metadata.size}`);
+      // return res.status(413).send(`The file is too big since its size is ${metadata.size}`);
+      return res.render("fileTooBig");
     }
     logger.log({
       level: "info",

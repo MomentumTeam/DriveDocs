@@ -65,8 +65,34 @@ const permissions = {
 
 const maxSizes = {
     DOCX: parseInt(process.env.MAX_SIZE_DOCX),
+    docx: parseInt(process.env.MAX_SIZE_DOCX),
+    DOC: parseInt(process.env.MAX_SIZE_DOCX),
+    doc: parseInt(process.env.MAX_SIZE_DOCX),
     PPTX: parseInt(process.env.MAX_SIZE_PPTX),
+    pptx : parseInt(process.env.MAX_SIZE_PPTX),
+    PPT: parseInt(process.env.MAX_SIZE_PPTX),
+    ppt : parseInt(process.env.MAX_SIZE_PPTX),
     XLSX: parseInt(process.env.MAX_SIZE_XLSX),
+    xlsx: parseInt(process.env.MAX_SIZE_XLSX),
+    XLS: parseInt(process.env.MAX_SIZE_XLSX),
+    xls: parseInt(process.env.MAX_SIZE_XLSX),
+    PDF: parseInt(process.env.MAX_SIZE_PDF),
+};
+
+
+const localMaxSizes = {
+    DOCX: parseInt(process.env.MAX_SIZE_DOCX),
+    docx: parseInt(process.env.MAX_SIZE_DOCX),
+    DOC: parseInt(process.env.MAX_SIZE_DOCX),
+    doc: parseInt(process.env.MAX_SIZE_DOCX),
+    PPTX: parseInt(process.env.MAX_SIZE_PPTX),
+    pptx : parseInt(process.env.MAX_SIZE_PPTX),
+    PPT: parseInt(process.env.MAX_SIZE_PPTX),
+    ppt : parseInt(process.env.MAX_SIZE_PPTX),
+    XLSX: parseInt(process.env.MAX_SIZE_DOCX),
+    xlsx: parseInt(process.env.MAX_SIZE_DOCX),
+    XLS: parseInt(process.env.MAX_SIZE_DOCX),
+    xls: parseInt(process.env.MAX_SIZE_DOCX),
     PDF: parseInt(process.env.MAX_SIZE_PDF),
 };
 
@@ -81,5 +107,6 @@ exports.config = {
     typesToConvert,
     roles,
     maxSizes,
-    pdfTypes
+    pdfTypes,
+    localMaxSizes
 }
