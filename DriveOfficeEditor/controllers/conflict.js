@@ -36,6 +36,12 @@ exports.resolver = async (req, res, next) => {
       else{
         localSession = JSON.parse(localSession);
         const userName = (localSession.user && localSession.user.name)?localSession.user.name : "";
+        const userId = req.user.id;
+        let userIdInSession = localSession.user.id;
+        let message = "ערוך את הקובץ בכל זאת";
+        if(userId == userIdInSession){
+          message = "סגרתי את המסמך, רוצה לערוך באונליין";
+        } 
         return res.render("localOffice", {
           id: req.params.id,
           name: res.locals.metadata.name,
@@ -43,7 +49,8 @@ exports.resolver = async (req, res, next) => {
           user: userName,
           onlineUrl: `../files/view/${req.params.id}`,
           onlineUrlForce: `../files/${req.params.id}?force=1`,
-          local: true
+          local: true,
+          message: message,
         });
       }
     } else if (mode == "local") {
@@ -60,7 +67,8 @@ exports.resolver = async (req, res, next) => {
             lastUpdated: onlineSession.lastUpdated,
             onlineUrl: `../files/${req.params.id}`,
             onlineUrlForce: `../files/${req.params.id}?force=1`,
-            local: false
+            local: false,
+            message: "הצטרף לעריכה המשותפת",
           });
         }
         else{
@@ -82,13 +90,16 @@ exports.resolver = async (req, res, next) => {
           next();
         }
         else{
+          const userName = (localSession.user && localSession.user.name)?localSession.user.name : "";
           return res.render("localOffice", {
             id: req.params.id,
             name: res.locals.metadata.name,
             type: res.locals.metadata.type,
             onlineUrl: `../files/view/${req.params.id}`,
             onlineUrlForce: `../files/${req.params.id}?force=1`,
-            local: true
+            user: userName,
+            local: true,
+            message:"ערוך את הקובץ בכל זאת",
           });
         }
       } 

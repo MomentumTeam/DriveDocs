@@ -7,8 +7,12 @@ exports.generateAccessToken = async (req, res, next) => {
   try {
     const authorization = metadataService.getAuthorizationHeader(req.user);
     res.locals.authorization = authorization;
+    const name = req.user["name"] ? req.user["name"] : "User";
     const dataToSign = {
-      user: { id: req.user["id"], name: req.user["name"], permission: res.locals.permission, authorization: authorization },
+      user: { id: req.user["id"], 
+      name: name, 
+      permission: res.locals.permission, 
+      authorization: authorization },
       created: Date.now(),
     };
     if (res.locals.metadata) {

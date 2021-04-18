@@ -12,6 +12,9 @@
       text-align: center;
       font-weight: bold;
     }
+    .center{
+      text-align:center;
+    }
   </style>
   <%- include('partials/head'); -%>
 </head>
@@ -34,7 +37,7 @@
         </li>
         <% }); %>
     </ul>
-    <div class="card-body hebrew">
+    <div class="card-body hebrew center">
       <a class="card-link hebrew" href=<%=onlineUrl %> >הצטרף לעריכה משותפת</a>
     </div>
   </div>
@@ -43,9 +46,11 @@
       <div class="card-body">
         <h5 class="card-title hebrew">הקובץ <%= name%> פתוח בעריכה לוקאלית אצל המשתמש: </h5>
         <p class="card-text userName"><%= user%></p>
-        <a class="btn btn-primary hebrew" href=<%=onlineUrl %> >פתח את הקובץ לקריאה בלבד</a>
-        <a class="btn btn-primary hebrew" onclick="myFunction('<%=onlineUrlForce %>')"> ערוך את הקובץ בכל
-          זאת</a>
+        <div class="center">
+          <a class="btn btn-primary hebrew" href=<%=onlineUrl %> >פתח את הקובץ לקריאה בלבד</a>
+          <a class="btn btn-primary hebrew" onclick="myFunction('<%=onlineUrlForce %>')"> <%= message %></a>
+        </div>
+
       </div>
     </div>
     <% } %>

@@ -16,10 +16,12 @@ delete fileTypes["PDF"];
 
 exports.webdavDownloadAndPermissions = async (req, res, next) => {
   try {
+    const user = {...req.user};
+    user.name = user.name? user.name : "User";
     let body = {
       fileId: req.params.id,
       authorization: res.locals.authorization,
-      user: req.user,
+      user: user,
       webDavFolder: res.locals.webDavFolder,
       webDavFileName: res.locals.webDavFileName,
       permission: res.locals.permission,
@@ -45,7 +47,7 @@ exports.initRedisSession = async (req, res, next) => {
       const redisKey = `local.${req.params.id}`;
       const user = {
         id: req.user.id,
-        name: req.user.name,
+        name: req.user.name ? req.user.name : "User",
         authorization: res.locals.authorization,
         permission: res.locals.permission,
       };
