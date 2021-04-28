@@ -15,7 +15,6 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.Json;
 using Newtonsoft.Json.Linq;
-using ServiceStack.Redis;
 
 namespace DriveWopi.Controllers
 {

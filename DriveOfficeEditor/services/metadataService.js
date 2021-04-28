@@ -1,6 +1,6 @@
 const axios = require("axios");
 const jwt = require("jsonwebtoken");
-const logger = require("../services/logger.js");
+const logger = require("./logger.js");
 
 const handleUserName = (user) => {
   if (!user.name) {
@@ -22,12 +22,9 @@ const generateAuthorizationHeader = (userObj) => {
     const hour = 60 * minute;
     const day = 24 * hour;
     const expiresIn = day * 1;
-
     const iat = Math.floor(Date.now() / 1000);
     const exp = iat + expiresIn;
-
     const user = { ...userObj, iat, exp };
-
     const name = handleUserName(user);
 
     user.firstName = name.firstName;
@@ -36,15 +33,15 @@ const generateAuthorizationHeader = (userObj) => {
     const authorization = jwt.sign(JSON.parse(JSON.stringify(user)), driveSecret);
     logger.log({
       level: "info",
-      message: `authorization created successfully ${authorization}`,
+      message: `Authorization token created successfully`,
       label: `user: ${userObj.id}`
     });
     return "Bearer " + authorization;
   } catch (e) {
     logger.log({
       level: "error",
-      message: `authorization creation fail, error: ${e}`,
-      label: `user: ${userObj.id}`
+      message: `Authorization token creation failed, error: ${e}`,
+      label: `User: ${userObj.id}`
     });
     throw e;
   }
@@ -56,8 +53,8 @@ exports.getAuthorizationHeader = (userObj) => {
   } catch (e) {
     logger.log({
       level: "error",
-      message: `authorization creation fail, error: ${e}`,
-      label: `user: ${userObj.id}`
+      message: `Authorization creation failed, error: ${e}`,
+      label: `User: ${userObj.id}`
     });
     throw e;
   }
@@ -74,8 +71,8 @@ exports.getMetadata = async (fileId, user) => {
   } catch (error) {
     logger.log({
       level: "error",
-      message: `getMetadata fail, error: ${error}`,
-      label: `session: ${fileId} user: ${userObj.id}`
+      message: `GetMetadata failed, error: ${error}`,
+      label: `Session: ${fileId}, User: ${user.id}`
     });
     throw error;
   }

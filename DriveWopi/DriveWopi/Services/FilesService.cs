@@ -11,7 +11,6 @@ using System.Net.Http.Headers;
 using Newtonsoft.Json;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using ServiceStack.Redis;
 
 namespace DriveWopi.Services
 {
@@ -61,6 +60,7 @@ namespace DriveWopi.Services
                         if(response.StatusCode == HttpStatusCode.NotFound){
                             Config.logger.LogError("Got an exception in GetUploadId - file not found");
                             HandleNotFoundCase(fileId);
+                            throw new DriveFileNotFoundException(fileId);
                         }
                         return null;
                     }
@@ -77,10 +77,9 @@ namespace DriveWopi.Services
         public static void HandleNotFoundCase(string fileId) 
         {
             try{
-                IRedisClient client = RedisService.GenerateRedisClient();
-                Session s = Session.GetSessionFromRedis(fileId, client);
+                Session s = Session.GetSessionFromRedis(fileId);
                 s.DeleteSessionFromRedis();
-                s.DeleteSessionFromAllSessionsInRedis(fileId,client);
+                s.DeleteSessionFromAllSessionsInRedis(fileId);
                 s.RemoveLocalFile();
             }
             catch(Exception ex){
@@ -101,7 +100,13 @@ namespace DriveWopi.Services
                     }
                     catch (Exception e)
                     {
-                        return null;
+                        if(e is DriveFileNotFoundException){
+                            throw e;
+                        }
+                        else{
+                            return null;
+                        }
+
                     }
                 });
                 t.Wait();
@@ -285,9 +290,28 @@ namespace DriveWopi.Services
             return Config.Folder + "/" + id;
         }
 
+        public static bool UpdateSessionInDrive(string id)
+        {
+            Session session = Session.GetSessionFromRedis(id);
+            if(session == null){
+                return true;
+            }
+            User userForUpload;
+            if(session.Users != null && session.Users.Count > 0){
+                userForUpload = session.Users[0];
+            }
+            else if(session.UserForUpload != null){
+                userForUpload = session.UserForUpload;
+            }
+            else{
+                return false;
+            }
+            bool updateResult = session.SaveToDrive(userForUpload);
+            return updateResult;
+    }
+
         public static void RemoveFile(string path)
         {
-            Console.WriteLine(path);
             try
             {
                 File.Delete(path);

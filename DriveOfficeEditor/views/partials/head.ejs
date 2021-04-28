@@ -1,0 +1,174 @@
+<meta charset="utf-8">
+
+<!-- Enable IE Standards mode -->
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+
+<title></title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+<style>
+    .centered {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 5%;
+    }
+
+    body {
+        /* background-image: ; */
+        /* background-color: #4fbe9f; */
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        -ms-content-zooming: none;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .dialog {
+        height: 40vh;
+        max-height: 400px;
+        min-height: 400px;
+        width: 70vw;
+        max-width: 800px;
+        min-width: 550px;
+        background-color: white;
+        border-radius: 10px;
+        margin: auto;
+        margin-top: 25vh;
+        box-shadow: 2px 2px darkgrey;
+        padding: 5vh;
+        text-align: center;
+        font-weight: 700;
+    }
+
+    .refresh-image {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .dialog>div {
+        margin: 20px;
+    }
+
+    .dialog>span {
+        margin: 30px;
+    }
+
+    .header {
+        font-size: 40px;
+        color: #60718b;
+    }
+
+    .content {
+        font-size: 20px;
+        color: #8796ac;
+    }
+
+    .refresh-button {
+        color: white;
+        background-color: #4fbe9f;
+        border-color: #4fbe9f;
+        font-size: 22px;
+        font-weight: 800;
+        border-radius: 22px;
+        padding: 12px 24px;
+    }
+
+    .refresh-button:hover {
+        background-color: #298d82;
+        border-color: #298675;
+    }
+
+    .refresh-button:active {
+        background-color: #298d82 !important;
+        border-color: #298675 !important;
+    }
+
+    .refresh-button:focus {
+        background-color: #298d82 !important;
+        border-color: #298675 !important;
+        box-shadow: 0 0 0 0.2rem rgba(150, 207, 193, 1) !important;
+    }
+
+    div.actions {
+        margin: 5vh;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    #circle-1 {
+        height: 50vw;
+        width: 50vw;
+        position: fixed;
+        background-color: #96cfc1;
+        border-radius: 25vw;
+        left: -25vw;
+        bottom: -25vw;
+        z-index: -1;
+    }
+
+    #circle-2 {
+        height: 40vw;
+        width: 40vw;
+        position: fixed;
+        background-color: #96cfc1;
+        border-radius: 20vw;
+        right: -20vw;
+        top: -20vw;
+        z-index: -1;
+    }
+
+    *,
+    ::after,
+    ::before {
+        -webkit-box-sizing: content-box;
+        -moz-box-sizing: content-box;
+        box-sizing: content-box;
+    }
+
+    #finishPage {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: 0;
+        border: none;
+        display: none;
+    }
+
+    #office_frame {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: 0;
+        border: none;
+        display: block;
+    }
+
+    .mt-300 {
+        margin-top: 300px;
+    }
+
+    .text-large {
+        font-size: 150%;
+    }
+
+    .text-meduim {
+        font-size: 125%;
+    }
+
+    .text {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+</style>
+</head>

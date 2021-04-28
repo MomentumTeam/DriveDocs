@@ -1,13 +1,63 @@
 <!DOCTYPE html>
-<html>
-<body>
-אתה מועבר לעריכה באופיס!
+<html dir="rtl">
 
-</body>
+<head>
+  <style>
+    .hebrew {
+      direction: rtl;
+      text-align: right;
+    }
+    .userName{
+      direction: rtl;
+      text-align: center;
+      font-weight: bold;
+    }
+    .center{
+      text-align:center;
+    }
+  </style>
+  <%- include('partials/head'); -%>
+</head>
 
-<script type="text/javascript">
-    const link = <%= link%>;
-    window.open(link,"_blank");
-</script>
+<% if(local==false){ %>
+  <div class="card centered style=" width: 25rem;">
+    <div class="card-body">
+      <h5 style="direction: rtl;" class="card-title">הקובץ <%= name%> פתוח במקום אחר </h5>
+    </div>
+    <div class="card-header">
+      <p class="card-text hebrew">הקובץ נמצא בעריכה אצל :</p>
+    </div>
+    <ul class="list-group list-group-flush hebrew">
+      <% users.forEach(function(user) { %>
+        <li class="list-group-item hebrew">
+          <!-- <img src="" alt="..." class="rounded-circle"> -->
+          <strong class="heberw">
+            <%= user.Name %>
+          </strong>
+        </li>
+        <% }); %>
+    </ul>
+    <div class="card-body hebrew center">
+      <a class="card-link hebrew" href=<%=onlineUrl %> >הצטרף לעריכה משותפת</a>
+    </div>
+  </div>
+  <% } else{ %>
+    <div class="card centered hebrew">
+      <div class="card-body">
+        <h5 class="card-title hebrew">הקובץ <%= name%> פתוח בעריכה לוקאלית אצל המשתמש: </h5>
+        <p class="card-text userName"><%= user%></p>
+        <div class="center">
+          <a class="btn btn-primary hebrew" href=<%=onlineUrl %> >פתח את הקובץ לקריאה בלבד</a>
+          <a class="btn btn-primary hebrew" onclick="myFunction('<%=onlineUrlForce %>')"> <%= message %></a>
+        </div>
+
+      </div>
+    </div>
+    <% } %>
+
+      </body>
+
+      <%- include('partials/script'); -%>
+        <%- include('partials/alert'); -%>
+
 </html>
-
