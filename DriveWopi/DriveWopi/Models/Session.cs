@@ -16,7 +16,11 @@ namespace DriveWopi.Models
         protected DateTime _LastIndexed;
 
         protected string _LocalFilePath;
+
+        protected string _OriginalFileName;
         protected List<User> _Users;
+
+        protected List<User> _UsersHistory;
 
         protected LockStatus _LockStatus;
 
@@ -28,7 +32,7 @@ namespace DriveWopi.Models
 
         protected FileInfo _FileInfo;
 
-        public Session(string SessionId, string LocalFilePath)
+        public Session(string SessionId, string LocalFilePath , string OriginalFileName)
         {
             _FileInfo = new FileInfo(LocalFilePath);
             _SessionId = SessionId;
@@ -36,11 +40,12 @@ namespace DriveWopi.Models
             _LastIndexed = _LastUpdated;
             _LocalFilePath = LocalFilePath;
             _Users = new List<User>();
+            _UsersHistory = new List<User>();
             _LockStatus = LockStatus.UNLOCK;
             _LockString = "";
             _ChangesMade = false;
+            _OriginalFileName = OriginalFileName;
         }
-
 
         public string SessionId
         {
@@ -57,7 +62,7 @@ namespace DriveWopi.Models
         {
             get { return _ChangesMade; }
             set { _ChangesMade = value; }
-        }
+        }     
 
         public User UserForUpload
         {
@@ -75,11 +80,23 @@ namespace DriveWopi.Models
             set { _LocalFilePath = value; }
         }
 
+        public string OriginalFileName
+        {
+            get { return _OriginalFileName; }
+            set { _OriginalFileName = value; }
+        }
         public List<User> Users
         {
             get { return _Users; }
             set { _Users = value; }
         }
+
+        public List<User> UsersHistory
+        {
+            get { return _UsersHistory; }
+            set { _UsersHistory = value; }
+        }
+
         public LockStatus LockStatus
         {
             get { return _LockStatus; }
@@ -108,6 +125,42 @@ namespace DriveWopi.Models
                     return "Drive Docs";
             }
         }
+
+        public string buildMessage(){
+            string ret = "";
+            try{  
+                List<string> recipientNames = new List<string>();
+                foreach(User user in this.UsersHistory){
+                    if(user.Name != null && (!user.Name.Contains("undefined"))){
+                        recipientNames.Add(user.Name);
+                    }
+                }
+                string recipientsString = string.Join(", ",recipientNames);
+                ret = String.Format("הקובץ {0} נערך בעריכת אונליין על ידי המשתתפים: {1}",
+                         this.OriginalFileName, recipientsString);
+                return ret;
+            }
+            catch(Exception){
+                ret = String.Format("הקובץ {0} נערך בעריכת אונליין",
+                         this.OriginalFileName);
+                return ret;
+            }
+        }
+
+        public bool SendToHiBot(){
+            try{
+                string authorization = this.UserForUpload.Authorization;
+                string fileId = this.SessionId;
+                string message = this.buildMessage();
+                //TODO GET OWNER ID
+                HiBotRequest hiBotRequest= new HiBotRequest(message, this.UserForUpload.Id);
+                bool ret = HiBotService.SendToHiBot(hiBotRequest, fileId, authorization);
+                return ret;
+            }
+            catch(Exception){
+                return false;
+            }
+        }
         
 
         public bool Index(){
@@ -118,12 +171,11 @@ namespace DriveWopi.Models
                 this.LastIndexed = DateTime.Now;
                 return ret;
             }
-            catch(Exception e){
+            catch(Exception){
                 return false;
             }
-
-
         }
+
         public CheckFileInfo GetCheckFileInfo(string userId, string userName, string name)
         {
             try
@@ -171,6 +223,21 @@ namespace DriveWopi.Models
                 throw e;
             }
         }
+        public void AddUserToUsersHistory(string id)
+        {
+            _UsersHistory.Add(new User(id));
+        }
+
+        public void AddUserToUsersHistory(string id, string authorization, string permission, string name)
+        {
+            _UsersHistory.Add(new User(id, authorization, permission, name));
+        }
+
+        public void AddUserToUsersHistory(User user)
+        {
+            _UsersHistory.Add(user);
+        }
+        
 
         public void AddUser(string id)
         {
@@ -223,9 +290,12 @@ namespace DriveWopi.Models
                     Dictionary<string, object> deserializedSessionDict = JsonConvert.DeserializeObject<Dictionary<string, Object>>(session.ToString(), new JsonSerializerSettings()
                     { ContractResolver = new IgnorePropertiesResolver(new[] { "Client" }) });
                     List<Dictionary<string, object>> UsersListDict = JsonConvert.DeserializeObject<List<Dictionary<string, Object>>>(deserializedSessionDict["Users"].ToString());
+                    List<Dictionary<string, object>> UsersHistoryListDict = JsonConvert.DeserializeObject<List<Dictionary<string, Object>>>(deserializedSessionDict["UsersHistory"].ToString());
+                    
                     Dictionary<string, object> userForUploadDict = deserializedSessionDict["UserForUpload"] == null ? null : JsonConvert.DeserializeObject<Dictionary<string, object>>(deserializedSessionDict["UserForUpload"].ToString());
                     User userForUpload = userForUploadDict == null ? null : new User((string)userForUploadDict["Id"], (DateTime)userForUploadDict["LastUpdated"], (string)userForUploadDict["Authorization"]);
-                    Session sessionObj = new Session((string)deserializedSessionDict["SessionId"], (string)deserializedSessionDict["LocalFilePath"]);
+                    Session sessionObj = new Session((string)deserializedSessionDict["SessionId"], (string)deserializedSessionDict["LocalFilePath"]
+                    ,(string)deserializedSessionDict["OriginalFileName"]);
                     sessionObj.LastUpdated = (DateTime)deserializedSessionDict["LastUpdated"];
                     sessionObj.LastIndexed = (DateTime)deserializedSessionDict["LastIndexed"];
                     string lockStatusAsString = ((long)deserializedSessionDict["LockStatus"]).ToString();
@@ -240,6 +310,13 @@ namespace DriveWopi.Models
                         user.Name = (string)userDict["Name"];
                         user.Permission = (string)userDict["Permission"];
                         sessionObj.AddUser(user);
+                    }
+                    foreach (Dictionary<string, object> userDict in UsersHistoryListDict)
+                    {
+                        User user = new User((string)userDict["Id"], (DateTime)userDict["LastUpdated"], (string)userDict["Authorization"]);
+                        user.Name = (string)userDict["Name"];
+                        user.Permission = (string)userDict["Permission"];
+                        sessionObj.AddUserToUsersHistory(user);
                     }
                     Config.logger.LogDebug("GetSession of {0} Success", sessionId);
                     return sessionObj;
@@ -430,6 +507,20 @@ namespace DriveWopi.Models
             catch (Exception e)
             {
                 Config.logger.LogError("UserIsInSession of {0} fail error: {1}", userId, e.Message);
+                throw e;
+            }
+        }
+
+         public bool UserIsInHistory(string userId)
+        {
+            try
+            {
+                return UsersHistory.Find((User u) => u.Id.Equals(userId)) != null;
+
+            }
+            catch (Exception e)
+            {
+                Config.logger.LogError("UserIsInHistory of {0} fail error: {1}", userId, e.Message);
                 throw e;
             }
         }

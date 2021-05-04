@@ -51,14 +51,16 @@ namespace DriveWopi.Models
                 List<Session> allSessionsList = allSessions.Where(x => x != null).ToList();
                 for (int i = 0; i < allSessionsList.Count; i++)
                 {
-                    
                     Session session = allSessionsList[i];
                     if (session.Users.Count == 0 && !session.ChangesMade) {
                         needToCloseSomeSessions = true;
                         allSessionsList[i] = null;
                         if(Config.EnableIndexing){
                             session.Index();
-                        }  
+                        }
+                        if(Config.EnableHiBot){
+                            session.SendToHiBot();
+                        }
                         session.DeleteSessionFromRedis();
                         session.RemoveLocalFile();
 

@@ -42,6 +42,7 @@ services:
             -  TIMER_TIME=${TIMER_TIME}
             -  ENABLE_INDEXING=${ENABLE_INDEXING}
             -  INDEXING_TIME=${INDEXING_TIME}
+            -  ENABLE_HI_BOT=${ENABLE_HI_BOT}
         ports: 
             - "8082:8080"
         volumes:

@@ -58,19 +58,32 @@ namespace DriveWopi.Controllers
                 var sessionContext = Request.Headers["X-WOPI-SessionContext"];
                 string idToDownload = id;
                 string fileName = Config.Folder + "/" + metadata["id"] + "." + metadata["type"];
+                string originalFileName =  metadata["name"];
                 Session editSession = Session.GetSessionFromRedis(id);
                 if (editSession == null)
                 {
                     FilesService.DownloadFileFromDrive(idToDownload, fileName, user["authorization"]);
-                    editSession = new Session(id, fileName);
+                    editSession = new Session(id, fileName,originalFileName);
                     editSession.SaveToRedis();
                     editSession.AddSessionToSetInRedis();
                     Config.logger.LogDebug("New session added to Redis for id=" + id);
                 }
+
+                bool usersAdded = false;
                 if (!editSession.UserIsInSession(user["id"]))
                 {
+                    usersAdded = true;
                     Config.logger.LogDebug("add new user to session");
                     editSession.AddUser(user["id"], user["authorization"], user["permission"], user["name"]);
+                }
+                if (!editSession.UserIsInHistory(user["id"]))
+                {
+                    usersAdded = true;
+                    Config.logger.LogDebug("add new user to session");
+                    editSession.AddUserToUsersHistory(user["id"], user["authorization"], user["permission"], user["name"]);
+                }
+                
+                if(usersAdded){
                     editSession.SaveToRedis();
                     Config.logger.LogDebug("Added user {0} to session {1}", user["id"], id);
                 }

@@ -35,6 +35,7 @@ namespace DriveWopi
         public static string OfficeEditorUrl;
 
         public static bool EnableIndexing;
+        public static bool EnableHiBot;
 
         public static int IndexingTime;
 
@@ -79,7 +80,10 @@ namespace DriveWopi
             timerTime = int.Parse(Environment.GetEnvironmentVariable("TIMER_TIME"));
 
             EnableIndexing = bool.Parse(Environment.GetEnvironmentVariable("ENABLE_INDEXING"));
-        
+            Console.WriteLine("ENABLE_INDEXING="+Environment.GetEnvironmentVariable("ENABLE_INDEXING"));
+            Console.WriteLine("ENABLE_HI_BOT="+Environment.GetEnvironmentVariable("ENABLE_HI_BOT"));
+            EnableHiBot = bool.Parse(Environment.GetEnvironmentVariable("ENABLE_HI_BOT"));
+
             IndexingTime = int.Parse(Environment.GetEnvironmentVariable("INDEXING_TIME"));
         }
     }
