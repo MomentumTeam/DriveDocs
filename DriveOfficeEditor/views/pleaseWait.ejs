@@ -61,7 +61,7 @@ body {
   <h1>אנא המתן בזמן שאנו סוגרים את עריכת הקובץ באונליין</h1>
   <hr>
   <h3 id="count"></h3>
-  <h4 dir="rtl">לאחר מכן: לחץ על "Open in Office" ואשר את ההודעה שמופיעה עם פתיחת הקובץ<h4>
+  <h4 id="message" dir="rtl"><h4>
 </div>
 
 <script>
@@ -75,6 +75,7 @@ body {
     }
     else{
         document.getElementById("count").innerHTML =  "רענן את הדף כעת";
+        document.getElementById("message").innerHTML =  "לאחר מכן: לחץ על \"Open in Office\" ואשר את ההודעה שמופיעה עם פתיחת הקובץ";
         clearInterval(interval);
     }
 }, 1000);

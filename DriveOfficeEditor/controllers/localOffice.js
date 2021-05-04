@@ -16,7 +16,10 @@ delete fileTypes["PDF"];
 
 exports.webdavDownloadAndPermissions = async (req, res, next) => {
   try {
-    const user = {...req.user};
+    const user = {
+      id: req.user.id,
+    name: req.user.name
+    };
     user.name = user.name? user.name : "User";
     let body = {
       fileId: req.params.id,
@@ -61,6 +64,9 @@ exports.initRedisSession = async (req, res, next) => {
       await redis.set(redisKey, JSON.stringify(session));
       next();
     }
+    else{
+      return res.render("readLocalNotSupported");
+    }
   } catch (err) {
     return res.status(500).send("error in initializing session in Redis");
   }
@@ -93,12 +99,12 @@ exports.redirectToLocalOffice = (req, res, next) => {
     const webDavPath = `${process.env.WEBDAV_URL}/files/${res.locals.webDavFolder}/${res.locals.webDavFileName}`;
     const redirectLink = `ms-${typeToLocalOffice[fileType]}:${operationToLocalFlag[operation]}|u|${webDavPath}`;
     return res.redirect(redirectLink);
-  } catch (e) {
+  } catch (error) {
     logger.log({
       level: "error",
       message: `Status 500, failed to create url, error: ${e}`,
       label: `session: ${req.params.id}`,
     });
-    return res.status(500).send(e);
+    return res.status(500).send(error);
   }
 };
