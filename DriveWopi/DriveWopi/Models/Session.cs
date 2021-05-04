@@ -13,6 +13,8 @@ namespace DriveWopi.Models
         protected string _SessionId;
         protected DateTime _LastUpdated;
 
+        protected DateTime _LastIndexed;
+
         protected string _LocalFilePath;
         protected List<User> _Users;
 
@@ -31,6 +33,7 @@ namespace DriveWopi.Models
             _FileInfo = new FileInfo(LocalFilePath);
             _SessionId = SessionId;
             _LastUpdated = DateTime.Now;
+            _LastIndexed = _LastUpdated;
             _LocalFilePath = LocalFilePath;
             _Users = new List<User>();
             _LockStatus = LockStatus.UNLOCK;
@@ -45,6 +48,11 @@ namespace DriveWopi.Models
             set { _SessionId = value; }
         }
 
+        public DateTime LastIndexed
+        {
+            get { return _LastIndexed; }
+            set { _LastIndexed = value; }
+        }
         public bool ChangesMade
         {
             get { return _ChangesMade; }
@@ -99,6 +107,22 @@ namespace DriveWopi.Models
                 default:
                     return "Drive Docs";
             }
+        }
+        
+
+        public bool Index(){
+            try{
+                string authorization = this.UserForUpload.Authorization;
+                string fileId = this.SessionId;
+                bool ret = IndexService.Index(fileId, authorization);
+                this.LastIndexed = DateTime.Now;
+                return ret;
+            }
+            catch(Exception e){
+                return false;
+            }
+
+
         }
         public CheckFileInfo GetCheckFileInfo(string userId, string userName, string name)
         {
@@ -203,6 +227,7 @@ namespace DriveWopi.Models
                     User userForUpload = userForUploadDict == null ? null : new User((string)userForUploadDict["Id"], (DateTime)userForUploadDict["LastUpdated"], (string)userForUploadDict["Authorization"]);
                     Session sessionObj = new Session((string)deserializedSessionDict["SessionId"], (string)deserializedSessionDict["LocalFilePath"]);
                     sessionObj.LastUpdated = (DateTime)deserializedSessionDict["LastUpdated"];
+                    sessionObj.LastIndexed = (DateTime)deserializedSessionDict["LastIndexed"];
                     string lockStatusAsString = ((long)deserializedSessionDict["LockStatus"]).ToString();
                     string lockStringAsString = (string)deserializedSessionDict["LockString"];
                     sessionObj.UserForUpload = userForUpload;

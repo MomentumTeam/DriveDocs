@@ -40,6 +40,8 @@ services:
             -  MAX_USER_IDLE=${MAX_USER_IDLE}
             -  INTERVAL_TIME=${INTERVAL_TIME}
             -  TIMER_TIME=${TIMER_TIME}
+            -  INDEXING_ENABLED=${INDEXING_ENABLED}
+            -  INDEXING_TIME=${INDEXING_TIME}
         ports: 
             - "8082:8080"
         volumes:

@@ -56,10 +56,23 @@ namespace DriveWopi.Models
                     if (session.Users.Count == 0 && !session.ChangesMade) {
                         needToCloseSomeSessions = true;
                         allSessionsList[i] = null;
+                        if(Config.EnableIndexing){
+                            session.Index();
+                        }  
                         session.DeleteSessionFromRedis();
                         session.RemoveLocalFile();
+
                         logger.Debug("Delete session "+ allSessionsList[i] + "- All useres left and no changes made");
                     } else {
+                        if(Config.EnableIndexing){
+                            if (!session.ChangesMade && 
+                            session.LastIndexed < session.LastUpdated && 
+                            session.LastUpdated.AddSeconds(Config.IndexingTime) < DateTime.Now)
+                            {
+                                session.Index();
+                                session.SaveToRedis();
+                            }
+                        }
                         session.Users.RemoveAll((User user) => {
                             int maxTime = Config.intervalTime + Config.idleTime + Config.timerTime;
                             if (user.LastUpdated.AddSeconds(maxTime) < DateTime.Now)
