@@ -78,7 +78,7 @@ namespace DriveWopi
 
             timerTime = int.Parse(Environment.GetEnvironmentVariable("TIMER_TIME"));
 
-            EnableIndexing = bool.Parse(Environment.GetEnvironmentVariable("INDEXING_ENABLED"));
+            EnableIndexing = bool.Parse(Environment.GetEnvironmentVariable("ENABLE_INDEXING"));
         
             IndexingTime = int.Parse(Environment.GetEnvironmentVariable("INDEXING_TIME"));
         }
