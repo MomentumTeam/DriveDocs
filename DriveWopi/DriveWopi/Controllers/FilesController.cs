@@ -50,7 +50,7 @@ namespace DriveWopi.Controllers
                 Dictionary<string, string> user = (Dictionary<string, string>)token["user"];
                 Dictionary<string, string> metadata = (Dictionary<string, string>)token["metadata"];
 
-                if (!AccessTokenVerifier.VerifyAccessToken(id, (string)metadata["id"], (string)token["created"]))
+                if (!AccessTokenVerifier.VerifyAccessToken(id, (string)metadata["id"]))
                 {
                     Config.logger.LogError("status:500 accessToken is illegal");
                     return StatusCode(500); //access token is illegal
@@ -59,11 +59,12 @@ namespace DriveWopi.Controllers
                 string idToDownload = id;
                 string fileName = Config.Folder + "/" + metadata["id"] + "." + metadata["type"];
                 string originalFileName =  metadata["name"];
+                string ownerId = metadata["ownerId"];
                 Session editSession = Session.GetSessionFromRedis(id);
                 if (editSession == null)
                 {
                     FilesService.DownloadFileFromDrive(idToDownload, fileName, user["authorization"]);
-                    editSession = new Session(id, fileName,originalFileName);
+                    editSession = new Session(id, fileName, originalFileName, ownerId);
                     editSession.SaveToRedis();
                     editSession.AddSessionToSetInRedis();
                     Config.logger.LogDebug("New session added to Redis for id=" + id);
@@ -122,7 +123,7 @@ namespace DriveWopi.Controllers
                 Dictionary<string, string> user = (Dictionary<string, string>)token["user"];
                 Dictionary<string, string> metadata = (Dictionary<string, string>)token["metadata"];
 
-                if (!AccessTokenVerifier.VerifyAccessToken(id, (string)metadata["id"], (string)token["created"]))
+                if (!AccessTokenVerifier.VerifyAccessToken(id, (string)metadata["id"]))
                 {
                     Config.logger.LogError("status:500 accessToken is illegal");
                     return StatusCode(500); //access token is illegal
@@ -169,7 +170,7 @@ namespace DriveWopi.Controllers
                 Dictionary<string, Object> token = AccessTokenVerifier.DecodeJWT(access_token);
                 Dictionary<string, string> user = (Dictionary<string, string>)token["user"];
                 Dictionary<string, string> metadata = (Dictionary<string, string>)token["metadata"];
-                if (!AccessTokenVerifier.VerifyAccessToken(id, (string)metadata["id"], (string)token["created"]))
+                if (!AccessTokenVerifier.VerifyAccessToken(id, (string)metadata["id"]))
                 {
                     Config.logger.LogError("status:500 accessToken is illegal");
                     return StatusCode(500);
@@ -295,7 +296,7 @@ namespace DriveWopi.Controllers
                 Dictionary<string, Object> token = AccessTokenVerifier.DecodeJWT(access_token);
                 Dictionary<string, string> metadata = (Dictionary<string, string>)token["metadata"];
                 Dictionary<string, string> user = (Dictionary<string, string>)token["user"];
-                if (!AccessTokenVerifier.VerifyAccessToken(id, (string)metadata["id"], (string)token["created"]))
+                if (!AccessTokenVerifier.VerifyAccessToken(id, (string)metadata["id"]))
                 {
                     Config.logger.LogError("status:500 accessToken is illegal");
                     return StatusCode(500); //access token is illegal

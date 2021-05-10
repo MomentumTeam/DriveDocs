@@ -13,13 +13,13 @@ exports.generateAccessToken = async (req, res, next) => {
       name: name, 
       permission: res.locals.permission, 
       authorization: authorization },
-      created: Date.now(),
     };
     if (res.locals.metadata) {
       dataToSign.metadata = {
         id: res.locals.metadata["id"],
         name: res.locals.metadata["name"],
         type: res.locals.metadata["type"],
+        ownerId: res.locals.metadata["ownerId"]
       };
     }
     res.locals.dataToSign = dataToSign;

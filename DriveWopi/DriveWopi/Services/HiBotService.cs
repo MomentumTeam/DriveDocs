@@ -22,6 +22,10 @@ namespace DriveWopi.Services
             try
             {
                 string url = Config.DriveUrl+"/api/hiBot/"+ fileId;
+                Console.WriteLine("Sending message to Hi bot: url="+url+ ",  message="+
+                hiBotRequest.Message + ",  ownerId="+hiBotRequest.OwnerId+
+                "  ,fileId=" + fileId );
+                return true;
                 Task<bool> t = Task<bool>.Run(async () =>
                 {
                     try

@@ -32,7 +32,10 @@ namespace DriveWopi.Models
 
         protected FileInfo _FileInfo;
 
-        public Session(string SessionId, string LocalFilePath , string OriginalFileName)
+        protected string _OwnerId;
+
+        public Session(string SessionId, string LocalFilePath , string OriginalFileName,
+        string OwnerId)
         {
             _FileInfo = new FileInfo(LocalFilePath);
             _SessionId = SessionId;
@@ -45,12 +48,19 @@ namespace DriveWopi.Models
             _LockString = "";
             _ChangesMade = false;
             _OriginalFileName = OriginalFileName;
+            _OwnerId = OwnerId;
         }
 
         public string SessionId
         {
             get { return _SessionId; }
             set { _SessionId = value; }
+        }
+
+        public string OwnerId
+        {
+            get { return _OwnerId; }
+            set { _OwnerId = value; }
         }
 
         public DateTime LastIndexed
@@ -147,14 +157,32 @@ namespace DriveWopi.Models
             }
         }
 
+        public bool CanSendToBot(){
+            try{
+                bool ownerIsAlone = true;
+                foreach(User user in this.UsersHistory){
+                    if(!string.Equals(user.Id, this.OwnerId)){
+                        ownerIsAlone = false;
+                        break;
+                    }
+                }
+                return !ownerIsAlone;
+            }
+            catch(Exception){
+                return false;
+            }
+        }
+
         public bool SendToHiBot(){
             try{
-                string authorization = this.UserForUpload.Authorization;
-                string fileId = this.SessionId;
-                string message = this.buildMessage();
-                //TODO GET OWNER ID
-                HiBotRequest hiBotRequest= new HiBotRequest(message, this.UserForUpload.Id);
-                bool ret = HiBotService.SendToHiBot(hiBotRequest, fileId, authorization);
+                bool ret = true;
+                if(this.CanSendToBot()){
+                    string authorization = this.UserForUpload.Authorization;
+                    string fileId = this.SessionId;
+                    string message = this.buildMessage();
+                    HiBotRequest hiBotRequest= new HiBotRequest(message, this.UserForUpload.Id);
+                    ret = HiBotService.SendToHiBot(hiBotRequest, fileId, authorization);
+                }
                 return ret;
             }
             catch(Exception){
@@ -162,7 +190,6 @@ namespace DriveWopi.Models
             }
         }
         
-
         public bool Index(){
             try{
                 string authorization = this.UserForUpload.Authorization;
@@ -294,8 +321,10 @@ namespace DriveWopi.Models
                     
                     Dictionary<string, object> userForUploadDict = deserializedSessionDict["UserForUpload"] == null ? null : JsonConvert.DeserializeObject<Dictionary<string, object>>(deserializedSessionDict["UserForUpload"].ToString());
                     User userForUpload = userForUploadDict == null ? null : new User((string)userForUploadDict["Id"], (DateTime)userForUploadDict["LastUpdated"], (string)userForUploadDict["Authorization"]);
-                    Session sessionObj = new Session((string)deserializedSessionDict["SessionId"], (string)deserializedSessionDict["LocalFilePath"]
-                    ,(string)deserializedSessionDict["OriginalFileName"]);
+                    Session sessionObj = new Session((string)deserializedSessionDict["SessionId"], 
+                    (string)deserializedSessionDict["LocalFilePath"]
+                    ,(string)deserializedSessionDict["OriginalFileName"],
+                    (string)deserializedSessionDict["OwnerId"]);
                     sessionObj.LastUpdated = (DateTime)deserializedSessionDict["LastUpdated"];
                     sessionObj.LastIndexed = (DateTime)deserializedSessionDict["LastIndexed"];
                     string lockStatusAsString = ((long)deserializedSessionDict["LockStatus"]).ToString();

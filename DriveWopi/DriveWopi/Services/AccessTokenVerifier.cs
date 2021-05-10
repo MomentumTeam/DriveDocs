@@ -24,7 +24,7 @@ namespace DriveWopi.Services
                 Dictionary<string, Object> dataDict = JsonConvert.DeserializeObject<Dictionary<string, Object>>(jsonString);
                 //Dictionary<string, Object> dataDict = JsonConvert.DeserializeObject<Dictionary<string, Object>>(bigDict["data"].ToString());
 
-                string create = dataDict["created"].ToString();
+                //string create = dataDict["created"].ToString();
                 //string operation = dataDict["operation"].ToString();
                 string template = dataDict.ContainsKey("template") ? dataDict["template"].ToString() : null;
                 Dictionary<string, string> user = JsonConvert.DeserializeObject<Dictionary<string, string>>(dataDict["user"].ToString());
@@ -33,7 +33,7 @@ namespace DriveWopi.Services
                 // dict["uid"] = uid;
                 //dict["operation"] = operation;
                 dict["user"] = user;
-                dict["created"] = create;
+                //dict["created"] = create;
                 if (metadata != null)
                 {
                     dict["metadata"] = metadata;
@@ -53,8 +53,20 @@ namespace DriveWopi.Services
 
         public static bool VerifyAccessToken(string fileId, string idFromToken, string created)
         {
-            //TODO check expiring time
             if (idFromToken.Equals(fileId) && DateTimeOffset.Now.ToUnixTimeMilliseconds() - Convert.ToDouble(created) < Config.AccessTokenExpiringTime)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+        public static bool VerifyAccessToken(string fileId, string idFromToken)
+        {
+            if (idFromToken.Equals(fileId))
             {
                 return true;
             }
